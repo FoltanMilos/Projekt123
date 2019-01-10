@@ -1,5 +1,4 @@
-
-
+from PIL import Image
 
 ##ALL data informations and datasets with its labels
 class data:
@@ -12,6 +11,9 @@ class data:
 
     def __init__(self):
         ##NACITANIE DAT A ROZDELENIE DO DATASETOV podla conf
+        img = Image.open()
+
+
         pass
 
 

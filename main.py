@@ -1,6 +1,7 @@
 import model
 import keras
 import sys
+import data
 
 #entry point
 if __name__ == "__main__":
@@ -13,3 +14,4 @@ if __name__ == "__main__":
 
     #init glob. vars
     model = model.Model()
+    data = data.data()

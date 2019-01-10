@@ -13,7 +13,7 @@ class Model:
     def __init__(self):
         self.model = Sequential()
         model = Sequential()
-        model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(IMG_SIZE, IMG_SIZE, 1)))
+        model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(conf.IMG_SIZE_X, conf.IMG_SIZE_Y, 1)))
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(BatchNormalization())
         model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
@@ -37,6 +37,6 @@ class Model:
 
 
     def train(self,train_data,train_labels):
-        model.fit(train_data, train_labels, batch_size=50, epochs=5, verbose=1)
+        model.fit(train_data, train_labels, batch_size=50, epochs=conf.EPOCH, verbose=1)
 
 
