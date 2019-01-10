@@ -5,5 +5,5 @@ Program projektovej vyucby
     - keras 2.2.2
 
 Informacie pre contribútora:
-  * push --> vždy do MASTER
+    - v triede configuration do premennej DIR priradte cestu k svojim lokalnym data k programu
  
