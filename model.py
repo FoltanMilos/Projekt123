@@ -6,7 +6,8 @@ from keras.layers. normalization import BatchNormalization
 import numpy as np
 import configuration as conf
 
-### System model
+
+# System model
 class Model:
     global model
 
@@ -35,8 +36,7 @@ class Model:
         model.add(Dense(128, activation='relu'))
         model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-
-    def train(self,train_data,train_labels):
+    def train(self, train_data, train_labels):
         model.fit(train_data, train_labels, batch_size=50, epochs=conf.EPOCH, verbose=1)
 
 
