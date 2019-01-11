@@ -14,4 +14,5 @@ if __name__ == "__main__":
 
     #init glob. vars
     model = model.Model()
-    data = data.data()
+    data = data.Data()
+
