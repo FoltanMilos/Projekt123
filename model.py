@@ -15,39 +15,32 @@ class Model:
         pass
 
     def train(self, train_data, train_labels):
-        model.fit(train_data, train_labels, batch_size=50, epochs=conf.EPOCH, verbose=1)
+        self.model.fit(train_data, train_labels, batch_size=2, epochs=conf.EPOCH, verbose=1)
 
     def predict(self):
         pass
 
 
-
     ##Vytvorenie modelu od podlady
     def create_model(self):
         self.model = Sequential()
-        model = Sequential()
-        model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(conf.IMG_SIZE_X, conf.IMG_SIZE_Y, 1)))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(BatchNormalization())
-        model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(BatchNormalization())
-        model.add(Conv2D(96, kernel_size=(3, 3), activation='relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(BatchNormalization())
-        model.add(Conv2D(96, kernel_size=(3, 3), activation='relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(BatchNormalization())
-        model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(BatchNormalization())
-        model.add(Dropout(0.2))
-        model.add(Flatten())
-        model.add(Dense(256, activation='relu'))
-        model.add(Dropout(0.2))
-        model.add(Dense(128, activation='relu'))
-        model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+        self.model.add(Conv2D(32, (3, 3), activation='relu', input_shape=(conf.IMG_SIZE_X, conf.IMG_SIZE_Y, 3)))
+        self.model.add(Conv2D(32, (3, 3), activation='relu'))
+        self.model.add(MaxPooling2D(pool_size=(2, 2)))
+        self.model.add(Dropout(0.25))
+        self.model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+        return self.model
 
     ##Nahranie uz vytvoreneho modelu
     def load_model(self):
         pass
+
+
+    def save_model(self):
+        json_model = self.model.to_json()
+        with open("model.json", "w") as json_file:
+            json_file.write(json_model)
+
+    def predict_image(self,img):
+        predicted = self.model.predict(img,batch_size=None,verbose=0,steps=None)
+        return predicted

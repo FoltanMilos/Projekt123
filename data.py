@@ -1,7 +1,7 @@
 from PIL import Image
 import configuration as conf
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
+import numpy as np
 
 ##ALL data informations and datasets with its labels
 class Data:
@@ -15,7 +15,11 @@ class Data:
     def __init__(self):
         ##NACITANIE DAT A ROZDELENIE DO DATASETOV podla conf
         try:
-            img = mpimg.imread('ISIC_0000000.jpg')
+            self.train_data = []
+            for i in range(0,3):
+                img = Image.open('data/ISIC_000000' + str(i) +'.jpg')
+                self.train_data.append(np.array(img.resize((conf.IMG_SIZE_X,conf.IMG_SIZE_Y),Image.ANTIALIAS)))
+            self.train_labels=self.train_data[0]
             #self.show_image(img)
         except IOError:
             print("Chyba pri otvarani suboru! Skontrolujte cestu v configuration.py"+
