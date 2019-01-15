@@ -16,3 +16,9 @@ if __name__ == "__main__":
     model = model.Model()
     data = data.Data()
 
+    model.create_model()
+
+
+    #
+
+

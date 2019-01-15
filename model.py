@@ -12,6 +12,18 @@ class Model:
     global model
 
     def __init__(self):
+        pass
+
+    def train(self, train_data, train_labels):
+        model.fit(train_data, train_labels, batch_size=50, epochs=conf.EPOCH, verbose=1)
+
+    def predict(self):
+        pass
+
+
+
+    ##Vytvorenie modelu od podlady
+    def create_model(self):
         self.model = Sequential()
         model = Sequential()
         model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(conf.IMG_SIZE_X, conf.IMG_SIZE_Y, 1)))
@@ -36,7 +48,6 @@ class Model:
         model.add(Dense(128, activation='relu'))
         model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-    def train(self, train_data, train_labels):
-        model.fit(train_data, train_labels, batch_size=50, epochs=conf.EPOCH, verbose=1)
-
-
+    ##Nahranie uz vytvoreneho modelu
+    def load_model(self):
+        pass

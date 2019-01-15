@@ -15,10 +15,8 @@ class Data:
     def __init__(self):
         ##NACITANIE DAT A ROZDELENIE DO DATASETOV podla conf
         try:
-
-
             img = mpimg.imread('ISIC_0000000.jpg')
-            self.show_image(img)
+            #self.show_image(img)
         except IOError:
             print("Chyba pri otvarani suboru! Skontrolujte cestu v configuration.py"+
                   " v premennej DIR!")
