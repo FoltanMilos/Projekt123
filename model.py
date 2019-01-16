@@ -1,11 +1,8 @@
-import keras
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
-from keras.layers. normalization import BatchNormalization
-import numpy as np
 import configuration as conf
-
+import numpy as np
 
 # System model
 class Model:
@@ -15,7 +12,7 @@ class Model:
         pass
 
     def train(self, train_data, train_labels):
-        self.model.fit(train_data, train_labels, batch_size=2, epochs=conf.EPOCH, verbose=1)
+        self.model.fit(np.array(train_data), np.array(train_labels), epochs=conf.EPOCH, verbose=1)
 
     def predict(self):
         pass
@@ -24,10 +21,15 @@ class Model:
     ##Vytvorenie modelu od podlady
     def create_model(self):
         self.model = Sequential()
-        self.model.add(Conv2D(32, (3, 3), activation='relu', input_shape=(conf.IMG_SIZE_X, conf.IMG_SIZE_Y, 3)))
-        self.model.add(Conv2D(32, (3, 3), activation='relu'))
+        ##VSTUPNA VRSTVA
+        self.model.add(Conv2D(128, (3, 3),  activation='relu',
+                              data_format='channels_last', input_shape=(conf.IMG_SIZE_X,conf.IMG_SIZE_Y,3))) ##pre obrazky s RGB
+
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
-        self.model.add(Dropout(0.25))
+        self.model.add(Flatten())
+
+        self.model.add(Dense(1, activation='softmax'))
+
         self.model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
         return self.model
 

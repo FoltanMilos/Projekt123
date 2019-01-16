@@ -17,10 +17,10 @@ if __name__ == "__main__":
     data = data.Data()
 
     model.create_model()
-    #model.train(data.train_data,data.train_labels)
+    model.train(data.train_data,data.train_labels)
 
-    #cc = model.predict_image(data.train_data[0])
-
+    result = model.predict_image(data.train_data[0])
+    print(result)
 
 
 
