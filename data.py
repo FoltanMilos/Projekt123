@@ -19,12 +19,14 @@ class Data:
             self.train_labels = []
             for i in range(0,3):
                 img = Image.open('data/ISIC_000000' + str(i) +'.jpg')
+
                 self.train_data.append(np.array(img.resize((conf.IMG_SIZE_X,conf.IMG_SIZE_Y),Image.ANTIALIAS)))
-
+                img = np.expand_dims(img, axis=0)
                 arr = self.train_data[0]
-
-                self.train_labels.append(np.array([1]))
-
+                if i > 1 :
+                    self.train_labels.append(np.array([0]))
+                else:
+                    self.train_labels.append(np.array([ 1]))
 
                 print(arr.shape)
 

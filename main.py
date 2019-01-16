@@ -2,7 +2,7 @@ import model
 import keras
 import sys
 import data
-
+import numpy as np
 # entry point
 if __name__ == "__main__":
     # kontrola dependences
@@ -19,7 +19,9 @@ if __name__ == "__main__":
     model.create_model()
     model.train(data.train_data,data.train_labels)
 
-    result = model.predict_image(data.train_data[0])
+    result = model.predict_image(np.expand_dims(data.train_data[0], axis=0))
+
+
     print(result)
 
 
