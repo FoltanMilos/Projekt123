@@ -20,12 +20,13 @@ class Model:
         pass
 
 
-    ##Vytvorenie modelu od podlady
+    ##Vytvorenie modelu od podlahy
     def create_model(self):
         self.model = Sequential()
         ##VSTUPNA VRSTVA
         self.model.add(Conv2D(32, (3, 3),  activation='relu',
-                             padding='same', data_format='channels_last', input_shape=(conf.IMG_SIZE_X,conf.IMG_SIZE_Y,3))) ##pre obrazky s RGB
+                             padding='same', data_format='channels_last',
+                              input_shape=(conf.IMG_SIZE_X,conf.IMG_SIZE_Y,3))) ##pre obrazky s RGB
 
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
         self.model.add(Flatten())
@@ -51,10 +52,29 @@ class Model:
         with open("saved_model/model.json", "w") as json_file:
             json_file.write(json_model)
         #ulozenie vah
-        model.save_weights("saved_model/model.h5")
+        self.model.save_weights("saved_model/model.h5")
         print("Saved model to disk")
 
+    def test_model(self,test_data,test_labels):
+        print('Model evaulation(Test set used):')
+        result = self.model.evaluate(test_data, test_labels, batch_size=128)
+        print('Evaulation completed:')
+        i = 0
+        for score in result:
+            print('Name:{} Value:{}'.format(self.model.metrics_names[i], score))
+            i += 1
+        print('=========================')
 
+    # predikuje pre jeden obrazok
+    # pre mnozinu EX-ANTE
     def predict_image(self,img):
         predicted = self.model.predict(img,batch_size=None,verbose=0,steps=None)
         return predicted
+
+    # generuje predikcie pre celu mnozinu
+    # generuje ich pre mnozinu so znamou hodnotou
+    # len pre EX-POST alebo nejaky batch vacsi
+    def model_generated_predictions(self, data, labels):
+        result = self.model.predict(data)
+        # , abs(result - labels)
+        return result
