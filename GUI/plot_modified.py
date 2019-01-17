@@ -3,6 +3,10 @@ import numpy as np
 
 class Plot_modified:
 
+    # plotne obrazky v liste
+    # k nim priradi ich urcenu hodnotu REAL --> labels
+    # porovna s hodnotou predikcii daneho labelu
+        # --> pustitelne len na batch hodnoty, pre jeden obrazok treba upravu kodu metody, nepusti asi kompilator
     def plot_data(self,data,labels,predicted_labels):
         figure = plt.figure(figsize=(10,10))
         i = 1
