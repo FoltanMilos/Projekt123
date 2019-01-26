@@ -18,6 +18,7 @@ if __name__ == "__main__":
     model = model.Model()
     data = data.Data()
     data.load_all_data()
+    data.load_all_labels()
 
     model.create_model()
 

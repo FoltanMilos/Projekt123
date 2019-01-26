@@ -1,6 +1,6 @@
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
-from keras.layers import Conv2D, MaxPooling2D
+from keras.layers import Conv2D, MaxPooling2D, BatchNormalization
 import configuration as conf
 import numpy as np
 from keras.models import model_from_json
@@ -16,11 +16,11 @@ class Model:
     # Konstruktor
     def __init__(self):
         self.model = Sequential()
-        self.adam = optimizers.Adam(lr=0.001)
+        self.adam = optimizers.Adam(lr=0.01)
 
     # Trenovanie
     def train(self, train_data, train_labels):
-        res = self.model.fit(np.array(train_data), np.array(train_labels), batch_size=3, epochs=conf.EPOCH, verbose=1)
+        res = self.model.fit(np.array(train_data), np.array(train_labels), batch_size=4, epochs=conf.EPOCH, verbose=1)
         self.save_model()
         return res
 
@@ -35,27 +35,33 @@ class Model:
         ## vstupna vrstva do modelu
         ## musi obsahovat vstupny shape, kvoli rozmeru v datach
         ## krnel size -- urcenie miesta kde sa vykkona v matik
+
+        #odel.add(Flatten(input_shape=train_data.shape[1:]))
+
         self.model.add(Conv2D(32, kernel_size=(3, 3),  activation='relu',
                              padding='same', data_format='channels_last',
                               input_shape=(conf.IMG_SIZE_X,conf.IMG_SIZE_Y,3))) # pre obrazky s RGB treba 3
         self.model.add(MaxPooling2D(pool_size=(2, 2))) # zvyraznenie
-
+        self.model.add(BatchNormalization())
 
         ## prvy filter
-        self.model.add(Conv2D(64, (3, 3), padding='same', activation='relu'))
-        self.model.add(Conv2D(64, (3, 3), activation='relu'))
-        self.model.add(MaxPooling2D(pool_size=(2, 2)))
-        self.model.add(Dropout(0.25))
+       # self.model.add(Conv2D(32, (3, 3), padding='same', activation='relu'))
+        #self.model.add(Conv2D(64, (3, 3), activation='relu'))
+        #self.model.add(MaxPooling2D(pool_size=(2, 2)))
+        #self.model.add(Dropout(0.25))
 
         self.model.add(Flatten())
-        self.model.add(Dense(512, activation='relu'))
-
+        #self.model.add(Dense(10, activation='relu'))
+        #self.model.add(BatchNormalization())
 
         ## vystupna vrstva
 
         self.model.add(Dense(1, activation='softmax'))
 
         self.model.compile(loss='binary_crossentropy', optimizer=self.adam, metrics=['accuracy'])
+
+
+
         return self.model
 
     # Nahranie uz vytvoreneho modelu
@@ -81,7 +87,7 @@ class Model:
     # Model evaulation
     def test_model(self,test_data,test_labels):
         print('Model evaulation(Test set used):')
-        result = self.model.evaluate(test_data, test_labels, batch_size=128)
+        result = self.model.evaluate(test_data, test_labels, batch_size=4)
         print('Evaulation completed:')
         i = 0
         for score in result:
