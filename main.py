@@ -22,15 +22,19 @@ if __name__ == "__main__":
 
     model.create_model()
 
+    ##toto musi byt pre nacitanie modelu, aj s testom
+    model.load_model()
+    model.test_model(data.test_data,data.test_labels)
     print(model.model_summary())
-    model.train(data.train_data,data.train_labels)
-
-    result = model.predict_image(np.expand_dims(data.train_data[0],axis=0))
 
 
-    print(result)
-    d = np.expand_dims(data.train_data[0],axis=0)
-    ss = np.expand_dims(data.train_data[0:3], axis=0)
+    #model.train(data.train_data,data.train_labels)
+    #result = model.predict_image(np.expand_dims(data.train_data[0],axis=0))
+
+
+   #print(result)
+    d = np.expand_dims(data.test_data[0:3],axis=0)
+    ss = np.expand_dims(data.test_data[0:3], axis=0)
 
     predicted = model.model_generated_predictions(np.array(data.train_data),data.train_labels)
     plot = plt.Plot_modified()
