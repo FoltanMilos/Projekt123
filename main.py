@@ -26,7 +26,7 @@ if __name__ == "__main__":
     model.load_model()
     model.test_model(data.test_data,data.test_labels)
     print(model.model_summary())
-
+    #model.validate_model_on_test_data(data.test_data,data.test_labels)
 
     #model.train(data.train_data,data.train_labels)
     #result = model.predict_image(np.expand_dims(data.train_data[0],axis=0))

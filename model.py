@@ -108,3 +108,17 @@ class Model:
         result = self.model.predict(data)
         # , abs(result - labels)
         return result
+
+    ## toto tu ani netreba
+    ## hodnoty v evaulate su dobre
+    def validate_model_on_test_data(self,data,labels):
+        labels = np.array(labels)
+        result = self.model.predict(np.array(data))
+        i = 0
+        ok = 0
+        for lab in labels:
+            if(int(lab) == int(result[i])):
+                ok+=1
+            print("Result NN: {}  - label: {} ".format(result[i],lab))
+            i+=1
+        print("Accuracy test set: {}".format(ok/len(labels)))
