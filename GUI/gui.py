@@ -28,7 +28,7 @@ class GUI:
         menuDropdown.add_command(label='Load Model')
 
         modelMenu = Menu(menu)
-        modelMenu.add_command(label='Show Model')
+        modelMenu.add_command(label='Show Model',command=self.showParameters)
         modelMenu.add_command(label='Model Structure')
         modelMenu.add_command(label='Training Session')
         modelMenu.add_command(label='Training Video')
@@ -44,7 +44,7 @@ class GUI:
         helpMenu.add_command(label='Contributors')
 
         menu.add_cascade(label='Menu',menu=menuDropdown)
-        menu.add_command(label='Model',command= self.showParameters)
+        menu.add_cascade(label='Model',menu= modelMenu)
         menu.add_command(label='Live Predictions')
         menu.add_cascade(label='Datasets',menu=datasetMenu)
         menu.add_cascade(label='Help',menu= helpMenu)
