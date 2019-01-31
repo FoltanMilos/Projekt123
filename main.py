@@ -5,27 +5,32 @@ import data
 import numpy as np
 import GUI.plot_modified as plt
 
-# entry point
-if __name__ == "__main__":
-    # kontrola dependences
-    print("Interpreter version: " + sys.version)
-    print("Keras version: " + keras.__version__)
-    # start aplikacie
-    print("Aplication started: OK (main)")
 
-    # init glob. vars
-    model = model.Model()
-    data = data.Data()
-    data.load_all_data()
-    data.load_all_labels()
+class Backend:
+    # instancia triedy model
+    global model
 
-    model.create_model()
+    # instancia triedy data
+    global data
 
-    ##toto musi byt pre nacitanie modelu, aj s testom
-    model.load_model()
-    model.test_model(data.test_data,data.test_labels)
-    print(model.model_summary())
-    #model.validate_model_on_test_data(data.test_data,data.test_labels)
+    def __init__(self):
+        # kontrola dependences
+        print("Interpreter version: " + sys.version)
+        print("Keras version: " + keras.__version__)
+        print("Aplication started: OK (main)")
+
+        # init data
+        self.data = data.Data()
+        self.data.load_all_data()
+        self.data.load_all_labels()
+
+        # init model
+        self.model = model.Model()
+        self.model.create_model()
+        model.load_model()
+        model.test_model(data.test_data,data.test_labels)  # musi byt pustena evualation
+        print(model.model_summary())
+
 
     #model.train(data.train_data,data.train_labels)
     #result = model.predict_image(np.expand_dims(data.train_data[0],axis=0))
@@ -38,3 +43,8 @@ if __name__ == "__main__":
     predicted = model.model_generated_predictions(np.array(data.train_data),data.train_labels)
     plot = plt.Plot_modified()
     plot.plot_data(data.train_data,data.train_labels,predicted)
+
+
+# entry point
+if __name__ == "__main__":
+    bck = Backend()
