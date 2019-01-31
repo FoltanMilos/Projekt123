@@ -27,22 +27,20 @@ class Backend:
         # init model
         self.model = model.Model()
         self.model.create_model()
-        model.load_model()
-        model.test_model(data.test_data,data.test_labels)  # musi byt pustena evualation
-        print(model.model_summary())
+        self.model.load_model()
+        self.model.test_model(self.data.test_data,self.data.test_labels)  # musi byt pustena evualation
+        print(self.model.model_summary())
 
 
-    #model.train(data.train_data,data.train_labels)
-    #result = model.predict_image(np.expand_dims(data.train_data[0],axis=0))
+        #result = model.predict_image(np.expand_dims(data.train_data[0],axis=0))
 
 
-   #print(result)
-    d = np.expand_dims(data.test_data[0:3],axis=0)
-    ss = np.expand_dims(data.test_data[0:3], axis=0)
+        d = np.expand_dims(self.data.test_data[0:3],axis=0)
+        ss = np.expand_dims(self.data.test_data[0:3], axis=0)
 
-    predicted = model.model_generated_predictions(np.array(data.train_data),data.train_labels)
-    plot = plt.Plot_modified()
-    plot.plot_data(data.train_data,data.train_labels,predicted)
+        predicted = self.model.model_generated_predictions(np.array(self.data.train_data),self.data.train_labels)
+        plot = plt.Plot_modified()
+        plot.plot_data(self.data.train_data,self.data.train_labels,predicted)
 
 
 # entry point
