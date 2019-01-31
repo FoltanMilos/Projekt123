@@ -6,10 +6,10 @@ matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from pandas import DataFrame
 import data
-class GUI:
 
+class GUI:
     def __init__(self):
-        self.data = data.Data()
+        self.data =data.Data()
         self.data.load_all_data()
         self.data.load_all_labels()
         self.root = Tk()
@@ -47,9 +47,13 @@ class GUI:
         helpMenu.add_command(label='Article')
         helpMenu.add_command(label='Contributors')
 
+        livePred = Menu(menu)
+        livePred.add_command(label='Chcek Your Photo...')
+        livePred.add_command(label='Load Other Photo...')
+
         menu.add_cascade(label='Menu',menu=menuDropdown)
         menu.add_cascade(label='Model',menu= modelMenu)
-        menu.add_command(label='Live Predictions')
+        menu.add_cascade(label='Live Predictions',menu=livePred)
         menu.add_cascade(label='Datasets',menu=datasetMenu)
         menu.add_cascade(label='Help',menu= helpMenu)
         menu.add_command(label='About')
