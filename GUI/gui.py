@@ -5,10 +5,13 @@ import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from pandas import DataFrame
-
-
+import data
 class GUI:
+
     def __init__(self):
+        self.data = data.Data()
+        self.data.load_all_data()
+        self.data.load_all_labels()
         self.root = Tk()
         self.root.geometry('1000x650')
         self.root.resizable(False,False)
@@ -37,8 +40,8 @@ class GUI:
 
 
         datasetMenu = Menu(menu)
-        datasetMenu.add_command(label='Show Training Dataset',command=self.showDataset)
-        datasetMenu.add_command(label='Show Test Dataset',command=self.showDataset)
+        datasetMenu.add_command(label='Show Training Dataset',command=lambda: self.showDataset(False,0))
+        datasetMenu.add_command(label='Show Test Dataset',command= lambda: self.showDataset(True,0))
 
         helpMenu = Menu(menu)
         helpMenu.add_command(label='Article')
@@ -57,7 +60,7 @@ class GUI:
         for i in self.frame.winfo_children():
             i.destroy()
 
-    def showDataset(self,data,labels,predicted_labels):
+    def showDataset(self,test ,index = 0):
         # self.file = ''
         # self.clean()
         # text= StringVar()
@@ -66,25 +69,38 @@ class GUI:
         # Label(self.frame,textvariable=text,bg='white').place(x=30,y=200)
         # Button(self.frame,text='Select dataset', command= lambda: [self.fileOpen(text)]).place(x=self.frame.winfo_width()/2+100, y=200)
         # Button(self.frame, text='Start presentation', command= self.startTrain).place(x= self.frame.winfo_width()/2,y=250, anchor='center')
-
+        self.clean()
+        print('called' + str(index))
         figure = plt.figure(figsize=(10, 10))
         i = 1
         ax = []  # na manipulaciu subloptmi
-        index = 0
-        for img in data:
-            if (index < 4):  ## test
-                # img = np.random.randint(10, size=(10, 10))
-                figure.add_subplot(2, 2, i)
-                ax.append(figure.add_subplot(2, 2, i))
-                color = 'red'
-                if (labels[i - 1] == predicted_labels[i - 1]):
-                    color = 'green'
-                ax[i - 1].set_title('Real:{} Pred:{}'.format(labels[i - 1], int(predicted_labels[i - 1])), color=color)
-                plt.imshow(img)
-                i += 1
-                index += 1
+        if test == True:
+            dataset = self.data.test_data
+            labels = self.data.test_labels
+        else:
+            dataset = self.data.train_data
+            labels = self.data.train_labels
+
+        for img in range(index,index + min(4,dataset.__len__() - index)):
+            ## test
+            # img = np.random.randint(10, size=(10, 10))
+            # figure.add_subplot(2, 2, i)
+            ax.append(figure.add_subplot(2, 2, i))
+            color = 'red'
+
+            ax[divmod(img,4)[1]].set_title('Malignant:{}'.format(labels[img], color='black'))
+            plt.imshow(dataset[img])
+            i += 1
+        index += min(4,dataset.__len__() - index)
         canvas = FigureCanvasTkAgg(figure, self.frame)
         canvas.get_tk_widget().pack(fill=BOTH,expand=1)
+        if (index != dataset.__len__()):
+            Button(self.frame,text='>',font=('helvetica',24),bg='white',command= lambda: self.showDataset(test,index))\
+            .place(x=self.frame.winfo_width()-100,y=self.frame.winfo_height()/2)
+        if index > 4:
+            Button(self.frame, text='<',font=('helvetica',24),bg='white',command=lambda: self.showDataset(test, index-8)) \
+            .place(x=50, y=self.frame.winfo_height()/2 )
+
 
     def startTrain(self):
         pass
