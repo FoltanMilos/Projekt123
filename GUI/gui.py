@@ -5,8 +5,9 @@ import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from pandas import DataFrame
-class GUI:
 
+
+class GUI:
     def __init__(self):
         self.root = Tk()
         self.root.geometry('1000x650')
@@ -111,5 +112,6 @@ class GUI:
         canvas.get_tk_widget().pack(side=RIGHT)
         df.plot(kind='line',ax=ax)
 
-gui = GUI()
-gui.start()
+if __name__ == "__main__":
+    gui = GUI()
+    gui.start()
