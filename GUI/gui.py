@@ -11,7 +11,7 @@ class GUI:
         self.root = Tk()
         self.root.geometry('1000x650')
         self.root.resizable(False,False)
-        self.root.iconbitmap(r'c:\Users\Jakubko\PycharmProjects\Projekt123\GUI\brain-favicon.ico')
+        #self.root.iconbitmap(r'GUI\brain-favicon.ico')
         self.frame = Frame(self.root, bg='white')
         self.frame.pack(fill=BOTH,expand=1)
         self.menu()
