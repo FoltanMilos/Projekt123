@@ -29,7 +29,7 @@ class GUI:
         menu = Menu(self.root)
 
         menuDropdown = Menu(menu)
-        menuDropdown.add_command(label='Load Model')
+        menuDropdown.add_command(label='Load Your Model...')
         menuDropdown.add_command(label='Exit')
 
         modelMenu = Menu(menu)
@@ -43,6 +43,7 @@ class GUI:
         datasetMenu = Menu(menu)
         datasetMenu.add_command(label='Show Training Dataset',command=lambda: self.showDataset(False,0))
         datasetMenu.add_command(label='Show Test Dataset',command= lambda: self.showDataset(True,0))
+        datasetMenu.addadd_command(label='Dataset Information')  ## tu daj vypis ze z kade mame foto
 
         helpMenu = Menu(menu)
         helpMenu.add_command(label='Tutorial')
@@ -55,7 +56,7 @@ class GUI:
         aboutMenu.add_command(label='Article')
         aboutMenu.add_command(label='Contributors')
         aboutMenu.add_command(label='Our work')
-        aboutMenu.add_command(label='About Model')
+        aboutMenu.add_command(label='Model know-how')
 
         menu.add_cascade(label='Menu',menu=menuDropdown)
         menu.add_cascade(label='Model',menu= modelMenu)
