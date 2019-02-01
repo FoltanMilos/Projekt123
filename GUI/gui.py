@@ -30,13 +30,14 @@ class GUI:
 
         menuDropdown = Menu(menu)
         menuDropdown.add_command(label='Load Model')
+        menuDropdown.add_command(label='Exit')
 
         modelMenu = Menu(menu)
         modelMenu.add_command(label='Show Model',command=self.showParameters)
         modelMenu.add_command(label='Model Structure')
         modelMenu.add_command(label='Training Session')
         modelMenu.add_command(label='Training Video')
-        modelMenu.add_command(label='About Model')
+
 
 
         datasetMenu = Menu(menu)
@@ -44,19 +45,24 @@ class GUI:
         datasetMenu.add_command(label='Show Test Dataset',command= lambda: self.showDataset(True,0))
 
         helpMenu = Menu(menu)
-        helpMenu.add_command(label='Article')
-        helpMenu.add_command(label='Contributors')
+        helpMenu.add_command(label='Tutorial')
 
         livePred = Menu(menu)
         livePred.add_command(label='Chcek Your Photo...')
-        livePred.add_command(label='Load Other Photo...')
+        livePred.add_command(label='Load Example Photo...')
+
+        aboutMenu = Menu(menu)
+        aboutMenu.add_command(label='Article')
+        aboutMenu.add_command(label='Contributors')
+        aboutMenu.add_command(label='Our work')
+        aboutMenu.add_command(label='About Model')
 
         menu.add_cascade(label='Menu',menu=menuDropdown)
         menu.add_cascade(label='Model',menu= modelMenu)
         menu.add_cascade(label='Live Predictions',menu=livePred)
         menu.add_cascade(label='Datasets',menu=datasetMenu)
         menu.add_cascade(label='Help',menu= helpMenu)
-        menu.add_command(label='About')
+        menu.add_cascade(label='About',menu=aboutMenu)
         self.root.config(menu=menu)
         self.frame.pack()
 
