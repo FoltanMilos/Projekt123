@@ -196,17 +196,21 @@ class GUI:
                 text.insert(END, content[i])
                 text.configure(state=DISABLED)
                 text.place(x=80, y=100 * i + 20)
-                can = Canvas(self.frame, width=50, height=50)
-                can.place(x=800, y=100 * i + 20)
-                can.create_image(0, 0, image=PhotoImage(file='tmp.png'))
+                img = Image.open('tmp.gif')
+                img = ImageTk.PhotoImage(img)
+                panel = Label(self.frame, image=img,width=80 , height=80)
+                panel.image = img
+                panel.place(x=800,y=100*i+20)
             else:
                 text = Text(self.frame, width=80, height=4,borderwidth=1)
                 text.insert(END, content[i])
                 text.configure(state=DISABLED)
                 text.place(x=280, y=100 * i + 20)
-                can = Canvas(self.frame, width=50, height=50)
-                can.place(x=80, y=100 * i + 20)
-                can.create_image(0, 0, image=PhotoImage(file='tmp.png'))
+                img = Image.open('tmp.gif')
+                img = ImageTk.PhotoImage(img)
+                panel = Label(self.frame, image=img,width=80 , height=80)
+                panel.image = img
+                panel.place(x=80, y=100 * i + 20)
 
     def loadPhoto(self):
         self.clean()
