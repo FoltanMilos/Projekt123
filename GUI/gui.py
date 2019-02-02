@@ -35,9 +35,9 @@ class GUI:
         menuDropdown.add_command(label='Exit')
 
         modelMenu = Menu(menu)
-        modelMenu.add_command(label='Show Model',command=self.showParameters)
+        modelMenu.add_command(label='Show Model')
         modelMenu.add_command(label='Model Structure')
-        modelMenu.add_command(label='Training Session')
+        modelMenu.add_command(label='Training Session',command=self.showParameters)
         modelMenu.add_command(label='Training Video')
 
 
@@ -51,7 +51,7 @@ class GUI:
         helpMenu.add_command(label='Tutorial')
 
         livePred = Menu(menu)
-        livePred.add_command(label='Chcek Your Photo...')
+        livePred.add_command(label='Chcek Your Photo...',command=self.loadPhoto)
         livePred.add_command(label='Load Example Photo...',command= self.loadExamplePhoto)
 
         aboutMenu = Menu(menu)
@@ -207,6 +207,33 @@ class GUI:
                 can = Canvas(self.frame, width=50, height=50)
                 can.place(x=80, y=100 * i + 20)
                 can.create_image(0, 0, image=PhotoImage(file='tmp.png'))
+
+    def loadPhoto(self):
+        self.clean()
+        Label(self.frame,text='Live Prediction',font=('helvetica',18),bg='white').place(x=self.frame.winfo_width()/2,y=20,anchor=CENTER)
+        text= StringVar()
+        Button(self.frame, text='Select Photo', command=lambda:  self.fileOpen(text)).place(x=750,y=100)
+        Label(self.frame,textvariable=text,bg='white').place(x=200,y=100)
+        Button(self.frame,text='Evaluate Photo',command=lambda: self.evaluate(text.get())).place(x=self.frame.winfo_width()/2,y=300,anchor=CENTER)
+
+    def evaluate(self,path):
+        self.clean()
+        Label(self.frame,text='Live Prediction',font=('helvetica',18),bg='white').place(x=self.frame.winfo_width()/2,y=20,anchor=CENTER)
+        Label(self.frame,text='Verdict',bg='white').place(x=50,y=60)
+        verdict = StringVar()
+        verdict.set('OK')
+        Label(self.frame,textvariable=verdict,bg='white').place(x=70,y=80)
+        Label(self.frame,text='Recommendation').place(x=50,y=150)
+        content="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vulputate tellus metus, at maximus nunc tincidunt in. Suspendisse blandit, felis eget sollicitudin condimentum, magna nisi interdum nisi, vel sodales arcu turpis eu libero. Nulla iaculis mauris eget dapibus ullamcorper. Ut molestie velit nec sem pretium porttitor. Sed finibus sit amet lectus eu blandit. Donec rhoncus sollicitudin velit in tristique. Donec luctus tortor tellus, vitae vehicula arcu rutrum nec. Mauris porttitor sed nunc vel mollis. Nulla hendrerit ex pellentesque tortor rhoncus elementum. Ut sed finibus felis. Fusce aliquam pretium erat, vel pellentesque tortor blandit ac. Etiam euismod aliquam dolor, nec feugiat quam blandit vitae. Integer egestas massa eros, mattis dictum velit luctus vel. Suspendisse aliquet posuere quam, sit amet scelerisque est dapibus posuere. Integer non dui eu velit tincidunt consectetur sit amet eu eros."
+        txt = Text(self.frame,width=30,height=15,borderwidth=0)
+        txt.insert(END,content)
+        txt.configure(state=DISABLED)
+        txt.place(x=50,y=170)
+        img = Image.open(path)
+        img = ImageTk.PhotoImage(img)
+        panel = Label(self.frame, image = img)
+        panel.image = img
+        panel.place(x=350,y=100)
 
 
 
