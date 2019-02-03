@@ -31,7 +31,7 @@ class GUI:
         menu = Menu(self.root)
 
         menuDropdown = Menu(menu)
-        menuDropdown.add_command(label='Load Your Model...')
+        menuDropdown.add_command(label='Load Your Model...',state=DISABLED)
         menuDropdown.add_command(label='Exit')
 
         modelMenu = Menu(menu)
