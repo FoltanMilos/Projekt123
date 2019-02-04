@@ -35,12 +35,12 @@ class Backend:
         #result = model.predict_image(np.expand_dims(data.train_data[0],axis=0))
 
 
-        d = np.expand_dims(self.data.test_data[0:3],axis=0)
-        ss = np.expand_dims(self.data.test_data[0:3], axis=0)
+        #d = np.expand_dims(self.data.test_data[0:3],axis=0)
+        #ss = np.expand_dims(self.data.test_data[0:3], axis=0)
 
-        predicted = self.model.model_generated_predictions(np.array(self.data.train_data),self.data.train_labels)
-        plot = plt.Plot_modified()
-        plot.plot_data(self.data.train_data,self.data.train_labels,predicted)
+        #predicted = self.model.model_generated_predictions(np.array(self.data.train_data),self.data.train_labels)
+        #plot = plt.Plot_modified()
+        #plot.plot_data(self.data.train_data,self.data.train_labels,predicted)
 
 
 # entry point

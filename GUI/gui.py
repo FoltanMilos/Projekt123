@@ -8,12 +8,26 @@ from pandas import DataFrame
 import data
 from PIL import Image,ImageTk
 import os
+import backend as bck
+from keras.utils import plot_model
+from matplotlib_util import save_model_to_file
+from convnet_drawer import Model, Conv2D, MaxPooling2D, Flatten, Dense, config
+import matplotlib.pyplot as plt
+import configuration as conf
 
 class GUI:
+    ## na oddelenie gui od ostatku app
+    # obsahuje
+    #       - data_train
+    #       - data_test
+    #       - model
+    global backend
+
     def __init__(self):
-        self.data =data.Data()
-        self.data.load_all_data()
-        self.data.load_all_labels()
+        #INIT backend
+        self.backend = bck.Backend()
+
+        #gui init
         self.root = Tk()
         self.root.geometry('1000x650')
         self.root.resizable(False,False)
@@ -32,15 +46,13 @@ class GUI:
 
         menuDropdown = Menu(menu)
         menuDropdown.add_command(label='Load Your Model...',state=DISABLED)
-        menuDropdown.add_command(label='Exit')
+        menuDropdown.add_command(label='Exit',command=exit)
 
         modelMenu = Menu(menu)
         modelMenu.add_command(label='Show Model')
-        modelMenu.add_command(label='Model Structure')
+        modelMenu.add_command(label='Model Structure',command=self.showModelStructure)
         modelMenu.add_command(label='Training Session',command=self.showParameters)
         modelMenu.add_command(label='Training Video')
-
-
 
         datasetMenu = Menu(menu)
         datasetMenu.add_command(label='Show Training Dataset',command=lambda: self.showDataset(False,0))
@@ -88,11 +100,11 @@ class GUI:
         i = 1
         ax = []  # na manipulaciu subloptmi
         if test == True:
-            dataset = self.data.test_data
-            labels = self.data.test_labels
+            dataset = self.backend.data.test_data
+            labels = self.backend.data.test_labels
         else:
-            dataset = self.data.train_data
-            labels = self.data.train_labels
+            dataset = self.backend.data.train_data
+            labels = self.backend.data.train_labels
 
         for img in range(page*4,page*4 + min(4,dataset.__len__() - page*4)):
             ## test
@@ -216,16 +228,28 @@ class GUI:
         self.clean()
         Label(self.frame,text='Live Prediction',font=('helvetica',18),bg='white').place(x=self.frame.winfo_width()/2,y=20,anchor=CENTER)
         text= StringVar()
-        Button(self.frame, text='Select Photo', command=lambda:  self.fileOpen(text)).place(x=750,y=100)
-        Label(self.frame,textvariable=text,bg='white').place(x=200,y=100)
-        Button(self.frame,text='Evaluate Photo',command=lambda: self.evaluate(text.get())).place(x=self.frame.winfo_width()/2,y=300,anchor=CENTER)
+        #Button(self.frame, text='Select Photo', command=lambda:
+        self.fileOpen(text) #).place(x=750,y=100)
+
+        # nahra fotku z vybranej cesty
+        #img = self.backend.data.load_solo_img(text.get())
+        self.evaluate(text.get())
+        #Label(self.frame,textvariable=text,bg='white').place(x=200,y=100)
+        #Button(self.frame,text='Evaluate Photo',command=lambda: self.evaluate(text.get())).place(x=self.frame.winfo_width()/2,y=300,anchor=CENTER)
 
     def evaluate(self,path):
         self.clean()
-        Label(self.frame,text='Live Prediction',font=('helvetica',18),bg='white').place(x=self.frame.winfo_width()/2,y=20,anchor=CENTER)
+        Label(self.frame,text='Prediction',font=('helvetica',18),bg='white').place(x=self.frame.winfo_width()/2,y=50,anchor=CENTER)
         Label(self.frame,text='Verdict',bg='white').place(x=50,y=60)
+
+        img = Image.open(path)
+        img = img.resize((conf.IMG_SIZE_Y, conf.IMG_SIZE_X), Image.ANTIALIAS)
+
+        #predikcia siete
+        result = self.backend.model.predict_image(img)
+        img = ImageTk.PhotoImage(img)
         verdict = StringVar()
-        verdict.set('OK')
+        verdict.set(str(result))
         Label(self.frame,textvariable=verdict,bg='white').place(x=70,y=80)
         Label(self.frame,text='Recommendation').place(x=50,y=150)
         content="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vulputate tellus metus, at maximus nunc tincidunt in. Suspendisse blandit, felis eget sollicitudin condimentum, magna nisi interdum nisi, vel sodales arcu turpis eu libero. Nulla iaculis mauris eget dapibus ullamcorper. Ut molestie velit nec sem pretium porttitor. Sed finibus sit amet lectus eu blandit. Donec rhoncus sollicitudin velit in tristique. Donec luctus tortor tellus, vitae vehicula arcu rutrum nec. Mauris porttitor sed nunc vel mollis. Nulla hendrerit ex pellentesque tortor rhoncus elementum. Ut sed finibus felis. Fusce aliquam pretium erat, vel pellentesque tortor blandit ac. Etiam euismod aliquam dolor, nec feugiat quam blandit vitae. Integer egestas massa eros, mattis dictum velit luctus vel. Suspendisse aliquet posuere quam, sit amet scelerisque est dapibus posuere. Integer non dui eu velit tincidunt consectetur sit amet eu eros."
@@ -233,13 +257,30 @@ class GUI:
         txt.insert(END,content)
         txt.configure(state=DISABLED)
         txt.place(x=50,y=170)
-        img = Image.open(path)
-        img = ImageTk.PhotoImage(img)
+
         panel = Label(self.frame, image = img)
         panel.image = img
         panel.place(x=350,y=100)
 
+    def showModelStructure(self):
+        self.clean()
+        text = Text(self.frame, width=95, height=30)
+        scroll = Scrollbar(self.frame, command=text.yview)
+        content = str(self.backend.model.model.to_json())
+        text.insert(END, content)
+        text.config(state=DISABLED)
+        text.configure(yscrollcommand=scroll.set, borderwidth=0)
+        scroll.pack(fill=Y, side=RIGHT)
+        text.place(x=200, y=100)
 
+        model = Model(input_shape=(450, 600, 3))
+        model.add(Conv2D(32, (11, 11), ))
+        model.add(MaxPooling2D((2, 2), ))
+        model.add(Conv2D(32, (11, 11), ))
+        model.add(MaxPooling2D((2, 2), ))
+        model.add(Flatten())
+        model.add(Dense(1))
+        save_model_to_file(model, "example.pdf")
 
 
 if __name__ == "__main__":

@@ -61,3 +61,11 @@ class Data:
                     else:
                         self.test_labels.append(np.array(i[0].split(";")[1]))
                 index+=1
+
+    def load_solo_img(self,path):
+        img = None
+        try:
+            img = Image.open(path)
+        except:
+            print("Nepodarilo sa nahrat fotku! ")
+        return img

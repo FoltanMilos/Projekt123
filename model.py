@@ -5,6 +5,7 @@ import configuration as conf
 import numpy as np
 from keras.models import model_from_json
 from keras import optimizers
+from PIL import Image
 
 # System model
 class Model:
@@ -98,6 +99,8 @@ class Model:
     # predikuje pre jeden obrazok
     # pre mnozinu EX-ANTE
     def predict_image(self,img):
+        img = np.array(img) # img.resize((conf.IMG_SIZE_X,conf.IMG_SIZE_Y),Image.ANTIALIAS)
+        img = np.expand_dims(img,axis=0)
         predicted = self.model.predict(img,batch_size=None,verbose=0,steps=None)
         return predicted
 
