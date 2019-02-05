@@ -49,7 +49,7 @@ class GUI:
         menuDropdown.add_command(label='Exit',command=exit)
 
         modelMenu = Menu(menu)
-        modelMenu.add_command(label='Show Model')
+        #modelMenu.add_command(label='Show Model')
         modelMenu.add_command(label='Model Structure',command=self.showModelStructure)
         modelMenu.add_command(label='Training Session',command=self.showParameters)
         modelMenu.add_command(label='Training Video')
@@ -179,24 +179,14 @@ class GUI:
 
     def loadExamplePhoto(self):
         self.clean()
-        frame = Frame(self.frame,width=330,height=self.frame.winfo_height()-40)
-        text = Text(frame,width=40,height=30)
-        scrollbar = Scrollbar(frame,command = text.yview())
-        content = """
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vulputate tellus metus, at maximus nunc tincidunt in. Suspendisse blandit, felis eget sollicitudin condimentum, magna nisi interdum nisi, vel sodales arcu turpis eu libero. Nulla iaculis mauris eget dapibus ullamcorper. Ut molestie velit nec sem pretium porttitor. Sed finibus sit amet lectus eu blandit. Donec rhoncus sollicitudin velit in tristique. Donec luctus tortor tellus, vitae vehicula arcu rutrum nec. Mauris porttitor sed nunc vel mollis. Nulla hendrerit ex pellentesque tortor rhoncus elementum. Ut sed finibus felis. Fusce aliquam pretium erat, vel pellentesque tortor blandit ac. Etiam euismod aliquam dolor, nec feugiat quam blandit vitae. Integer egestas massa eros, mattis dictum velit luctus vel. Suspendisse aliquet posuere quam, sit amet scelerisque est dapibus posuere. Integer non dui eu velit tincidunt consectetur sit amet eu eros.
-                """
-        text.insert(END,content)
-        text.config(state = DISABLED,yscrollcommand=scrollbar.set,borderwidth=0)
-        scrollbar.pack(fill=Y,side=RIGHT)
-        text.pack(fill=Y,side=LEFT)
-        Label(self.frame,text='Description', font=('Helvetica',18),bg='white').place(x=130,y=20)
-        Label(self.frame,text='Select example photo', font=('Helvetica',18),bg='white').place(x=600,y=20)
-        textvar = StringVar()
-        textvar.set('')
-        frame.place(x=0,y=40)
-        Label(self.frame,textvariable=textvar , bg='white').place(x=400,y=200)
-        Button(self.frame,text='Select',command=lambda: self.fileOpen(textvar)).place(x=900,y=200)
-        Button(self.frame,text='Evaluate photo').place(x=650,y=300)
+        self.loadPhoto()
+        # to iste, len k tomu uz bude nahrana diagnoza
+        # TODO: fotky z inej DB a dotiahnut aj diagnozu real
+        realDiagnosis = StringVar()
+        realDiagnosis.set("Malignant")
+        Label(self.frame, text='Real diagnosis', font=('helvetica', 14)).place(x=50, y=160)
+        Label(self.frame, textvariable=realDiagnosis, bg='white', font=('helvetica', 12)).place(x=70, y=200)
+
 
     def aboutContributors(self):
         self.clean()
@@ -226,7 +216,7 @@ class GUI:
 
     def loadPhoto(self):
         self.clean()
-        Label(self.frame,text='Live Prediction',font=('helvetica',18),bg='white').place(x=self.frame.winfo_width()/2,y=20,anchor=CENTER)
+        #Label(self.frame,text='Live Prediction',font=('helvetica',18),bg='white').place(x=self.frame.winfo_width()/2,y=20,anchor=CENTER)
         text= StringVar()
         #Button(self.frame, text='Select Photo', command=lambda:
         self.fileOpen(text) #).place(x=750,y=100)
@@ -239,25 +229,28 @@ class GUI:
 
     def evaluate(self,path):
         self.clean()
-        Label(self.frame,text='Prediction',font=('helvetica',18),bg='white').place(x=self.frame.winfo_width()/2,y=50,anchor=CENTER)
-        Label(self.frame,text='Verdict',bg='white').place(x=50,y=60)
+        #predikcia seiete
 
         img = Image.open(path)
         img = img.resize((conf.IMG_SIZE_Y, conf.IMG_SIZE_X), Image.ANTIALIAS)
-
-        #predikcia siete
         result = self.backend.model.predict_image(img)
+        if(int(str(result).split("[")[2].split("]")[0].split(".")[0]) == 1):
+            result = "Malignant appearance on (76%)"
+        else:
+            result = "No positive match "
         img = ImageTk.PhotoImage(img)
         verdict = StringVar()
         verdict.set(str(result))
-        Label(self.frame,textvariable=verdict,bg='white').place(x=70,y=80)
-        Label(self.frame,text='Recommendation').place(x=50,y=150)
+
+        Label(self.frame,text='Prediction',font=('helvetica',18),bg='white').place(x=self.frame.winfo_width()/2,y=50,anchor=CENTER)
+        Label(self.frame,text='Verdict',font=('helvetica',14)).place(x=50,y=60)
+        Label(self.frame,textvariable=verdict,bg='white',font=('helvetica',12)).place(x=70,y=100)
+        Label(self.frame,text='Recommendation',font=('helvetica',14)).place(x=50,y=270)
         content="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vulputate tellus metus, at maximus nunc tincidunt in. Suspendisse blandit, felis eget sollicitudin condimentum, magna nisi interdum nisi, vel sodales arcu turpis eu libero. Nulla iaculis mauris eget dapibus ullamcorper. Ut molestie velit nec sem pretium porttitor. Sed finibus sit amet lectus eu blandit. Donec rhoncus sollicitudin velit in tristique. Donec luctus tortor tellus, vitae vehicula arcu rutrum nec. Mauris porttitor sed nunc vel mollis. Nulla hendrerit ex pellentesque tortor rhoncus elementum. Ut sed finibus felis. Fusce aliquam pretium erat, vel pellentesque tortor blandit ac. Etiam euismod aliquam dolor, nec feugiat quam blandit vitae. Integer egestas massa eros, mattis dictum velit luctus vel. Suspendisse aliquet posuere quam, sit amet scelerisque est dapibus posuere. Integer non dui eu velit tincidunt consectetur sit amet eu eros."
         txt = Text(self.frame,width=30,height=15,borderwidth=0)
         txt.insert(END,content)
         txt.configure(state=DISABLED)
-        txt.place(x=50,y=170)
-
+        txt.place(x=50,y=300)
         panel = Label(self.frame, image = img)
         panel.image = img
         panel.place(x=350,y=100)
@@ -266,7 +259,7 @@ class GUI:
         self.clean()
         text = Text(self.frame, width=95, height=30)
         scroll = Scrollbar(self.frame, command=text.yview)
-        content = str(self.backend.model.model.to_json())
+        content = ""  #str(self.backend.model.model.to_json())
         text.insert(END, content)
         text.config(state=DISABLED)
         text.configure(yscrollcommand=scroll.set, borderwidth=0)
@@ -281,6 +274,42 @@ class GUI:
         model.add(Flatten())
         model.add(Dense(1))
         save_model_to_file(model, "example.pdf")
+
+
+        img = Image.open('GUI/modelStructure.png')
+        img = img.resize((conf.IMG_SIZE_Y, conf.IMG_SIZE_X), Image.ANTIALIAS)
+        img = ImageTk.PhotoImage(img)
+        panel = Label(self.frame, image=img)
+        panel.image = img
+        panel.place(x=350, y=100)
+
+        #uprava frame
+        Label(self.frame, text='Model structure', font=('helvetica', 18), bg='white').place(x=self.frame.winfo_width() / 2,
+                                                                                   y=50, anchor=CENTER)
+        inputDense = StringVar()
+        inputDense.set("Input dense")
+        Label(self.frame, text='Input dense', font=('helvetica', 14)).place(x=50, y=60)
+        Label(self.frame, textvariable=inputDense, bg='white', font=('helvetica', 12)).place(x=70, y=100)
+
+        hiddenDenses = StringVar()
+        hiddenDenses.set("Hiden dense 1")
+        Label(self.frame, text='Hidden denses', font=('helvetica', 14)).place(x=50, y=160)
+        Label(self.frame, textvariable=hiddenDenses, bg='white', font=('helvetica', 12)).place(x=70, y=200)
+        Label(self.frame, textvariable=hiddenDenses, bg='white', font=('helvetica', 10)).place(x=70, y=220)
+
+        Label(self.frame, textvariable=hiddenDenses, bg='white', font=('helvetica', 12)).place(x=70, y=250)
+        Label(self.frame, textvariable=hiddenDenses, bg='white', font=('helvetica', 10)).place(x=70, y=270)
+
+        Label(self.frame, textvariable=hiddenDenses, bg='white', font=('helvetica', 12)).place(x=70, y=300)
+        Label(self.frame, textvariable=hiddenDenses, bg='white', font=('helvetica', 10)).place(x=70, y=320)
+
+        Label(self.frame, textvariable=hiddenDenses, bg='white', font=('helvetica', 12)).place(x=70, y=350)
+        Label(self.frame, textvariable=hiddenDenses, bg='white', font=('helvetica', 10)).place(x=70, y=370)
+
+        output = StringVar()
+        hiddenDenses.set("Output dense")
+        Label(self.frame, text='Ouput dense', font=('helvetica', 14)).place(x=50, y=430)
+        Label(self.frame, textvariable=hiddenDenses, bg='white', font=('helvetica', 12)).place(x=70, y=470)
 
 
 if __name__ == "__main__":
