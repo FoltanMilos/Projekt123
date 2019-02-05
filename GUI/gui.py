@@ -14,6 +14,7 @@ from matplotlib_util import save_model_to_file
 from convnet_drawer import Model, Conv2D, MaxPooling2D, Flatten, Dense, config
 import matplotlib.pyplot as plt
 import configuration as conf
+import csv
 
 class GUI:
     ## na oddelenie gui od ostatku app
@@ -188,10 +189,19 @@ class GUI:
 
     def loadExamplePhoto(self):
         self.clean()
-        self.loadPhoto()
+        path = self.loadPhoto()
+
         # to iste, len k tomu uz bude nahrana diagnoza
         realDiagnosis = StringVar()
-        realDiagnosis.set("Malignant")
+        with open('obrazkyIne/description(MSK-1)/metadata.csv', 'r') as csvfile:
+            subor = csv.reader(csvfile, delimiter=';')
+            for i in subor:
+                if(str(i).split(";")[0] == str(path).split("\.")[0].split("/")[str(path).split("/").__len__()-1].split(".")[0]):
+                    if(int(str(i).split(";")[1]) == 1):
+                        realDiagnosis.set("Malignant")
+                    else:
+                        realDiagnosis.set("OK")
+
         Label(self.frame, text='Real diagnosis', font=('helvetica', 14)).place(x=50, y=160)
         Label(self.frame, textvariable=realDiagnosis, bg='white', font=('helvetica', 12)).place(x=70, y=200)
 
@@ -234,6 +244,7 @@ class GUI:
         self.evaluate(text.get())
         #Label(self.frame,textvariable=text,bg='white').place(x=200,y=100)
         #Button(self.frame,text='Evaluate Photo',command=lambda: self.evaluate(text.get())).place(x=self.frame.winfo_width()/2,y=300,anchor=CENTER)
+        return text.get()
 
     def evaluate(self,path):
         self.clean()
