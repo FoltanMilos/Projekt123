@@ -196,11 +196,13 @@ class GUI:
         with open('obrazkyIne/description(MSK-1)/metadata.csv', 'r') as csvfile:
             subor = csv.reader(csvfile, delimiter=';')
             for i in subor:
-                if(str(i).split(";")[0] == str(path).split("\.")[0].split("/")[str(path).split("/").__len__()-1].split(".")[0]):
-                    if(int(str(i).split(";")[1]) == 1):
+                if(str(i[0]) == str(path).split("\.")[0].split("/")[str(path).split("/").__len__()-1].split(".")[0]):
+                    if(int(i[1]) == 1):
                         realDiagnosis.set("Malignant")
+                        break
                     else:
                         realDiagnosis.set("OK")
+                        break
 
         Label(self.frame, text='Real diagnosis', font=('helvetica', 14)).place(x=50, y=160)
         Label(self.frame, textvariable=realDiagnosis, bg='white', font=('helvetica', 12)).place(x=70, y=200)
