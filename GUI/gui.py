@@ -27,7 +27,7 @@ class GUI:
 
     def __init__(self):
         #INIT backend
-        self.backend = bck.Backend(False)
+        self.backend = bck.Backend(True)
 
         #gui init
         self.root = Tk()
@@ -297,7 +297,7 @@ class GUI:
         save_model_to_file(model, "example.pdf")
 
 
-        img = Image.open('GUI/modelStructure.png')
+        img = Image.open('GUI/modelStructure2.png')
         img = img.resize((conf.IMG_SIZE_Y, conf.IMG_SIZE_X), Image.ANTIALIAS)
         img = ImageTk.PhotoImage(img)
         panel = Label(self.frame, image=img)

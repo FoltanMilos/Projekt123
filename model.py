@@ -17,7 +17,7 @@ class Model:
     # Konstruktor
     def __init__(self):
         self.model = Sequential()
-        self.adam = optimizers.Adam(lr=0.003)
+        self.adam = optimizers.Adam(lr=0.001)
 
     # Trenovanie
     def train(self, train_data, train_labels):
@@ -41,7 +41,7 @@ class Model:
 
         self.model.add(Conv2D(32, kernel_size=(3, 3),  activation='relu',
                              padding='same', data_format='channels_last',
-                              input_shape=(conf.IMG_SIZE_X,conf.IMG_SIZE_Y,3))) # pre obrazky s RGB treba 3
+                              input_shape=(conf.IMG_SIZE_X,conf.IMG_SIZE_Y,3))) # pre obrazky s RGB treba 3 conf.IMG_SIZE_X,conf.IMG_SIZE_Y
         self.model.add(MaxPooling2D(pool_size=(2, 2))) # zvyraznenie
         self.model.add(BatchNormalization())
 

@@ -32,9 +32,17 @@ class Backend:
             self.model.test_model(self.data.test_data,self.data.test_labels)  # musi byt pustena evualation
             print(self.model.model_summary())
         else:
-            self.model.train(self.data.train_data,self.data.train_labels)
+            history_train = self.model.train(self.data.train_data,self.data.train_labels)
             self.model.test_model(self.data.test_data, self.data.test_labels)
             print(self.model.model_summary())
+            ## vyvoj ucenia
+            plt.figure(figsize=[8, 6])
+            plt.plot(history_train.history['loss'], 'r', linewidth=3.0)
+            plt.legend(['Training loss'], fontsize=18)
+            plt.xlabel('Epochs ', fontsize=16)
+            plt.ylabel('Loss', fontsize=16)
+            plt.title('Loss Curves', fontsize=16)
+            plt.show(block=True)
 
         #result = model.predict_image(np.expand_dims(data.train_data[0],axis=0))
 
