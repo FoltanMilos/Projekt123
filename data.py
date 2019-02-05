@@ -27,12 +27,12 @@ class Data:
         index = 0
         try:
             for img_path in path_directory:
-                if(index > 80):
+                if(index > 1000):
                     break
                     ##ten list dir neyvladne viac ....
                 img = Image.open('data/images/' + img_path)
                 # rozdelenie na train a test
-                if index <= 75: #self.train_data.__len__()
+                if index <= 850: #self.train_data.__len__()
                     self.train_data.append(np.array(img))
                     #self.train_labels.append(np.array([0]))
                 else:
@@ -50,16 +50,16 @@ class Data:
 
     def load_all_labels(self):
         with open('data/description/data_komplet.csv', 'r') as csvfile:
-            subor = csv.reader(csvfile, delimiter=',')
+            subor = csv.reader(csvfile, delimiter=';')
             index = 0
             for i in subor:
                 if(index > 0):
-                    if (index > 81):
+                    if (index > 1001):
                         break
-                    if(index <= 76):
-                        self.train_labels.append(np.array(i[0].split(";")[1]))
+                    if(index <= 851):
+                        self.train_labels.append(np.array(i[1]))
                     else:
-                        self.test_labels.append(np.array(i[0].split(";")[1]))
+                        self.test_labels.append(np.array(i[1]))
                 index+=1
 
     def load_solo_img(self,path):

@@ -17,11 +17,11 @@ class Model:
     # Konstruktor
     def __init__(self):
         self.model = Sequential()
-        self.adam = optimizers.Adam(lr=0.01)
+        self.adam = optimizers.Adam(lr=0.003)
 
     # Trenovanie
     def train(self, train_data, train_labels):
-        res = self.model.fit(np.array(train_data), np.array(train_labels), batch_size=4, epochs=conf.EPOCH, verbose=1)
+        res = self.model.fit(np.array(train_data), np.array(train_labels), batch_size=8, epochs=conf.EPOCH, verbose=1)
         self.save_model()
         return res
 

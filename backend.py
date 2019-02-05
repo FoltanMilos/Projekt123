@@ -13,7 +13,7 @@ class Backend:
     # instancia triedy data
     global data
 
-    def __init__(self):
+    def __init__(self,train):
         # kontrola dependences
         print("Interpreter version: " + sys.version)
         print("Keras version: " + keras.__version__)
@@ -27,10 +27,14 @@ class Backend:
         # init model
         self.model = model.Model()
         self.model.create_model()
-        self.model.load_model()
-        self.model.test_model(self.data.test_data,self.data.test_labels)  # musi byt pustena evualation
-        print(self.model.model_summary())
-
+        if(train == False):
+            self.model.load_model()
+            self.model.test_model(self.data.test_data,self.data.test_labels)  # musi byt pustena evualation
+            print(self.model.model_summary())
+        else:
+            self.model.train(self.data.train_data,self.data.train_labels)
+            self.model.test_model(self.data.test_data, self.data.test_labels)
+            print(self.model.model_summary())
 
         #result = model.predict_image(np.expand_dims(data.train_data[0],axis=0))
 

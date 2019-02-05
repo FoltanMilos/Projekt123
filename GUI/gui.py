@@ -26,7 +26,7 @@ class GUI:
 
     def __init__(self):
         #INIT backend
-        self.backend = bck.Backend()
+        self.backend = bck.Backend(False)
 
         #gui init
         self.root = Tk()
