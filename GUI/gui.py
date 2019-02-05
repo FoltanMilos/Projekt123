@@ -53,7 +53,7 @@ class GUI:
         #modelMenu.add_command(label='Show Model')
         modelMenu.add_command(label='Model Structure',command=self.showModelStructure)
         modelMenu.add_command(label='Training Session',command=self.showParameters)
-        modelMenu.add_command(label='Training Video')
+        modelMenu.add_command(label='Training Video',state=DISABLED)
 
         datasetMenu = Menu(menu)
         datasetMenu.add_command(label='Show Training Dataset',command=lambda: self.showDataset(False,0))
@@ -307,30 +307,30 @@ class GUI:
         #uprava frame
         Label(self.frame, text='Model structure', font=('helvetica', 18), bg='white').place(x=self.frame.winfo_width() / 2,
                                                                                    y=50, anchor=CENTER)
-        inputDense = StringVar()
-        inputDense.set("Input dense")
         Label(self.frame, text='Input dense', font=('helvetica', 14)).place(x=50, y=60)
-        Label(self.frame, textvariable=inputDense, bg='white', font=('helvetica', 12)).place(x=70, y=100)
+        Label(self.frame, text="Input shape: 600x450x3", bg='white', font=('helvetica', 12)).place(x=70, y=100)
 
         hiddenDenses = StringVar()
-        hiddenDenses.set("Hiden dense 1")
         Label(self.frame, text='Hidden denses', font=('helvetica', 14)).place(x=50, y=160)
-        Label(self.frame, textvariable=hiddenDenses, bg='white', font=('helvetica', 12)).place(x=70, y=200)
-        Label(self.frame, textvariable=hiddenDenses, bg='white', font=('helvetica', 10)).place(x=70, y=220)
+        Label(self.frame, text="1. Hidden layer ", bg='white', font=('helvetica', 12)).place(x=70, y=200)
+        Label(self.frame, text="450x450x32 neurons", bg='white', font=('helvetica', 10)).place(x=70, y=220)
 
-        Label(self.frame, textvariable=hiddenDenses, bg='white', font=('helvetica', 12)).place(x=70, y=250)
-        Label(self.frame, textvariable=hiddenDenses, bg='white', font=('helvetica', 10)).place(x=70, y=270)
+        Label(self.frame, text="2. Hidden layer (filter)", bg='white', font=('helvetica', 12)).place(x=70, y=250)
+        #hiddenDenses.set()
+        Label(self.frame, text="convert to 150x150 (3x3)", bg='white', font=('helvetica', 10)).place(x=70, y=270)
 
-        Label(self.frame, textvariable=hiddenDenses, bg='white', font=('helvetica', 12)).place(x=70, y=300)
-        Label(self.frame, textvariable=hiddenDenses, bg='white', font=('helvetica', 10)).place(x=70, y=320)
+        Label(self.frame, text="3. Hidden layer (filter)", bg='white', font=('helvetica', 12)).place(x=70, y=300)
+        #hiddenDenses.set("2. Hidden layer")
+        Label(self.frame, text="Conv2D filter 3x3", state=DISABLED, bg='white', font=('helvetica', 10)).place(x=70, y=320)
 
-        Label(self.frame, textvariable=hiddenDenses, bg='white', font=('helvetica', 12)).place(x=70, y=350)
-        Label(self.frame, textvariable=hiddenDenses, bg='white', font=('helvetica', 10)).place(x=70, y=370)
+        Label(self.frame, text="4. Hidden layer (flattening)", bg='white', font=('helvetica', 12)).place(x=70, y=350)
+        #hiddenDenses.set("2. Hidden layer")
+        Label(self.frame, text="flattening to 1 dim output", bg='white', font=('helvetica', 10)).place(x=70, y=370)
 
         output = StringVar()
         hiddenDenses.set("Output dense")
         Label(self.frame, text='Ouput dense', font=('helvetica', 14)).place(x=50, y=430)
-        Label(self.frame, textvariable=hiddenDenses, bg='white', font=('helvetica', 12)).place(x=70, y=470)
+        Label(self.frame, text="Softmax (% class match)", bg='white', font=('helvetica', 12)).place(x=70, y=470)
 
 
 if __name__ == "__main__":
