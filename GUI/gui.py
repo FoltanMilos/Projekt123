@@ -107,17 +107,26 @@ class GUI:
             labels = self.backend.data.train_labels
 
         for img in range(page*4,page*4 + min(4,dataset.__len__() - page*4)):
-            ## test
-            # img = np.random.randint(10, size=(10, 10))
-            # figure.add_subplot(2, 2, i)
             tmp = figure.add_subplot(2, 2, i)
             tmp.xaxis.set_visible(False)
             tmp.yaxis.set_visible(False)
             ax.append(tmp)
 
             color = 'red'
-            print(img)
-            ax[divmod(img,4)[1]].set_title('Malignant:{}'.format(labels[img], color='black'))
+            #print(img)
+            result = ""
+            if(test):
+                # je to testovanie tak aj opredikovane veci
+                result = self.backend.model.predict_image(dataset[img]) #,labels[img]
+                if(int(str(result).split("[")[2].split("]")[0].split(".")[0]) == 1):
+                    result = "Malignant"
+                else:
+                    result = "OK"
+            else:
+                pass
+
+            label = 'Malignant' if int(labels[img]) == 0 else "OK"
+            ax[divmod(img,4)[1]].set_title('Real diagnosis: {} \n Predicted diagnosis: {}'.format(label,result, color='black'))
             plt.imshow(dataset[img])
             i += 1
         canvas = FigureCanvasTkAgg(figure, self.frame)
@@ -181,7 +190,6 @@ class GUI:
         self.clean()
         self.loadPhoto()
         # to iste, len k tomu uz bude nahrana diagnoza
-        # TODO: fotky z inej DB a dotiahnut aj diagnozu real
         realDiagnosis = StringVar()
         realDiagnosis.set("Malignant")
         Label(self.frame, text='Real diagnosis', font=('helvetica', 14)).place(x=50, y=160)

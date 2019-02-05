@@ -108,7 +108,9 @@ class Model:
     # generuje ich pre mnozinu so znamou hodnotou
     # len pre EX-POST alebo nejaky batch vacsi
     def model_generated_predictions(self, data, labels):
-        result = self.model.predict(data)
+        data = np.array(data)
+        dataset = np.expand_dims(data, axis=0)
+        result = self.model.predict(dataset)
         # , abs(result - labels)
         return result
 
