@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 import configuration as conf
 import csv
 
+
 class GUI:
     ## na oddelenie gui od ostatku app
     # obsahuje
@@ -50,7 +51,6 @@ class GUI:
         menuDropdown.add_command(label='Exit',command=exit)
 
         modelMenu = Menu(menu)
-        #modelMenu.add_command(label='Show Model')
         modelMenu.add_command(label='Model Structure',command=self.showModelStructure)
         modelMenu.add_command(label='Training Session',command=self.showParameters)
         modelMenu.add_command(label='Training Video',state=DISABLED)
@@ -58,7 +58,7 @@ class GUI:
         datasetMenu = Menu(menu)
         datasetMenu.add_command(label='Show Training Dataset',command=lambda: self.showDataset(False,0))
         datasetMenu.add_command(label='Show Test Dataset',command= lambda: self.showDataset(True,0))
-        datasetMenu.add_command(label='Dataset Information')  ## tu daj vypis ze z kade mame foto
+        datasetMenu.add_command(label='Dataset Information',state=DISABLED)  ## tu daj vypis ze z kade mame foto
 
         helpMenu = Menu(menu)
         helpMenu.add_command(label='Tutorial')
@@ -287,10 +287,10 @@ class GUI:
         scroll.pack(fill=Y, side=RIGHT)
         text.place(x=200, y=100)
 
-        model = Model(input_shape=(450, 600, 3))
-        model.add(Conv2D(32, (11, 11), ))
+        model = Model(input_shape=(600, 450, 3))
+        model.add(Conv2D(32, (3, 3), ))
         model.add(MaxPooling2D((2, 2), ))
-        model.add(Conv2D(32, (11, 11), ))
+        model.add(Conv2D(32, (3, 3), ))
         model.add(MaxPooling2D((2, 2), ))
         model.add(Flatten())
         model.add(Dense(1))
@@ -313,13 +313,13 @@ class GUI:
         hiddenDenses = StringVar()
         Label(self.frame, text='Hidden denses', font=('helvetica', 14)).place(x=50, y=160)
         Label(self.frame, text="1. Hidden layer ", bg='white', font=('helvetica', 12)).place(x=70, y=200)
-        Label(self.frame, text="450x450x32 neurons", bg='white', font=('helvetica', 10)).place(x=70, y=220)
+        Label(self.frame, text="598x448x32 neurons", bg='white', font=('helvetica', 10)).place(x=70, y=220)
 
         Label(self.frame, text="2. Hidden layer (filter)", bg='white', font=('helvetica', 12)).place(x=70, y=250)
         #hiddenDenses.set()
-        Label(self.frame, text="convert to 150x150 (3x3)", bg='white', font=('helvetica', 10)).place(x=70, y=270)
+        Label(self.frame, text="convert to 220x220 (3x3)", bg='white', font=('helvetica', 10)).place(x=70, y=270)
 
-        Label(self.frame, text="3. Hidden layer (filter)", bg='white', font=('helvetica', 12)).place(x=70, y=300)
+        Label(self.frame, text="3. Hidden layer (filter)",state=DISABLED, bg='white', font=('helvetica', 12)).place(x=70, y=300)
         #hiddenDenses.set("2. Hidden layer")
         Label(self.frame, text="Conv2D filter 3x3", state=DISABLED, bg='white', font=('helvetica', 10)).place(x=70, y=320)
 

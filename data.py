@@ -27,12 +27,12 @@ class Data:
         index = 0
         try:
             for img_path in path_directory:
-                if(index > 100):
+                if(index > 1000):
                     break
                     ##ten list dir neyvladne viac ....
                 img = Image.open('data/images/' + img_path)
                 # rozdelenie na train a test
-                if index <= 95: #self.train_data.__len__()
+                if index <= 950: #self.train_data.__len__()
                     self.train_data.append(np.array(img))
                     #self.train_labels.append(np.array([0]))
                 else:
@@ -54,9 +54,9 @@ class Data:
             index = 0
             for i in subor:
                 if(index > 0):
-                    if (index > 101):
+                    if (index > 1001):
                         break
-                    if(index <= 96):
+                    if(index <= 951):
                         self.train_labels.append(np.array(i[1]))
                     else:
                         self.test_labels.append(np.array(i[1]))
