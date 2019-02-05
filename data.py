@@ -13,12 +13,17 @@ class Data:
     global test_data
     global test_labels
 
+    global imagTrain
+    global imagTest
+
     def __init__(self):
         image_count =  os.listdir(os.path.dirname('data/images/')).__len__()
         self.train_data = []   #int(image_count/100)*conf.TRAIN_DATA
         self.train_labels = []  #int(image_count/100)*conf.TRAIN_DATA
         self.test_data = []     #int(image_count/100)*conf.TEST_DATA
         self.test_labels = []   #int(image_count/100)*conf.TEST_DATA
+        self.imagTrain = []
+        self.imagTest = []
 
     ## NACITANIE DAT A ROZDELENIE DO DATASETOV podla conf
     def load_all_data(self):
@@ -27,16 +32,19 @@ class Data:
         index = 0
         try:
             for img_path in path_directory:
-                if(index > 1000):
+                if(index > 900):
                     break
                     ##ten list dir neyvladne viac ....
                 img = Image.open('data/images/' + img_path)
                 # rozdelenie na train a test
-                if index <= 950: #self.train_data.__len__()
-                    self.train_data.append(np.array(img))
+
+                if index <= 800: #self.train_data.__len__()
+                    self.imagTrain.append(img)
+                    self.train_data.append(np.array(img.resize((conf.IMG_SIZE_Y,conf.IMG_SIZE_X),Image.ANTIALIAS)))
                     #self.train_labels.append(np.array([0]))
                 else:
-                    self.test_data.append(np.array(img))
+                    self.imagTest.append(img)
+                    self.test_data.append(np.array(img.resize((conf.IMG_SIZE_Y,conf.IMG_SIZE_X),Image.ANTIALIAS)))
                     #self.test_labels.append(np.array([0]))
 
                 arr = self.train_data[0]
@@ -54,9 +62,9 @@ class Data:
             index = 0
             for i in subor:
                 if(index > 0):
-                    if (index > 1001):
+                    if (index > 901):
                         break
-                    if(index <= 951):
+                    if(index <= 801):
                         self.train_labels.append(np.array(i[1]))
                     else:
                         self.test_labels.append(np.array(i[1]))

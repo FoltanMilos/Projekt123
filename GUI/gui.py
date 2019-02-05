@@ -101,10 +101,12 @@ class GUI:
         i = 1
         ax = []  # na manipulaciu subloptmi
         if test == True:
-            dataset = self.backend.data.test_data
+            dataset = self.backend.data.train_data
+            dts = self.backend.data.imagTrain
             labels = self.backend.data.test_labels
         else:
-            dataset = self.backend.data.train_data
+            dataset = self.backend.data.test_data
+            dts = self.backend.data.imagTest
             labels = self.backend.data.train_labels
 
         for img in range(page*4,page*4 + min(4,dataset.__len__() - page*4)):
@@ -128,7 +130,7 @@ class GUI:
 
             label = 'Malignant' if int(labels[img]) == 0 else "OK"
             ax[divmod(img,4)[1]].set_title('Real diagnosis: {} \n Predicted diagnosis: {}'.format(label,result, color='black'))
-            plt.imshow(dataset[img])
+            plt.imshow(dts[img])
             i += 1
         canvas = FigureCanvasTkAgg(figure, self.frame)
         canvas.get_tk_widget().pack(fill=BOTH,expand=1)

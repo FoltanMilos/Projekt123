@@ -3,7 +3,7 @@ import keras
 import sys
 import data
 import numpy as np
-import GUI.plot_modified as plt
+import matplotlib.pyplot as plt
 
 
 class Backend:
