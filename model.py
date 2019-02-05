@@ -88,7 +88,7 @@ class Model:
     # Model evaulation
     def test_model(self,test_data,test_labels):
         print('Model evaulation(Test set used):')
-        result = self.model.evaluate(np.array(test_data), np.array(test_labels), batch_size=4)
+        result = self.model.evaluate(np.array(test_data), np.array(test_labels), batch_size=1)
         print('Evaulation completed:')
         i = 0
         for score in result:

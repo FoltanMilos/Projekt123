@@ -256,7 +256,7 @@ class GUI:
         img = img.resize((conf.IMG_SIZE_Y, conf.IMG_SIZE_X), Image.ANTIALIAS)
         result = self.backend.model.predict_image(img)
         if(int(str(result).split("[")[2].split("]")[0].split(".")[0]) == 1):
-            result = "Malignant appearance on (76%)"
+            result = "Malignant appearance"
         else:
             result = "No positive match "
         img = ImageTk.PhotoImage(img)
