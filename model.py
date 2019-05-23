@@ -39,14 +39,14 @@ class Model:
 
         #odel.add(Flatten(input_shape=train_data.shape[1:]))
 
-        self.model.add(Conv2D(64, kernel_size=(3, 3),  activation='sigmoid',
+        self.model.add(Conv2D(64, kernel_size=(3),  activation='relu',
                              padding='same', data_format='channels_last',
                               input_shape=(conf.IMG_SIZE_X,conf.IMG_SIZE_Y,3))) # pre obrazky s RGB treba 3 conf.IMG_SIZE_X,conf.IMG_SIZE_Y
         self.model.add(MaxPooling2D(pool_size=(2, 2))) # zvyraznenie
         self.model.add(BatchNormalization())
 
         ## prvy filter
-        self.model.add(Conv2D(32, (3, 3), padding='same', activation='sigmoid'))
+        self.model.add(Conv2D(32, (3, 3), padding='same', activation='relu'))
         #self.model.add(Conv2D(64, (3, 3), activation='relu'))
         #self.model.add(MaxPooling2D(pool_size=(2, 2)))
         #self.model.add(Dropout(0.25))
