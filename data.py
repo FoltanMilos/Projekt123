@@ -3,6 +3,7 @@ import configuration as conf
 import csv
 import os
 import numpy as np
+import glob
 
 
 ##ALL data informations and datasets with its labels
@@ -18,6 +19,7 @@ class Data:
 
     def __init__(self):
         image_count =  os.listdir(os.path.dirname('data/images/')).__len__()
+
         self.train_data = []   #int(image_count/100)*conf.TRAIN_DATA
         self.train_labels = []  #int(image_count/100)*conf.TRAIN_DATA
         self.test_data = []     #int(image_count/100)*conf.TEST_DATA

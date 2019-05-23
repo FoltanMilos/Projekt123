@@ -10,8 +10,8 @@ from PIL import Image,ImageTk
 import os
 import backend as bck
 from keras.utils import plot_model
-from matplotlib_util import save_model_to_file
-from convnet_drawer import Model, Conv2D, MaxPooling2D, Flatten, Dense, config
+#from matplotlib_util import save_model_to_file
+#from convnet_drawer import Model, Conv2D, MaxPooling2D, Flatten, Dense, config
 import matplotlib.pyplot as plt
 import configuration as conf
 import csv
@@ -37,7 +37,7 @@ class GUI:
         self.frame = Frame(self.root, bg='white')
         self.frame.pack(fill=BOTH,expand=1)
         self.menu()
-        self.root.title('Project 1')
+        self.root.title('Project 1-2')
         Label(self.frame,text='Welcome back!',font=('Helvetica',32),pady=100,bg='white').pack()
         self.frame.pack()
     def start(self):
@@ -289,14 +289,14 @@ class GUI:
         scroll.pack(fill=Y, side=RIGHT)
         text.place(x=200, y=100)
 
-        model = Model(input_shape=(600, 450, 3))
-        model.add(Conv2D(32, (3, 3), ))
-        model.add(MaxPooling2D((2, 2), ))
-        model.add(Conv2D(32, (3, 3), ))
-        model.add(MaxPooling2D((2, 2), ))
-        model.add(Flatten())
-        model.add(Dense(1))
-        save_model_to_file(model, "example.pdf")
+        #model = Model(input_shape=(600, 450, 3))
+        #model.add(Conv2D(32, (3, 3), ))
+        #model.add(MaxPooling2D((2, 2), ))
+        #model.add(Conv2D(32, (3, 3), ))
+        #model.add(MaxPooling2D((2, 2), ))
+        #model.add(Flatten())
+        #model.add(Dense(1))
+        #save_model_to_file(model, "example.pdf")
 
 
         img = Image.open('GUI/modelStructure2.png')

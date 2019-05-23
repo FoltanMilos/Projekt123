@@ -29,7 +29,9 @@ class Backend:
         self.model.create_model()
         if(train == False):
             self.model.load_model()
-            self.model.test_model(self.data.test_data,self.data.test_labels)  # musi byt pustena evualation
+            ## Pred predikciou musi byt spusteny test modelu (len pre nahranie vsetkych parametrov na miest)
+            ## Staci aj s jednym obrazkom
+            self.model.test_model(self.data.test_data[1:2],self.data.test_labels[1:2])
             print(self.model.model_summary())
         else:
             history_train = self.model.train(self.data.train_data,self.data.train_labels)
