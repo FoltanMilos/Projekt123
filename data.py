@@ -18,7 +18,7 @@ class Data:
     global imagTest
 
     def __init__(self):
-        image_count =  os.listdir(os.path.dirname('data/images/')).__len__()
+        #image_count =  os.listdir(os.path.dirname('data/images/')).__len__()
 
         self.train_data = []   #int(image_count/100)*conf.TRAIN_DATA
         self.train_labels = []  #int(image_count/100)*conf.TRAIN_DATA
@@ -28,18 +28,18 @@ class Data:
         self.imagTest = []
 
     ## NACITANIE DAT A ROZDELENIE DO DATASETOV podla conf
-    def load_all_data(self):
-        path_directory = os.listdir(os.path.dirname('data/images/'))
-            # v csv je 0 ako benign -- nezhuby -- ten je OK
+    # ak je treba nahrat aj trenovacie data TRUE len ked sa pusta aj trenovanie
+    # ked sa pusta testovanie bude sa to nahravat postupne
+    def load_all_data(self): # is_need_to_load_train_data
         index = 0
         try:
-            for img_path in path_directory:
+            os.chdir('data/images/')
+            for img_path in glob.iglob("*.jpg"):
                 if(index > 200):
                     break
-                    ##ten list dir neyvladne viac ....
-                img = Image.open('data/images/' + img_path)
-                # rozdelenie na train a test
+                img = Image.open(img_path) #'data/images/' +
 
+                # rozdelenie na train a test
                 if index <= 150: #self.train_data.__len__()
                     self.imagTrain.append(img)
                     self.train_data.append(np.array(img.resize((conf.IMG_SIZE_Y,conf.IMG_SIZE_X),Image.ANTIALIAS)))
@@ -53,6 +53,8 @@ class Data:
                 # self.train_data.append(np.array(img.resize((conf.IMG_SIZE_X,conf.IMG_SIZE_Y),Image.ANTIALIAS))) - netreba lebo su rovnake
                 print('Nacitany obrazok cislo  - {}   [ shape: {} ]'.format(index,arr.shape))
                 index += 1
+            ## spatne nastavenie pracovneho priecinka
+            os.chdir('C:/SKOLA/7.Semester/Projekt 1/SarinaKristaTi/Projekt123')
         except IOError as err:
             print("Chyba pri otvarani suboru! Skontrolujte cestu v configuration.py" +
                   " v premennej DIR!")
