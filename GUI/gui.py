@@ -334,8 +334,8 @@ class GUI:
         Label(self.frame, text='Ouput dense', font=('helvetica', 14)).place(x=50, y=430)
         Label(self.frame, text="Softmax (% class match)", bg='white', font=('helvetica', 12)).place(x=70, y=470)
 
-
-if __name__ == "__main__":
-    gui = GUI()
-    gui.start()
+#local gui builder
+#if __name__ == "__main__":
+#    gui = GUI()
+#    gui.start()
 
