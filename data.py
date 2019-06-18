@@ -1,9 +1,9 @@
 from PIL import Image
-import configuration as conf
 import csv
 import os
 import numpy as np
 import glob
+import config as conf
 
 
 ##ALL data informations and datasets with its labels

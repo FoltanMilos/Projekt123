@@ -1,11 +1,11 @@
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D, BatchNormalization
-import configuration as conf
 import numpy as np
 from keras.models import model_from_json
 from keras import optimizers
 from PIL import Image
+import config as conf
 
 # System model
 class Model:
