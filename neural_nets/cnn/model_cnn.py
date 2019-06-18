@@ -8,7 +8,7 @@ import config as conf
 import interface.model_interface as interface
 
 # System model
-class Model(interface.ModelInterface):
+class Model_cnn(interface.ModelInterface):
     global model
 
     # optimizer pozmeneny
