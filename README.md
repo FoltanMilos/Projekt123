@@ -8,3 +8,5 @@ Program projektovej vyucby
     - neural_nets:
         * CNN 
         * MLP
+# rozhranie service
+    - pre FrontEnd pevne definovane endpointy cez interface
