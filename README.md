@@ -5,3 +5,6 @@ Program projektovej vyucby
     - keras 2.2.2
     - angular 7
 # informácie
+    - neural_nets:
+        * CNN 
+        * MLP
