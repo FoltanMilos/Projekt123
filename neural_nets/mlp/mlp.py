@@ -1,4 +1,5 @@
 from layer import Layer
+#import layer as Layer
 from numpy import dot
 
 

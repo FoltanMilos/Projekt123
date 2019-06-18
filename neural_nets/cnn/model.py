@@ -4,11 +4,11 @@ from keras.layers import Conv2D, MaxPooling2D, BatchNormalization
 import numpy as np
 from keras.models import model_from_json
 from keras import optimizers
-from PIL import Image
 import config as conf
+import interface.model_interface as interface
 
 # System model
-class Model:
+class Model(interface.ModelInterface):
     global model
 
     # optimizer pozmeneny
