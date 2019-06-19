@@ -33,7 +33,7 @@ class Data:
     def load_all_data(self): # is_need_to_load_train_data
         index = 0
         try:
-            os.chdir('data/images/')
+            os.chdir('dataset/cnn/images/')
             for img_path in glob.iglob("*.jpg"):
                 if(index > 200):
                     break
@@ -61,7 +61,7 @@ class Data:
             print(str(err))
 
     def load_all_labels(self):
-        with open('data/description/data_komplet.csv', 'r') as csvfile:
+        with open('dataset/cnn/description/data_komplet.csv', 'r') as csvfile:
             subor = csv.reader(csvfile, delimiter=';')
             index = 0
             for i in subor:

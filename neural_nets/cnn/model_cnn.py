@@ -67,22 +67,22 @@ class Model_cnn(interface.ModelInterface):
 
     # Nahranie uz vytvoreneho modelu
     def load_model(self):
-        json_file = open('saved_model/model.json', 'r')
+        json_file = open('saved_model/cnn/model.json', 'r')
         loaded_model_json = json_file.read()
         json_file.close()
         loaded_model = model_from_json(loaded_model_json)
         #nastavenie ulozenych vah
-        loaded_model.load_weights("saved_model/model.h5")
+        loaded_model.load_weights("saved_model/cnn/model.h5")
         self.model.compile(loss='binary_crossentropy', optimizer=self.adam, metrics=['accuracy'])
         print("Loaded model from disk")
 
     # ulozenie modelu
     def save_model(self):
         json_model = self.model.to_json()
-        with open("saved_model/model.json", "w") as json_file:
+        with open("saved_model/cnn/model.json", "w") as json_file:
             json_file.write(json_model)
         #ulozenie vah
-        self.model.save_weights("saved_model/model.h5")
+        self.model.save_weights("saved_model/cnn/model.h5")
         print("Saved model to disk")
 
     # Model evaulation

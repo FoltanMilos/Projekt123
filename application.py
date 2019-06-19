@@ -2,7 +2,8 @@ import sys
 
 import keras
 import matplotlib.pyplot as plt
-
+import data as dt
+import neural_nets.cnn.model_cnn as md_cnn
 
 class Application:
     # instancia triedy model
@@ -18,12 +19,12 @@ class Application:
         print("Aplication started: OK (main)")
 
         # init data
-        self.data = data.Data()
+        self.data = dt.Data()
         self.data.load_all_data()
         self.data.load_all_labels()
 
         # init model
-        self.model = model.Model()
+        self.model = md_cnn.Model_cnn()
         self.model.create_model()
         if(train == False):
             self.model.load_model()
