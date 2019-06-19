@@ -1,11 +1,12 @@
 import flask
 import application as neuralNetworkApplication
+import nn_type
 
 # server application instance
 app = flask.Flask(__name__)
 
 # holds instance of application with neural network
-application = neuralNetworkApplication.Application(False)
+application = neuralNetworkApplication.Application(False,nn_type.Nn_type.CNN)
 
 
 

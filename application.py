@@ -12,7 +12,7 @@ class Application:
     # instancia triedy data
     global data
 
-    def __init__(self,train):
+    def __init__(self,train,type_nn):
         # kontrola dependences
         print("Interpreter version: " + sys.version)
         print("Keras version: " + keras.__version__)
