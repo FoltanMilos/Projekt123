@@ -6,7 +6,7 @@ import nn_type
 app = flask.Flask(__name__)
 
 # holds instance of application with neural network
-application = neuralNetworkApplication.Application(False,nn_type.Nn_type.CNN)
+application = neuralNetworkApplication.Application(False)
 
 
 

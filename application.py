@@ -1,22 +1,29 @@
 import sys
-
 import keras
 import matplotlib.pyplot as plt
 import data as dt
 import neural_nets.cnn.model_cnn as md_cnn
+import nn_type
 
 class Application:
-    # instancia triedy model
-    global model
+    global active_model         # instancia triedy modelu, s ktorym sa pracuje
 
-    # instancia triedy data
-    global data
+    global data                 # instancia triedy data
 
-    def __init__(self,train,type_nn):
+    global models               # zoznam vsetkych modelov, ktore su implementovane v aplikacii
+
+    def __init__(self,train):
         # kontrola dependences
         print("Interpreter version: " + sys.version)
         print("Keras version: " + keras.__version__)
         print("Aplication started: OK (main)")
+
+        # initialization
+        self.models = []
+
+
+
+
 
         # init data
         self.data = dt.Data()
@@ -24,18 +31,22 @@ class Application:
         self.data.load_all_labels()
 
         # init model
-        self.model = md_cnn.Model_cnn()
-        self.model.create_model()
+        self.active_model = md_cnn.Model_cnn()
+        self.active_model.create_model()
+
+
+
+
         if(train == False):
-            self.model.load_model()
+            self.active_model.load_model()
             ## Pred predikciou musi byt spusteny test modelu (len pre nahranie vsetkych parametrov na miest)
             ## Staci aj s jednym obrazkom
-            self.model.test_model(self.data.test_data[1:2],self.data.test_labels[1:2])
-            print(self.model.model_summary())
+            self.active_model.test_model(self.data.test_data[1:2], self.data.test_labels[1:2])
+            print(self.active_model.model_summary())
         else:
-            history_train = self.model.train(self.data.train_data,self.data.train_labels)
-            self.model.test_model(self.data.test_data, self.data.test_labels)
-            print(self.model.model_summary())
+            history_train = self.active_model.train(self.data.train_data, self.data.train_labels)
+            self.active_model.test_model(self.data.test_data, self.data.test_labels)
+            print(self.active_model.model_summary())
             ## vyvoj ucenia
             plt.figure(figsize=[8, 6])
             plt.plot(history_train.history['loss'], 'r', linewidth=3.0)
@@ -55,3 +66,7 @@ class Application:
         #plot = plt.Plot_modified()
         #plot.plot_data(self.data.train_data,self.data.train_labels,predicted)
 
+
+    # registruje model do zoznamu modelov
+    def register_model(self,model):
+        self.models.append(model)
