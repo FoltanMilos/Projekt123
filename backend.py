@@ -1,10 +1,12 @@
 import flask
 import application as neuralNetworkApplication
 import nn_type
-
+import base64
+import json
+from flask_cors import CORS
 # server application instance
 app = flask.Flask(__name__)
-
+CORS(app)
 # holds instance of application with neural network
 application = neuralNetworkApplication.Application(False)
 
@@ -22,15 +24,24 @@ application = neuralNetworkApplication.Application(False)
 # - output data vo forme json
 @app.route("/loadImage",methods=["GET","POST"])
 def loadImage():
-    returnData = {"success": True}
+    result = []
+    with open('dataset/cnn/images/ISIC_0024306.jpg', 'rb') as file:
+        tmp = base64.b64encode(file.read())
+        result.append(tmp.decode('utf-8'))
 
-    if flask.request.method == "POST":
-        if flask.request.files.get("image"):
-            pass
+    with open('dataset/cnn/images/ISIC_0024307.jpg', 'rb') as file:
+        tmp = base64.b64encode(file.read())
+        result.append(tmp.decode('utf-8'))
+        jsonData = json.dumps({'data': result})
+    return flask.make_response(jsonData)
 
-    return flask.jsonify(returnData)
 
 
+# with open('dataset/cnn/images/ISIC_0024306.jpg', 'rb') as file:
+#     tmp =  base64.b64encode(file.read())
+#     tmp = tmp.decode('utf-8')
+#     res = json.dumps(tmp)
+#     print(res)
 
 ## SPUSTENIE SERVERA
 if __name__ == "__main__":
