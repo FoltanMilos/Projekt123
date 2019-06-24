@@ -36,7 +36,6 @@ class Model_cnn(interface.ModelInterface):
         ## vstupna vrstva do modelu
         ## musi obsahovat vstupny shape, kvoli rozmeru v datach
         ## krnel size -- urcenie miesta kde sa vykkona v matik
-
         #odel.add(Flatten(input_shape=train_data.shape[1:]))
 
         self.model.add(Conv2D(64, kernel_size=(3,3),  activation='relu',
