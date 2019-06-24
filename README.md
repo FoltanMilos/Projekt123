@@ -10,3 +10,9 @@ Program projektovej vyucby
         * MLP
 # rozhranie service
     - pre FrontEnd pevne definovane endpointy cez interface
+    
+# natiahnutie datasetu
+    - do zlozky Dataset/cnn treba nasledovne>
+        - vytvorit priecinok images
+        - nahrat do neho fotky
+        - (tento priecinok je len lokalny, gitignore ho nezahrnuje a preto nie je viditelny v projekte a treba ho manualne dotianut)
