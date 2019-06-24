@@ -52,17 +52,11 @@ class Model_cnn(interface.ModelInterface):
         #self.model.add(Dropout(0.25))
 
         self.model.add(Flatten())
-        #self.model.add(Dense(10, activation='relu'))
-        #self.model.add(BatchNormalization())
-
         ## vystupna vrstva
 
         self.model.add(Dense(1, activation='softmax'))
 
         self.model.compile(loss='binary_crossentropy', optimizer=self.adam, metrics=['accuracy'])
-
-
-
         return self.model
 
     # Nahranie uz vytvoreneho modelu
@@ -101,7 +95,7 @@ class Model_cnn(interface.ModelInterface):
     def predict_image(self,img):
         img = np.array(img) # img.resize((conf.IMG_SIZE_X,conf.IMG_SIZE_Y),Image.ANTIALIAS)
         img = np.expand_dims(img,axis=0)
-        predicted = self.model.predict(img,batch_size=None,verbose=0,steps=None)
+        predicted = self.model.predict(img,batch_size=None,verbose=0,steps=None) #
         return predicted
 
     # generuje predikcie pre celu mnozinu

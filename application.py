@@ -41,7 +41,7 @@ class Application:
             self.active_model.load_model()
             ## Pred predikciou musi byt spusteny test modelu (len pre nahranie vsetkych parametrov na miest)
             ## Staci aj s jednym obrazkom
-            self.active_model.test_model(self.data.test_data[1:2], self.data.test_labels[1:2])
+            self.active_model.test_model(self.data.test_data[1:3], self.data.test_labels[1:3])
             print(self.active_model.model_summary())
         else:
             history_train = self.active_model.train(self.data.train_data, self.data.train_labels)
@@ -70,3 +70,11 @@ class Application:
     # registruje model do zoznamu modelov
     def register_model(self,model):
         self.models.append(model)
+
+
+
+    def predict(self):
+        # z aktivneho modelu
+        img = self.data.train_data[1]
+        return self.active_model.predict_image(img)
+        #return self.active_model.model_generated_predictions(self.data.test_data,self.data.test_labels)

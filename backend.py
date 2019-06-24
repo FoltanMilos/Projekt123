@@ -30,6 +30,20 @@ def loadImage():
 
     return flask.jsonify(returnData)
 
+@app.route("/predict",methods=["POST"])
+def predict():
+    returnData = {
+        "succes" : True,
+        "result" : -999
+                  }
+
+    if flask.request.method == "POST":
+        ppp = application.predict()
+    else:
+        returnData["succes"] = False
+
+    return flask.jsonify(returnData)
+
 
 
 ## SPUSTENIE SERVERA
