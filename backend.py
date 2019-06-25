@@ -24,7 +24,7 @@ CORS(app)
 ## VZOROVY POPIS SERVICE
 # - input params
 # - output data vo forme json
-@app.route("/loadImage",methods=["POST", "PUT"])
+@app.route("/loadImage",methods=["POST", "OPTIONS"])
 def loadImages():
     result = []
     with open('images_other/description(MSK-1)/metadata.csv','r') as metadata:
