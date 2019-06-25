@@ -4,6 +4,7 @@ import nn_type
 import base64
 import json
 from flask_cors import CORS
+import csv
 
 # server application instance
 app = flask.Flask(__name__)
@@ -23,9 +24,16 @@ application = neuralNetworkApplication.Application(True)
 ## VZOROVY POPIS SERVICE
 # - input params
 # - output data vo forme json
-@app.route("/loadImage",methods=["GET","POST"])
-def loadImage():
+@app.route("/loadImage",methods=["POST"])
+def loadImages():
     result = []
+    with open('images_other/description(MSK-1)/metadata.csv','r') as metadata:
+        reader = csv.reader(metadata)
+        data = []
+        for row in reader:
+            data.append({'name': row[0], 'diagnosis': row[0]})
+
+        req = flask.request.data['metadata']
     with open('dataset/cnn/images/ISIC_0024306.jpg', 'rb') as file:
         tmp = base64.b64encode(file.read())
         result.append(tmp.decode('utf-8'))
