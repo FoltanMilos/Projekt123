@@ -1,5 +1,5 @@
 import flask
-import application as neuralNetworkApplication
+#import application as neuralNetworkApplication
 import nn_type
 import base64
 import json
@@ -10,7 +10,7 @@ import csv
 app = flask.Flask(__name__)
 CORS(app)
 # holds instance of application with neural network
-application = neuralNetworkApplication.Application(True)
+#application = neuralNetworkApplication.Application(True)
 
 
 
@@ -24,7 +24,7 @@ application = neuralNetworkApplication.Application(True)
 ## VZOROVY POPIS SERVICE
 # - input params
 # - output data vo forme json
-@app.route("/loadImage",methods=["POST"])
+@app.route("/loadImage",methods=["POST", "PUT"])
 def loadImages():
     result = []
     with open('images_other/description(MSK-1)/metadata.csv','r') as metadata:
