@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import data as dt
 import neural_nets.cnn.model_cnn as md_cnn
 import nn_type
+import database_manipulation as dm
 
 class Application:
     global active_model         # instancia triedy modelu, s ktorym sa pracuje
@@ -18,11 +19,13 @@ class Application:
         print("Keras version: " + keras.__version__)
         print("Aplication started: OK (main)")
 
+        # pripojenie na DB
+        self.db_connect = dm.DB_manip()
+
+
+
         # initialization
         self.models = []
-
-
-
 
 
         # init data

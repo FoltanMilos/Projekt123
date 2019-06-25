@@ -4,11 +4,12 @@ import nn_type
 import base64
 import json
 from flask_cors import CORS
+
 # server application instance
 app = flask.Flask(__name__)
 CORS(app)
 # holds instance of application with neural network
-application = neuralNetworkApplication.Application(False)
+application = neuralNetworkApplication.Application(True)
 
 
 
