@@ -63,17 +63,10 @@ def loadImages():
 
 @app.route("/predict",methods=["POST"])
 def predict():
-    returnData = {
-        "succes" : True,
-        "result" : -999
-                  }
-
-    if flask.request.method == "POST":
-        ppp = application.predict()
-    else:
-        returnData["succes"] = False
-
-    return flask.jsonify(returnData)
+    form = flask.request.get_json()
+    image = form.get('photo'))
+    
+    return flask.make_response()
 
 
 # with open('dataset/cnn/images/ISIC_0024306.jpg', 'rb') as file:
