@@ -64,8 +64,14 @@ def loadImages():
 @app.route("/predict",methods=["POST"])
 def predict():
     form = flask.request.get_json()
-    image = form.get('photo'))
+    image = form.get('photo')
     
+    return flask.make_response()
+
+@app.route("/train", methods=["POST"])
+def train(): 
+    form = flask.request.get_json()
+    print(form.get('useDataset'))
     return flask.make_response()
 
 
