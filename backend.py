@@ -6,13 +6,15 @@ import base64
 import json
 from flask_cors import CORS
 import csv
-
+import os
+import binascii
 # server application instance
 app = Flask(__name__)
 CORS(app, resources={"*": {"origins": "*"}})
 # holds instance of application with neural network
 #application = neuralNetworkApplication.Application(True)
 
+counters = {}
 
 
 
@@ -74,7 +76,34 @@ def train():
     print(form.get('useDataset'))
     return flask.make_response()
 
+@app.route('/dataset/new',methods=["POST"])
+def createDataset():
+    data = flask.request.get_json()
 
+    os.mkdir('dataset/'+data['name'])
+    os.mkdir('dataset/'+data['name']+'/description')
+    os.mkdir('dataset/'+data['name']+'/images')
+    counters[data['name']] = 0
+    keyword = 'base64,'
+    position = data['metadata'].find(keyword)
+    filestring = binascii.a2b_base64(data['metadata'][(position + len(keyword)):])
+    with open('dataset/'+data['name']+'/description/metadata.csv','wb') as file:
+        file.write(filestring)
+    
+    return flask.make_response()
+
+@app.route('/dataset/new/image', methods=["POST"])
+def createImage():
+    data = flask.request.get_json()
+    keyword = 'base64,'
+    position = data['photo']['file'].find(keyword)
+    filestring = data['photo']['file'][(position + len(keyword)):]
+    with open('dataset/'+data['dataset']+'/images/'+data['photo']['name'],'wb') as file:
+        file.write(binascii.a2b_base64(filestring))
+    counters[data['dataset']] += 1
+    
+    return flask.make_response()
+    
 # with open('dataset/cnn/images/ISIC_0024306.jpg', 'rb') as file:
 #     tmp =  base64.b64encode(file.read())
 #     tmp = tmp.decode('utf-8')
