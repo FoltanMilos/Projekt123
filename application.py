@@ -59,17 +59,6 @@ class Application:
             plt.title('Loss Curves', fontsize=16)
             plt.show(block=True)
 
-        #result = model.predict_image(np.expand_dims(data.train_data[0],axis=0))
-
-
-        #d = np.expand_dims(self.data.test_data[0:3],axis=0)
-        #ss = np.expand_dims(self.data.test_data[0:3], axis=0)
-
-        #predicted = self.model.model_generated_predictions(np.array(self.data.train_data),self.data.train_labels)
-        #plot = plt.Plot_modified()
-        #plot.plot_data(self.data.train_data,self.data.train_labels,predicted)
-
-
     # registruje model do zoznamu modelov
     def register_model(self,model):
         self.models.append(model)

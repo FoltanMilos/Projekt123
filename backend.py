@@ -1,6 +1,6 @@
 from flask import Flask,request
 import flask
-#import application as neuralNetworkApplication
+import application as neuralNetworkApplication
 import nn_type
 import base64
 import json
@@ -8,12 +8,13 @@ from flask_cors import CORS
 import csv
 import os
 import binascii
+import config
 # server application instance
 app = Flask(__name__)
 CORS(app, resources={"*": {"origins": "*"}})
 # holds instance of application with neural network
-#application = neuralNetworkApplication.Application(True)
-
+application = neuralNetworkApplication.Application(config.load_model)
+application.active_model.validate_model_on_test_data(application.data.test_data,application.data.test_labels)
 counters = {}
 
 

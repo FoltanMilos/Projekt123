@@ -15,8 +15,12 @@ text_color_feature_map = (0, 0, 0)
 text_color_layer = (0, 0, 0)
 
 ## netwok params
-IMG_SIZE_X = 450 #450
-IMG_SIZE_Y = 600 #300
-EPOCH = 1
+IMG_SIZE_X = 150 #450
+IMG_SIZE_Y = 300 #300
+EPOCH = 10
 TRAIN_DATA = 80
 TEST_DATA = 20
+
+##program params
+load_model = True   # TRUE trenuje novy model
+				# False nacita loadnuty

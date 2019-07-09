@@ -18,12 +18,10 @@ class Data:
     global imagTest
 
     def __init__(self):
-        #image_count =  os.listdir(os.path.dirname('data/images/')).__len__()
-
-        self.train_data = []   #int(image_count/100)*conf.TRAIN_DATA
-        self.train_labels = []  #int(image_count/100)*conf.TRAIN_DATA
-        self.test_data = []     #int(image_count/100)*conf.TEST_DATA
-        self.test_labels = []   #int(image_count/100)*conf.TEST_DATA
+        self.train_data = []
+        self.train_labels = []
+        self.test_data = []
+        self.test_labels = []
         self.imagTrain = []
         self.imagTest = []
 
@@ -35,19 +33,17 @@ class Data:
         try:
             os.chdir('dataset/cnn/images/')
             for img_path in glob.iglob("*.jpg"):
-                if(index > 200):
+                if(index > 155):
                     break
-                img = Image.open(img_path) #'data/images/' +
+                img = Image.open(img_path)
 
                 # rozdelenie na train a test
                 if index <= 150: #self.train_data.__len__()
                     self.imagTrain.append(img)
                     self.train_data.append(np.array(img.resize((conf.IMG_SIZE_Y,conf.IMG_SIZE_X),Image.ANTIALIAS)))
-                    #self.train_labels.append(np.array([0]))
                 else:
                     self.imagTest.append(img)
                     self.test_data.append(np.array(img.resize((conf.IMG_SIZE_Y,conf.IMG_SIZE_X),Image.ANTIALIAS)))
-                    #self.test_labels.append(np.array([0]))
 
                 arr = self.train_data[0]
                 # self.train_data.append(np.array(img.resize((conf.IMG_SIZE_X,conf.IMG_SIZE_Y),Image.ANTIALIAS))) - netreba lebo su rovnake
@@ -66,14 +62,13 @@ class Data:
             index = 0
             for i in subor:
                 if(index > 0):
-                    if (index > 201):
+                    if (index > 156):
                         break
                     if(index <= 151):
-                        self.train_labels.append(np.array(i[1]))
+                        self.train_labels.append([i[1],i[0]])
                     else:
-                        self.test_labels.append(np.array(i[1]))
+                        self.test_labels.append([i[1],i[0]])
                 index+=1
-
     def load_solo_img(self,path):
         img = None
         try:

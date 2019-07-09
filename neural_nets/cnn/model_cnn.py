@@ -21,7 +21,7 @@ class Model_cnn(interface.ModelInterface):
 
     # Trenovanie
     def train(self, train_data, train_labels):
-        res = self.model.fit(np.array(train_data), np.array(train_labels), batch_size=1, epochs=conf.EPOCH, verbose=1)
+        res = self.model.fit(np.array(train_data), np.array(train_labels)[:,0], batch_size=1, epochs=conf.EPOCH, verbose=1)
         self.save_model()
         return res
 
@@ -33,25 +33,15 @@ class Model_cnn(interface.ModelInterface):
 
     ##Vytvorenie modelu od podlahy
     def create_model(self):
-        ## vstupna vrstva do modelu
-        ## musi obsahovat vstupny shape, kvoli rozmeru v datach
-        ## krnel size -- urcenie miesta kde sa vykkona v matik
+        # vstupna vrstva do modelu
+        self.model.add(Conv2D(64,kernel_size=3,	activation='relu',padding='valid',input_shape=(conf.IMG_SIZE_X,conf.IMG_SIZE_Y,3)))
 
-        self.model.add(Conv2D(16, kernel_size=(3,3),  activation='relu',
-                             padding='same', data_format='channels_last',
-                              input_shape=(conf.IMG_SIZE_X,conf.IMG_SIZE_Y,3))) # pre obrazky s RGB treba 3 conf.IMG_SIZE_X,conf.IMG_SIZE_Y
-        self.model.add(MaxPooling2D(pool_size=(2, 2))) # zvyraznenie
-        self.model.add(BatchNormalization())
-
-        ## prvy filter
-        self.model.add(Conv2D(16, (3, 3), padding='same', activation='relu'))
-        #self.model.add(Conv2D(64, (3, 3), activation='relu'))
-        #self.model.add(MaxPooling2D(pool_size=(2, 2)))
-        #self.model.add(Dropout(0.25))
+        self.model.add(Conv2D(32, (3, 3), padding='same', activation='relu'))
 
         self.model.add(Flatten())
-        ## vystupna vrstva
 
+
+        ## vystupna vrstva
         self.model.add(Dense(1, activation='softmax'))
 
         self.model.compile(loss='binary_crossentropy', optimizer=self.adam, metrics=['accuracy'])
@@ -80,7 +70,7 @@ class Model_cnn(interface.ModelInterface):
     # Model evaulation
     def test_model(self,test_data,test_labels):
         print('Model evaulation(Test set used):')
-        result = self.model.evaluate(np.array(test_data), np.array(test_labels), batch_size=1)
+        result = self.model.evaluate(np.array(test_data), np.array(test_labels)[:,0], batch_size=1)
         print('Evaulation completed:')
         i = 0
         for score in result:
@@ -116,6 +106,6 @@ class Model_cnn(interface.ModelInterface):
         for lab in labels:
             if(int(lab) == int(result[i])):
                 ok+=1
-            print("Result NN: {}  - label: {} ".format(result[i],lab))
+            print("Result NN: {}  - label: {}  - name Pic: {} ".format(result[i],lab[1],lab[0]))
             i+=1
         print("Accuracy test set: {}".format(ok/len(labels)))
