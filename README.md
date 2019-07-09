@@ -9,6 +9,7 @@ Program projektovej vyucby
     - neural_nets:
         * CNN 
         * MLP
+        * Genetic alg
 # rozhranie service
     - pre FrontEnd pevne definovane endpointy cez interface
     
