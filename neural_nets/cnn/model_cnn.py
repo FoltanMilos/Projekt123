@@ -21,7 +21,7 @@ class Model_cnn(interface.ModelInterface):
 
     # Trenovanie
     def train(self, train_data, train_labels):
-        res = self.model.fit(np.array(train_data), np.array(train_labels)[:,0], batch_size=1, epochs=conf.EPOCH, verbose=1)
+        res = self.model.fit(np.array(train_data), np.array(train_labels)[:,1], batch_size=1, epochs=conf.EPOCH, verbose=1)
         self.save_model()
         return res
 
@@ -70,7 +70,7 @@ class Model_cnn(interface.ModelInterface):
     # Model evaulation
     def test_model(self,test_data,test_labels):
         print('Model evaulation(Test set used):')
-        result = self.model.evaluate(np.array(test_data), np.array(test_labels)[:,0], batch_size=1)
+        result = self.model.evaluate(np.array(test_data), np.array(test_labels)[:,1], batch_size=1)
         print('Evaulation completed:')
         i = 0
         for score in result:
