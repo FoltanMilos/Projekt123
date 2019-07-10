@@ -22,11 +22,8 @@ class Application:
         # pripojenie na DB
         self.db_connect = dm.DB_manip()
 
-
-
         # initialization
         self.models = []
-
 
         # init data
         self.data = dt.Data()
@@ -36,9 +33,6 @@ class Application:
         # init model
         self.active_model = md_cnn.Model_cnn(self)
         self.active_model.create_model()
-
-
-
 
         if(train == False):
             self.active_model.load_model()
@@ -59,6 +53,8 @@ class Application:
             #plt.ylabel('Loss', fontsize=16)
             #plt.title('Loss Curves', fontsize=16)
             #plt.show(block=True)
+
+        self.active_model.load_img_test()
 
     # registruje model do zoznamu modelov
     def register_model(self,model):

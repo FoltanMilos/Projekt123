@@ -17,8 +17,6 @@ application = neuralNetworkApplication.Application(config.load_model)
 application.active_model.validate_model_on_test_data(application.data.test_data,application.data.test_labels)
 counters = {}
 
-
-
 ### ----------------------------------###
 #                                       #
 #           S E R V I C E S             #
