@@ -34,7 +34,7 @@ class Application:
         self.data.load_all_labels()
 
         # init model
-        self.active_model = md_cnn.Model_cnn()
+        self.active_model = md_cnn.Model_cnn(self)
         self.active_model.create_model()
 
 
@@ -48,16 +48,17 @@ class Application:
             print(self.active_model.model_summary())
         else:
             history_train = self.active_model.train(self.data.train_data, self.data.train_labels)
+            print(history_train)
             self.active_model.test_model(self.data.test_data, self.data.test_labels)
             print(self.active_model.model_summary())
             ## vyvoj ucenia
-            plt.figure(figsize=[8, 6])
-            plt.plot(history_train.history['loss'], 'r', linewidth=3.0)
-            plt.legend(['Training loss'], fontsize=18)
-            plt.xlabel('Epochs ', fontsize=16)
-            plt.ylabel('Loss', fontsize=16)
-            plt.title('Loss Curves', fontsize=16)
-            plt.show(block=True)
+            #plt.figure(figsize=[8, 6])
+            #plt.plot(history_train.history['loss'], 'r', linewidth=3.0)
+            #plt.legend(['Training loss'], fontsize=18)
+            #plt.xlabel('Epochs ', fontsize=16)
+            #plt.ylabel('Loss', fontsize=16)
+            #plt.title('Loss Curves', fontsize=16)
+            #plt.show(block=True)
 
     # registruje model do zoznamu modelov
     def register_model(self,model):
