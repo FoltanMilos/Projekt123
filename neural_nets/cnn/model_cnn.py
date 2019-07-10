@@ -43,7 +43,7 @@ class Model_cnn(interface.ModelInterface):
 
         res = self.model.fit_generator(
             train_set ,steps_per_epoch=250,epochs=1,
-            validation_data=self.test_set(),
+            validation_data=test_set,
             validation_steps=150)
 
         self.save_model()
