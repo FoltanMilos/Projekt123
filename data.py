@@ -31,14 +31,14 @@ class Data:
     def load_all_data(self): # is_need_to_load_train_data
         index = 0
         try:
-            os.chdir('dataset/cnn/testimages/')
+            os.chdir('dataset/cnn/images/')
             for img_path in glob.iglob("*.jpg"):
-                if(index > 35): #155
+                if(index > 15): #155
                     break
                 img = Image.open(img_path)
 
                 # rozdelenie na train a test
-                if index <= 30: #self.train_data.__len__() #150
+                if index <= 10: #self.train_data.__len__() #150
                     self.imagTrain.append(img)
                     self.train_data.append(np.array(img.resize((conf.IMG_SIZE_Y,conf.IMG_SIZE_X),Image.ANTIALIAS)))
                 else:
@@ -57,14 +57,14 @@ class Data:
             print(str(err))
 
     def load_all_labels(self):
-        with open('dataset/cnn/testdescription/data_komplet.csv', 'r') as csvfile:
+        with open('dataset/cnn/description/data_komplet.csv', 'r') as csvfile:
             subor = csv.reader(csvfile, delimiter=';')
             index = 0
             for i in subor:
                 if(index > 0):
-                    if (index > 36):
+                    if (index > 16):
                         break
-                    if(index <= 31):
+                    if(index <= 11):
                         self.train_labels.append([i[1],i[0]])
                     else:
                         self.test_labels.append([i[1],i[0]])

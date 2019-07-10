@@ -17,7 +17,7 @@ text_color_layer = (0, 0, 0)
 ## netwok params
 IMG_SIZE_X = 100 #450
 IMG_SIZE_Y = 150 #300
-EPOCH = 10
+EPOCH = 50
 TRAIN_DATA = 80
 TEST_DATA = 20
 learning_coef = 0.01 #0.001

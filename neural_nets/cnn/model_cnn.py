@@ -1,4 +1,4 @@
-from typing import re
+from keras import backend as K
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten, Activation
 from keras.layers import Conv2D, MaxPooling2D, BatchNormalization
@@ -20,13 +20,17 @@ class Model_cnn(interface.ModelInterface):
     # Konstruktor
     def __init__(self,ref_app):
         self.model = Sequential()
-        self.adam = optimizers.Adam(lr=conf.learning_coef)
-        self.initializer = keras.initializers.TruncatedNormal(mean=0.0, stddev=0.05, seed=conf.initializer_seed)
+        #self.adam = optimizers.Adam(lr=conf.learning_coef)
+        #self.initializer = keras.initializers.TruncatedNormal(mean=0.0, stddev=0.05, seed=conf.initializer_seed)
+        self.initializer = keras.initializers.glorot_uniform(conf.initializer_seed)
+        self.bias_initializer = keras.initializers.RandomNormal(mean=0.0, stddev=0.05, seed=None)
         self.ref_app = ref_app
+        self.adam = keras.optimizers.Adadelta(lr=1.0, rho=0.95, epsilon=None, decay=0.0)
+        #self.adam = keras.optimizers.SGD(lr=0.01, momentum=0.0, decay=0.0, nesterov=False)
 
-    # Trenovanie
+        # Trenovanie
     def train(self, train_data, train_labels):
-        res = self.model.fit(np.array(train_data), np.array(train_labels)[:,0], batch_size=8, epochs=conf.EPOCH, verbose=1,
+        res = self.model.fit(np.array(train_data), np.array(train_labels)[:,0], batch_size=2, epochs=conf.EPOCH, verbose=1,
                              callbacks=[CallBack.Callback_after_epoch(np.array(self.ref_app.data.test_data),
                                                                       np.array(self.ref_app.data.test_labels)[:,0],self)],
                              validation_data=(np.array(self.ref_app.data.test_data),np.array(self.ref_app.data.test_labels)[:,0]))
@@ -40,26 +44,27 @@ class Model_cnn(interface.ModelInterface):
     ##Vytvorenie modelu od podlahy
     def create_model(self):
         # VSTUPNA
-        self.model.add(Conv2D(150,
+        self.model.add(Conv2D(64,
                               kernel_size=3,
                               #activation='relu',
                               padding='valid',
+                              bias_initializer=self.bias_initializer,
                               input_shape=(conf.IMG_SIZE_X,conf.IMG_SIZE_Y,3),
                               kernel_initializer=self.initializer)
                        )
-        self.model.add(Conv2D(100, (3, 3), padding='same')) #, activation='relu')
+        self.model.add(Conv2D(32, (3, 3), padding='same')) #, activation='relu')
         self.model.add(Activation('relu'))
         self.model.add(BatchNormalization())  # normalizuje na 0 - 1
 
-        self.model.add(Conv2D(60, (3, 3), padding='same', activation='relu'))
+        self.model.add(Conv2D(16, (3, 3), padding='same', activation='relu'))
 
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
         self.model.add(Flatten())
-        self.model.add(Dropout(0.5))  # reduces overfit
+        #self.model.add(Dropout(0.5))  # reduces overfit
 
         self.model.add(Dense(64, activation='sigmoid'))
         self.model.add(Dense(128, activation='sigmoid'))
-        self.model.add(Dense(46, activation='sigmoid'))
+        self.model.add(Dense(64, activation='sigmoid'))
         ## 2.VRSTVA
 
         #self.model.add(Conv2D(32, (3, 3), padding='same', activation='relu'))
@@ -69,8 +74,8 @@ class Model_cnn(interface.ModelInterface):
         ## vystupna vrstva
         self.model.add(Dense(1, activation='softmax'))
 
-        # compilovanie
-        self.model.compile(loss='binary_crossentropy', optimizer=self.adam, metrics=['accuracy'])
+        # compilovanie mean_absolute_percentage_error
+        self.model.compile(loss='mean_squared_error', optimizer=self.adam, metrics=['accuracy'])
         return self.model
 
     # Nahranie uz vytvoreneho modelu
