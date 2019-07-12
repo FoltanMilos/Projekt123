@@ -23,6 +23,7 @@ TEST_DATA = 20
 learning_coef = 0.01 #0.001
 
 ##program params
-load_model = True   # TRUE trenuje novy model
+load_model = False   # TRUE trenuje novy model
 				# False nacita loadnuty
 initializer_seed = None
+threshold = 0.4999
