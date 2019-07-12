@@ -3,7 +3,7 @@ import keras.callbacks as ker_clbck
 # trieda na zavolanie evaulate po jednej epoche
 # robi v podstate validaciu, daju sa sem vsak podhodit data exante pre sledovanie
 # zmeny generalizovania pocas behu ucenia
-class Callback_after_epoch(ker_clbck.Callback):
+class Callbacks(ker_clbck.Callback):
 	def __init__(self,test_data,test_lab,model):
 		self.test_data = test_data
 		self.test_labels = test_lab
