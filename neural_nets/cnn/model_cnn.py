@@ -1,16 +1,18 @@
 from keras import backend as K
+from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten, Activation
 from keras.layers import Conv2D, MaxPooling2D, BatchNormalization
 import numpy as np
 from keras.models import model_from_json
 from keras import optimizers
+from sklearn.metrics import classification_report
 import config as conf
 import interface.model_interface as interface
-import neural_nets.cnn.callback_after_epoch as CallBack
+import neural_nets.cnn.callbacks as CallBack
 import keras.initializers
 from keras.preprocessing.image import ImageDataGenerator
-from keras.preprocessing import image
+import neural_nets.cnn.results_set as ResultSet
 
 # System model
 class Model_cnn(interface.ModelInterface):
@@ -19,33 +21,41 @@ class Model_cnn(interface.ModelInterface):
     # optimizer pozmeneny
     global adam
 
+    #referencia na data patriace modelu
+    global ref_data
+
+    #resulty modelu
+    global result_processing
+
     # Konstruktor
-    def __init__(self,ref_app):
+    def __init__(self,ref_data):
+        self.result_processing =  ResultSet.Results_set(self)
         self.model = Sequential()
         #self.adam = optimizers.Adam(lr=conf.learning_coef)
         #self.initializer = keras.initializers.TruncatedNormal(mean=0.0, stddev=0.05, seed=conf.initializer_seed)
         self.initializer = keras.initializers.glorot_uniform(conf.initializer_seed)
         self.bias_initializer = keras.initializers.RandomNormal(mean=0.0, stddev=0.05, seed=None)
-        self.ref_app = ref_app
+        self.ref_data = ref_data
         self.adam = keras.optimizers.Adadelta(lr=1.0, rho=0.95, epsilon=None, decay=0.0)
         #self.adam = keras.optimizers.SGD(lr=0.01, momentum=0.0, decay=0.0, nesterov=False)
         self.train_datagen = ImageDataGenerator(rescale=1. / 255, shear_range=0.2, zoom_range=0.2, horizontal_flip=True)
 
         # Trenovanie
-    def train(self, train_data, train_labels):
+    def train(self, train_set, valid_set):
         #res = self.model.fit(np.array(train_data), np.array(train_labels)[:,0], batch_size=11, epochs=conf.EPOCH, verbose=1,
         #                     callbacks=[CallBack.Callback_after_epoch(np.array(self.ref_app.data.test_data),
         #                                                              np.array(self.ref_app.data.test_labels)[:,0],self)],
-        #                     validation_data=(np.array(self.ref_app.data.test_data),np.array(self.ref_app.data.test_labels)[:,0]))
-        train_set = self.train_set()
-        test_set = self.test_set()
-        #train_set.class_indices
-
+        #                     validation_data=(np.array(self.ref_data.test_data),np.array(self.ref_app.data.test_labels)[:,0]))
         res = self.model.fit_generator(
-            train_set ,steps_per_epoch=250,epochs=1,
-            validation_data=test_set,
-            validation_steps=150)
-
+            train_set ,steps_per_epoch=250,epochs=conf.EPOCH,
+            validation_data=valid_set,
+            validation_steps=100,
+            callbacks = [EarlyStopping(monitor='val_acc',
+                                       patience=200,
+                                       verbose=1)]),
+                         #TensorBoard(log_dir='./logs',histogram_freq=0,batch_size=32,write_graph=True,write_images=False)])
+        #TODO: niekto kto si dufa by mohol spravit callback na tensorflow board
+        # cmd tensorboard --logdir=/full_path_to_your_logs
         self.save_model()
         return res
 
@@ -80,20 +90,21 @@ class Model_cnn(interface.ModelInterface):
                               activation='relu'))
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
         self.model.add(Flatten())
-        #self.model.add(Dropout(0.5))  # reduces overfit
 
-        # FULL CONNECTED
+        # FULL CONNECTED -tu pride asi viacej vrstiev
         self.model.add(Dense(64, activation='sigmoid'))
         self.model.add(Dense(128, activation='sigmoid'))
 
-        # predvystupna
+        # predvystupna - aby sa dali nadpojit vystupy
         self.model.add(Dense(10, activation='sigmoid'))
 
-        # VYSTUPNA VRSTVA
+        # VYSTUPNA VRSTVA -sigmoid - vraj to ma byt ale nie som s tym stotozneny
         self.model.add(Dense(1, activation='sigmoid'))
 
         # compilovanie rmsprop ??mean_squared_error, rmsprop ?? najlepsie
-        self.model.compile(loss="binary_crossentropy", optimizer='adadelta', metrics=['accuracy'])
+        self.model.compile(loss="binary_crossentropy",
+                           optimizer='adadelta',
+                           metrics=['accuracy'])
         return self.model
 
     # Nahranie uz vytvoreneho modelu
@@ -117,9 +128,10 @@ class Model_cnn(interface.ModelInterface):
         print("Saved model to disk")
 
     # Model evaluation
-    def test_model(self,test_data,test_labels):
+    def test_model(self):
         print('Model evaulation(Test set used):')
-        result = self.model.evaluate(np.array(test_data), np.array(test_labels)[:,0], batch_size=1)
+        #result = self.model.evaluate(np.array(test_data), np.array(test_labels)[:,0], batch_size=1)
+        result = self.model.evaluate_generator(self.ref_data.load_test_set())
         print('Evaluation completed:')
         i = 0
         for score in result:
@@ -128,65 +140,22 @@ class Model_cnn(interface.ModelInterface):
         print('=========================')
         return result[0],result[1]
 
-    # predikuje pre jeden obrazok
-    # pre mnozinu EX-ANTE
-    def predict_image(self,img):
-        img = np.array(img)
-        img = np.expand_dims(img,axis=0)
-        predicted = self.model.predict(img,batch_size=None,verbose=0,steps=None)
+    def predict_image(self,image=None):
+        """Predikcia jedneho obrazku"""
+        if(image is None):
+            raise Exception("Error by predict image. Image is None!")
+        image = self.ref_data.preproces_image(image)
+        predicted = self.model.predict(image,batch_size=1,verbose=0,steps=1)
         return predicted
 
-    # generuje predikcie pre celu mnozinu
-    # generuje ich pre mnozinu so znamou hodnotou
-    # len pre EX-POST alebo nejaky batch vacsi
-    def model_generated_predictions(self, data, labels):
-        data = np.array(data)
-        dataset = np.expand_dims(data, axis=0)
-        result = self.model.predict(dataset)
-        # , abs(result - labels)
-        return result
 
-    ## toto tu ani netreba
-    ## hodnoty v evaulate su dobre
-    def validate_model_on_test_data(self,data,labels):
-        labels = np.array(labels)
-        result = self.model.predict(np.array(data))
-        i = 0
-        ok = 0
-        for lab in labels:
-            if(int(lab[0]) == int(result[i])):
-                ok+=1
-            print("Result NN: {}  - label: {}  - name Pic: {} ".format(result[i],lab[0],lab[1]))
-            i+=1
-        print("Accuracy test set: {}%".format((ok/len(labels))*100))
-
-    def train_set(self):
-        data = self.train_datagen.flow_from_directory(
-            'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\cnn\\train\\',
-            target_size=(64, 64),
-            batch_size=16,
-            classes = ["malignant", "bening"],
-            class_mode='binary'
-        )
-        return data
-
-    def test_set(self):
-        data = self.train_datagen.flow_from_directory(
-            'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\cnn\\test\\',
-            target_size=(64, 64),
-            batch_size=16,
-            classes=["malignant","bening"],
-            class_mode='binary')
-        return data
-
-    #ISIC_0024607
-    def load_img_test(self):
-        test_image = image.load_img(
-            'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\cnn\\test\\malignant\\ISIC_0034305.jpg',
-            target_size=(64, 64)
-        )
-        test_image = image.img_to_array(test_image)
-        test_image = np.expand_dims(test_image, axis=0)
-        result = self.model.predict(test_image)
-        print("Single predict [ISIC_0034305]: {} %".format(result[0]))
-        cc = ''
+    def predict_image_flow(self):
+        image_exante_set =  self.ref_data.load_image_exante_flow()
+        #image_exante_set.reset()
+        result_set = self.model.predict_generator(image_exante_set,
+                                                  steps=len(image_exante_set.filenames),
+                                                  verbose=0)
+        res_string = self.result_processing.process_results(result_set,
+                                                     np.array(image_exante_set.classes).reshape(len(image_exante_set.classes),1)
+                                                     ,image_exante_set.filenames)
+        return res_string
