@@ -1,4 +1,4 @@
-TODO:  Tensorboard spojazdnit, aby sa dal uzivatelom ukazat vyvoj trenovania
-       alebo spravit vlastny monitoring
+TODO:  Tensorboard spojazdnit, aby sa dal uzivatelom ukazat vyvoj trenovania, alebo spravit vlastny monitoring
 TODO:  Prekonvertovat kazde nacitanie dat cez flow
-
+TODO:  Mapovanie Path do DB
+TODO:  Mapovanie userov a ich overovanie + krypto dake aspon trosku
