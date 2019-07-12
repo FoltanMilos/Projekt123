@@ -27,34 +27,23 @@ class Application:
 
         # init data
         self.data = dt.Data()
-        self.data.load_all_data()
-        self.data.load_all_labels()
 
         # init model
-        self.active_model = md_cnn.Model_cnn(self)
+        self.active_model = md_cnn.Model_cnn(self.data)
         self.active_model.create_model()
 
         if(train == False):
             self.active_model.load_model()
-            ## Pred predikciou musi byt spusteny test modelu (len pre nahranie vsetkych parametrov na miest)
-            ## Staci aj s jednym obrazkom
-            self.active_model.test_model(self.data.test_data[1:3], self.data.test_labels[1:3])
             print(self.active_model.model_summary())
-        else:
-            history_train = self.active_model.train(self.data.train_data, self.data.train_labels)
-            print(history_train)
-            self.active_model.test_model(self.data.test_data, self.data.test_labels)
-            print(self.active_model.model_summary())
-            ## vyvoj ucenia
-            #plt.figure(figsize=[8, 6])
-            #plt.plot(history_train.history['loss'], 'r', linewidth=3.0)
-            #plt.legend(['Training loss'], fontsize=18)
-            #plt.xlabel('Epochs ', fontsize=16)
-            #plt.ylabel('Loss', fontsize=16)
-            #plt.title('Loss Curves', fontsize=16)
-            #plt.show(block=True)
 
-        self.active_model.load_img_test()
+        else:
+            history_train = self.active_model.train(self.data.train_set, self.data.valid_set)
+            print(history_train)
+            #self.active_model.test_model(self.data.test_data, self.data.test_labels)
+            print(self.active_model.model_summary())
+
+        #TEST MILOS
+        self.active_model.predict_image_flow()
 
     # registruje model do zoznamu modelov
     def register_model(self,model):
@@ -63,7 +52,8 @@ class Application:
 
 
     def predict(self):
+        pass
         # z aktivneho modelu
-        img = self.data.train_data[1]
-        return self.active_model.predict_image(img)
+        #img = self.data.train_data[1]
+        #return self.active_model.predict_image(img)
         #return self.active_model.model_generated_predictions(self.data.test_data,self.data.test_labels)
