@@ -14,7 +14,7 @@ app = Flask(__name__)
 CORS(app, resources={"*": {"origins": "*"}})
 # holds instance of application with neural network
 application = neuralNetworkApplication.Application(config.load_model)
-application.active_model.validate_model_on_test_data(application.data.test_data,application.data.test_labels)
+#application.active_model.validate_model_on_test_data(application.data.test_data,application.data.test_labels)
 counters = {}
 
 ### ----------------------------------###
