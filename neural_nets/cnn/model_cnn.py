@@ -5,7 +5,7 @@ from keras.layers import Dense, Dropout, Flatten, Activation
 from keras.layers import Conv2D, MaxPooling2D, BatchNormalization
 import numpy as np
 from keras.models import model_from_json
-from keras import optimizers
+import tensorflow as tf
 from sklearn.metrics import classification_report
 import config as conf
 import interface.model_interface as interface
@@ -13,6 +13,7 @@ import neural_nets.cnn.callbacks as CallBack
 import keras.initializers
 from keras.preprocessing.image import ImageDataGenerator
 import neural_nets.cnn.results_set as ResultSet
+from keras.backend import manual_variable_initialization
 
 # System model
 class Model_cnn(interface.ModelInterface):
@@ -31,26 +32,23 @@ class Model_cnn(interface.ModelInterface):
     def __init__(self,ref_data):
         self.result_processing =  ResultSet.Results_set(self)
         self.model = Sequential()
-        #self.adam = optimizers.Adam(lr=conf.learning_coef)
-        #self.initializer = keras.initializers.TruncatedNormal(mean=0.0, stddev=0.05, seed=conf.initializer_seed)
+        self.optimizer = keras.optimizers.Adadelta(lr=1.0, rho=0.95, epsilon=None, decay=0.0)
+        # ADADELTA --> an adaptive learning rate method
+        #  Adadelta is a more robust extension of Adagrad that adapts learning rates based on a moving window of gradient updates,
+        #  instead of accumulating all past gradients. This way, Adadelta continues learning even when many updates have been done.
+        #  Compared to Adagrad, in the original version of Adadelta you don't have to set an initial learning rate. In this version,
+        #  initial learning rate and decay factor can be set, as in most other Keras optimizers.
         self.initializer = keras.initializers.glorot_uniform(conf.initializer_seed)
         self.bias_initializer = keras.initializers.RandomNormal(mean=0.0, stddev=0.05, seed=None)
         self.ref_data = ref_data
-        self.adam = keras.optimizers.Adadelta(lr=1.0, rho=0.95, epsilon=None, decay=0.0)
-        #self.adam = keras.optimizers.SGD(lr=0.01, momentum=0.0, decay=0.0, nesterov=False)
-        self.train_datagen = ImageDataGenerator(rescale=1. / 255, shear_range=0.2, zoom_range=0.2, horizontal_flip=True)
 
-        # Trenovanie
+    # Trenovanie
     def train(self, train_set, valid_set):
-        #res = self.model.fit(np.array(train_data), np.array(train_labels)[:,0], batch_size=11, epochs=conf.EPOCH, verbose=1,
-        #                     callbacks=[CallBack.Callback_after_epoch(np.array(self.ref_app.data.test_data),
-        #                                                              np.array(self.ref_app.data.test_labels)[:,0],self)],
-        #                     validation_data=(np.array(self.ref_data.test_data),np.array(self.ref_app.data.test_labels)[:,0]))
         res = self.model.fit_generator(
-            train_set ,steps_per_epoch=250,epochs=conf.EPOCH,
+            train_set ,steps_per_epoch=80,epochs=conf.EPOCH,
             validation_data=valid_set,
-            validation_steps=100,
-            callbacks = [EarlyStopping(monitor='val_acc',
+            validation_steps=20,
+            callbacks = [EarlyStopping(monitor='acc',
                                        patience=200,
                                        verbose=1)]),
                          #TensorBoard(log_dir='./logs',histogram_freq=0,batch_size=32,write_graph=True,write_images=False)])
@@ -63,7 +61,7 @@ class Model_cnn(interface.ModelInterface):
     def model_summary(self):
         return self.model.summary()
 
-    ##Vytvorenie modelu od podlahy
+    # Vytvorenie modelu od podlahy
     def create_model(self):
         # VSTUPNA
         self.model.add(Conv2D(64,
@@ -101,21 +99,23 @@ class Model_cnn(interface.ModelInterface):
         # VYSTUPNA VRSTVA -sigmoid - vraj to ma byt ale nie som s tym stotozneny
         self.model.add(Dense(1, activation='sigmoid'))
 
-        # compilovanie rmsprop ??mean_squared_error, rmsprop ?? najlepsie
+        # compilovanie rmsprop ??mean_squared_error, rmsprop ?? najlepsie bola adadelta
         self.model.compile(loss="binary_crossentropy",
-                           optimizer='adadelta',
+                           optimizer=self.optimizer,
                            metrics=['accuracy'])
         return self.model
 
     # Nahranie uz vytvoreneho modelu
     def load_model(self):
+        tf.global_variables_initializer()
         json_file = open('saved_model/cnn/model.json', 'r')
         loaded_model_json = json_file.read()
         json_file.close()
-        loaded_model = model_from_json(loaded_model_json)
-        #nastavenie ulozenych vah
-        loaded_model.load_weights("saved_model/cnn/model.h5")
+        self.model = model_from_json(loaded_model_json)
+        # nastavenie ulozenych vah
+        self.model.load_weights("saved_model/cnn/model.h5")
         self.model.compile(loss='binary_crossentropy', optimizer='adadelta', metrics=['accuracy'])
+        self.test_model()
         print("Loaded model from disk")
 
     # ulozenie modelu
@@ -125,6 +125,7 @@ class Model_cnn(interface.ModelInterface):
             json_file.write(json_model)
         #ulozenie vah
         self.model.save_weights("saved_model/cnn/model.h5")
+        self.test_model()
         print("Saved model to disk")
 
     # Model evaluation
@@ -151,7 +152,7 @@ class Model_cnn(interface.ModelInterface):
 
     def predict_image_flow(self):
         image_exante_set =  self.ref_data.load_image_exante_flow()
-        #image_exante_set.reset()
+        image_exante_set.reset()
         result_set = self.model.predict_generator(image_exante_set,
                                                   steps=len(image_exante_set.filenames),
                                                   verbose=0)

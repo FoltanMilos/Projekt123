@@ -50,8 +50,8 @@ class Results_set:
 		result_string = ''
 		i = 0
 		for k in prediction_array:
-			result_string+="\nPhoto name: {}   --> Diagnosis: {}   --- Percentage: {}" \
-						   "\n".format(true_lab_names[i],prediction_array[i],prediction_array_01[i])
+			result_string+="\nPhoto name: {:>28} " \
+						   "  --> Diagnosis: {} --- Percentage: {:04.2f}%".format(true_lab_names[i], prediction_array_01[i],k[0]*100)
 			i=i+1
 
 		# vysledky
