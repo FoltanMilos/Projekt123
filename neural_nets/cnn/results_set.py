@@ -1,4 +1,5 @@
 import numpy as np
+import config as conf
 
 class Results_set:
 	""" Trieda zodpoveda za procesing vystupov zo siete """
@@ -40,13 +41,17 @@ class Results_set:
 		""" Spracovanie vysledkov generovanych cez predict_generator
 			prediction_array --->  obsahuje pole predpovedi
 			true_lab_array  ---> obsahuje pole vzorovych labelov"""
-		self.process_result_matrix(predction_array=prediction_array,true_lab_array=true_lab_array)
+		prediction_array_01 = prediction_array > conf.threshold
+		prediction_array_01 = prediction_array_01.astype(int)
+		self.process_result_matrix(predction_array=prediction_array_01,true_lab_array=true_lab_array)
 
+		#print(classification_report(single_predict_img.classes, res, target_names=target_names))
 		# proces string
 		result_string = ''
 		i = 0
 		for k in prediction_array:
-			result_string+="\nPhoto name: {}   --> Diagnosis: {}\n".format(true_lab_names[i],prediction_array[i])
+			result_string+="\nPhoto name: {}   --> Diagnosis: {}   --- Percentage: {}" \
+						   "\n".format(true_lab_names[i],prediction_array[i],prediction_array_01[i])
 			i=i+1
 
 		# vysledky
