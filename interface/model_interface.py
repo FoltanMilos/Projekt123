@@ -11,7 +11,7 @@ class ModelInterface(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def test_model(self, test_data, test_labels):
+    def test_model(self):
         raise NotImplementedError
 
     @abstractmethod
