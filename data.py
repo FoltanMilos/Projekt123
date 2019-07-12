@@ -88,6 +88,7 @@ class Data:
             #save_to_dir='C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\cnn\\ssss',
             classes=["malignant", "bening"],
             class_mode='binary')
+
         return self.train_set
 
     def load_test_set(self):
@@ -111,6 +112,7 @@ class Data:
         return self.valid_set
 
     def load_image_exante_flow(self):
+        """ Dovoluje nacitat viacero fotiek zo suboru"""
         images_exante_set = self.train_datagen.flow_from_directory(
             'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\cnn\\test\\',
             target_size=(64, 64),
@@ -121,6 +123,7 @@ class Data:
         return images_exante_set
 
     def load_image_exante(self):
+        """ Nacita jednu fotku zo suboru"""
         image_exante = img_proc.load_img(
             'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\cnn\\prediction\\malignant\\ISIC_0028679.jpg',
             target_size=(64, 64))

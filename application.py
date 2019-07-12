@@ -34,7 +34,7 @@ class Application:
 
         if(train == False):
             self.active_model.load_model()
-            print(self.active_model.model_summary())
+            #print(self.active_model.model_summary())
 
         else:
             history_train = self.active_model.train(self.data.train_set, self.data.valid_set)
@@ -48,7 +48,6 @@ class Application:
     # registruje model do zoznamu modelov
     def register_model(self,model):
         self.models.append(model)
-
 
 
     def predict(self):
