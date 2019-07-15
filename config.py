@@ -1,19 +1,3 @@
-import math
-
-## global params
-theta = - math.pi / 8
-ratio = 0.7
-bounding_box_margin = 10
-inter_layer_margin = 50
-text_margin = 50
-channel_scale = 0.5
-text_size = 10
-one_dim_width = 20
-line_color_feature_map = (0, 0, 0)
-line_color_layer = (0, 0, 255)
-text_color_feature_map = (0, 0, 0)
-text_color_layer = (0, 0, 0)
-
 ## netwok params
 IMG_SIZE_X = 64 #450
 IMG_SIZE_Y = 64 #300
@@ -41,3 +25,9 @@ load_model = False   # TRUE trenuje novy model
 				# False nacita loadnuty
 initializer_seed = None
 threshold = 0.4999
+
+
+## kym nie je db - cesty TEST
+path_train = 'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\cnn\\train\\'
+path_test = 'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\cnn\\test\\'
+path_validation = 'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\cnn\\validation\\'

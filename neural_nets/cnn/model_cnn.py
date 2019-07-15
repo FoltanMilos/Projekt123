@@ -151,7 +151,7 @@ class Model_cnn(interface.ModelInterface):
 
 
     def predict_image_flow(self):
-        image_exante_set =  self.ref_data.load_image_exante_flow()
+        image_exante_set =  self.ref_data.load_image_exante_flow('C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\cnn\\test\\')
         image_exante_set.reset()
         result_set = self.model.predict_generator(image_exante_set,
                                                   steps=len(image_exante_set.filenames),
