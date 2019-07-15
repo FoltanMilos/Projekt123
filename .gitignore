@@ -105,5 +105,11 @@ venv.bak/
 .mypy_cache/
 
 #dependencies
-dataset/
+dataset/images/
+dataset/description(10015)/
+dataset/images/
+dataset/processed/
+dataset/test/
+dataset/train/
+dataset/validation/
 logs/
