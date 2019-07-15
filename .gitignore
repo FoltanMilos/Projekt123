@@ -106,3 +106,4 @@ venv.bak/
 
 #dependencies
 dataset/
+logs/
