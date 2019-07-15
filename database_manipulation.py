@@ -32,6 +32,8 @@ class DB_manip:
             self.conn.close()
 
 
+    # VRACIA result set, ked nieco selectujes pouzi toto
+    # davaj si nameisto * nazvy collumnov, budes ich mat uspor. v sete
     def select_statement(self,select):
         if(self.conn is None):
             print("Nepodarilo sa pripojit na DB!")
@@ -47,16 +49,23 @@ class DB_manip:
     def close_conn(self):
         self.conn.close()
 
-
+    # Vrati len TRUE,FALSE, vzdy sa vykona, update, altery a pod
     def update_statement(self,update):
         if (self.conn is None):
             print("Nepodarilo sa pripojit na DB!")
-            return None
+            return False
         else:
+            cr = self.conn.cursor()
+            cr.execute(update)
             return True
 
-    def delete_statement(self):
-        pass
-
+    def delete_statement(self,delete):
+        if (self.conn is None):
+            print("Nepodarilo sa pripojit na DB!")
+            return False
+        else:
+            cr = self.conn.cursor()
+            cr.execute(delete)
+            return True
 
 
