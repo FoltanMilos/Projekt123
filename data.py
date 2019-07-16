@@ -1,7 +1,7 @@
 import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
 from keras.preprocessing import image as img_proc
-
+import os
 class Data:
     global train_set
     #global train_labels
@@ -14,6 +14,7 @@ class Data:
     global train_datagen
 
     def __init__(self):
+        self.path = os.getcwd()
         self.train_datagen = ImageDataGenerator(rescale=1. / 255,
                                                 shear_range=0.2,
                                                 zoom_range=0.2,
@@ -25,7 +26,7 @@ class Data:
     # LOADING AS FILE ITERATOR
     def load_train_set(self):
         self.train_set = self.train_datagen.flow_from_directory(
-            'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\cnn\\train\\',
+            self.path + '\\dataset\\cnn\\train\\',
             target_size=(64, 64),
             batch_size=16,
             shuffle=False,
@@ -36,7 +37,7 @@ class Data:
 
     def load_test_set(self):
         self.test_set = self.train_datagen.flow_from_directory(
-            'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\cnn\\test\\',
+            self.path + '\\dataset\\cnn\\test\\',
             target_size=(64, 64),
             batch_size=16,
             shuffle=False,
@@ -46,7 +47,7 @@ class Data:
 
     def load_validation_set(self):
         self.valid_set = self.train_datagen.flow_from_directory(
-            'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\cnn\\validation\\',
+            self.path + '\\dataset\\cnn\\validation\\',
             target_size=(64, 64),
             batch_size=16,
             shuffle=False,
