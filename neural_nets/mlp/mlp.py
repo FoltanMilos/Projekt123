@@ -1,5 +1,4 @@
-from layer import Layer
-#import layer as Layer
+from neural_nets.mlp.layer import Layer
 from numpy import dot
 
 
@@ -51,3 +50,6 @@ class Mlp:
 
     def reset_weights(self):
         self.__init__([len(layer.neurons) for layer in self.layers], self.learning_rate, self.activation_function, self.epoch_count)
+
+    def get_weights(self):
+        raise Exception("Unsupported function")

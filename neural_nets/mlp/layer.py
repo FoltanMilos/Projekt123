@@ -1,4 +1,4 @@
-from neuron import Neuron
+from neural_nets.mlp.neuron import Neuron
 
 
 class Layer:
