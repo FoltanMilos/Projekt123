@@ -52,4 +52,14 @@ class Mlp:
         self.__init__([len(layer.neurons) for layer in self.layers], self.learning_rate, self.activation_function, self.epoch_count)
 
     def get_weights(self):
-        raise Exception("Unsupported function")
+        return [[neuron.weights for neuron in layer.neurons] for layer in self.layers]
+
+    def set_weights(self, weights):
+        assert len(self.layers) == len(weights)
+        for i in range(len(weights)):
+            assert len(self.layers[i].neurons) == len(weights[i])
+            for j in range(len(weights[i])):
+                assert len(self.layers[i].neurons[j]) == len(weights[i][j])
+        for i in range(len(weights)):
+            for j in range(len(weights[i])):
+                self.layers[i].neurons[j] = weights[i][j]
