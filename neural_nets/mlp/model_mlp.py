@@ -23,8 +23,7 @@ class Model_mlp(interface.ModelInterface):
         self.mlp.learn(train_data, train_labels)
 
     def load_model(self):
-        raise Exception("Unsupported function")
+        self.mlp.load_model()
 
     def save_model(self):
-        raise Exception("Unsupported function")
-
+        self.mlp.save_model()

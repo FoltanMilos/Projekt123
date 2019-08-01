@@ -1,12 +1,14 @@
 from neural_nets.mlp.layer import Layer
 from numpy import dot
-
+import json
 
 class Mlp:
 
-    def __init__(self, layer_sizes, learning_rate=0.5, activation_function="sigmoid", epoch_count=10):
+    def __init__(self, layer_sizes, learning_rate=0.5, activation_function="sigmoid", epoch_count=10, weights=None):
         self.set_hyperparameters(learning_rate, activation_function, epoch_count)
         self.layers = [Layer(layer_sizes[j], 0 if j == 0 else layer_sizes[j-1]) for j in range(len(layer_sizes))]
+        if weights is not None:
+            self.set_weights(weights)
 
     def learn(self, inputs, labels):
         for i in range(1, self.epoch_count+1):
@@ -63,3 +65,13 @@ class Mlp:
         for i in range(len(weights)):
             for j in range(len(weights[i])):
                 self.layers[i].neurons[j] = weights[i][j]
+
+    def save_model(self):
+        with open("saved_model/mlp/someSavedModel.txt", 'w') as fp:
+            fp.write(json.dumps(self.learning_rate))
+            fp.write("\n" + self.activation_function + "\n")
+            fp.write(json.dumps(self.epoch_count) + "\n")
+            fp.write(json.dumps(self.get_weights()))
+
+    def load_model(self):
+        raise Exception('Unsupported function')
