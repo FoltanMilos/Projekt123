@@ -2,11 +2,12 @@ from neural_nets.mlp.layer import Layer
 from numpy import dot
 import json
 
+
 class Mlp:
 
     def __init__(self, layer_sizes, learning_rate=0.5, activation_function="sigmoid", epoch_count=10, weights=None):
         self.set_hyperparameters(learning_rate, activation_function, epoch_count)
-        self.layers = [Layer(layer_sizes[j], 0 if j == 0 else layer_sizes[j-1]) for j in range(len(layer_sizes))]
+        self.__init_layers__(layer_sizes)
         if weights is not None:
             self.set_weights(weights)
 
@@ -67,11 +68,15 @@ class Mlp:
                 self.layers[i].neurons[j] = weights[i][j]
 
     def save_model(self):
-        with open("saved_model/mlp/someSavedModel.txt", 'w') as fp:
-            fp.write(json.dumps(self.learning_rate))
-            fp.write("\n" + self.activation_function + "\n")
-            fp.write(json.dumps(self.epoch_count) + "\n")
-            fp.write(json.dumps(self.get_weights()))
+        with open('saved_model/mlp/someSavedModel.txt', 'w') as fp:
+            json.dump({'learning rate': self.learning_rate, 'activation_function': self.activation_function, 'epoch_count': self.epoch_count, 'weights': self.get_weights()}, fp)
 
     def load_model(self):
-        raise Exception('Unsupported function')
+        with open('saved_model/mlp/someSavedModel.txt', 'r') as fp:
+            model = json.load(fp)
+            self.__init_layers__([len(layer) for layer in model['weights']])
+            self.set_weights(model['weights'])
+            self.set_hyperparameters(model['learning_rate'], model['activation_function'], model['epoch_count'])
+
+    def __init_layers__(self, layer_sizes):
+        self.layers = [Layer(layer_sizes[j], 0 if j == 0 else layer_sizes[j - 1]) for j in range(len(layer_sizes))]
