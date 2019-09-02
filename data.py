@@ -4,28 +4,42 @@ from keras.preprocessing import image as img_proc
 
 class Data:
     global train_set
-    #global train_labels
+
     global valid_set
-    #global valid_labels
+
     global test_set
-    # global test_labels
 
-    # file iterator
-    global train_datagen
+    global train_datagen            # file iterator
 
-    def __init__(self):
+    global paths                    # cesty k suborom
+
+    global ref_model                # ref k modelu
+
+    global is_changed               # ak sa zmenia dake cesty treba update
+
+    global is_new                   # treba ulozit
+
+    global name                     # nazov datasetu
+
+    def __init__(self,ref_model):
+        self.ref_model= ref_model
+        self.paths = {"T":None,
+                      "R":None,
+                      "V":None}
+        self.is_new = None
         self.train_datagen = ImageDataGenerator(rescale=1. / 255,
                                                 shear_range=0.2,
                                                 zoom_range=0.2,
                                                 horizontal_flip=True)
-        self.load_train_set()
-        self.load_test_set()
-        self.load_validation_set()
+        #self.load_train_set()
+        #self.load_test_set()
+        #self.load_validation_set()
 
     # LOADING AS FILE ITERATOR
     def load_train_set(self):
         self.train_set = self.train_datagen.flow_from_directory(
-            'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\cnn\\train\\',
+            self.paths["R"],
+            #'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\cnn\\train\\',
             target_size=(64, 64),
             batch_size=16,
             shuffle=False,
@@ -36,7 +50,8 @@ class Data:
 
     def load_test_set(self):
         self.test_set = self.train_datagen.flow_from_directory(
-            'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\cnn\\test\\',
+            #'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\cnn\\test\\',
+            self.paths["T"],
             target_size=(64, 64),
             batch_size=16,
             shuffle=False,
@@ -46,7 +61,8 @@ class Data:
 
     def load_validation_set(self):
         self.valid_set = self.train_datagen.flow_from_directory(
-            'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\cnn\\validation\\',
+            #'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\cnn\\validation\\',
+            self.paths["V"],
             target_size=(64, 64),
             batch_size=16,
             shuffle=False,
@@ -81,3 +97,27 @@ class Data:
         image = np.expand_dims(image, axis=0)
         return image
 
+    def load_state(self):
+        ret_data_set = self.ref_model.ref_user.ref_db.select_statement(
+            "select D_ID, M_ID, D_NAME, D_PATH, D_PATH_TYPE from PROJECTUSER.proj_data where m_id=" + str(self.ref_model.m_id) + "")
+        if (len(ret_data_set) < 2):
+            print("MODEL HAS NO DATA!!!!!!!!!!!!!!!!!!!!!!!!!")
+        for row in ret_data_set:
+            self.paths[row[4]] = row[3]
+            self.name = row[2]
+        self.is_new = True
+
+    def save_state(self):
+        print("[SAVE]: data")
+        oo = 0
+        if(self.is_new):
+            for path_dict in self.paths:
+                self.ref_model.ref_user.ref_db.insert_statement("insert into PROJECTUSER.proj_data( M_ID, D_NAME, D_PATH, D_PATH_TYPE) "
+                    "values(:2, :3, :4, :5)",(self.ref_model.m_id,self.name,self.paths[path_dict],path_dict))
+            #self.ref_model.ref_user.ref_db.commit()
+        elif(self.is_changed):
+            pass
+            # update
+        else:
+            pass
+            # uz tam su

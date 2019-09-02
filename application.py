@@ -1,6 +1,6 @@
 import sys
 import keras
-import matplotlib.pyplot as plt
+import user
 import data as dt
 import neural_nets.cnn.model_cnn as md_cnn
 import nn_type
@@ -13,14 +13,27 @@ class Application:
 
     global models               # zoznam vsetkych modelov, ktore su implementovane v aplikacii
 
+    global user
+
+    global list_user
+
     def __init__(self,train):
         # kontrola dependences
         print("Interpreter version: " + sys.version)
         print("Keras version: " + keras.__version__)
         print("Aplication started: OK (main)")
-
         # pripojenie na DB
         self.db_connect = dm.DB_manip()
+
+
+        # testovanie prepojenia na userov
+        self.list_user = []
+        self.user = user.User(self,1,self.db_connect)
+        self.list_user.append(self.user)
+        self.user.load_user_data()
+        self.user.save_user_data()
+
+
 
         # initialization
         self.models = []
@@ -29,7 +42,7 @@ class Application:
         self.data = dt.Data()
 
         # init model
-        self.active_model = md_cnn.Model_cnn(self.data)
+        self.active_model = md_cnn.Model_cnn(self.data,self.db_connect)
         self.active_model.create_model()
 
         if(train == False):
@@ -48,6 +61,13 @@ class Application:
     # registruje model do zoznamu modelov
     def register_model(self,model):
         self.models.append(model)
+
+    def find_user_by_id(self,id):
+        for user in self.list_user:
+            if(user.u_id==id):
+                return user
+        return None
+
 
 
     def predict(self):

@@ -33,3 +33,11 @@ class ModelInterface(ABC):
     @abstractmethod
     def predict_image(self, img):
         raise NotImplementedError
+
+    @abstractmethod
+    def load_state(self,state):
+        raise NotImplementedError
+
+    @abstractmethod
+    def save_state(self):
+        raise NotImplementedError
