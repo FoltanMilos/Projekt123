@@ -102,7 +102,11 @@ def createImage():
     counters[data['dataset']] += 1
     
     return flask.make_response()
-    
+
+@app.route('/login', methods=["POST"])
+def login():
+    data = flask.request.get_json()
+    print(data)
 # with open('dataset/cnn/images/ISIC_0024306.jpg', 'rb') as file:
 #     tmp =  base64.b64encode(file.read())
 #     tmp = tmp.decode('utf-8')
