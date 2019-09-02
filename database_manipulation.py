@@ -4,7 +4,7 @@ class DB_manip:
 
     # vytvorenie connectu do DB
     def __init__(self):
-        self.ip_adress = '158.193.151.201'   #obelix.fri.uniza.sk
+        self.ip_adress = 'obelix.fri.uniza.sk'   # #158.193.151.201
         self.username = 'foltan'
         self.password = 'foltanKONTOprePROJEKT'
         self.port = '1521'
@@ -13,19 +13,14 @@ class DB_manip:
 
         check = False
         try:
-            #dsn_tns = cx.makedsn('obelix.fri.uniza.sk', '1521',
-           #                              'orcl')
-            #print(dsn_tns)
+            dsn_tns = cx.makedsn(self.ip_adress, self.port,
+                                         service_name = 'orcl.fri.uniza.sk') #
+            self.conn = cx.connect(user='foltan', password='foltanKONTOprePROJEKT', dsn=dsn_tns)
 
-            #conn = cx.connect(user='foltan', password='foltanKONTOprePROJEKT', dsn=dsn_tns)
-            cc = "(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = asterix.fri.uniza.sk)(PORT = 1521))" \
-                 "(CONNECT_DATA = (SERVER = DEDICATED)(SERVICE_NAME = obelix.fri.uniza.sk)))"
 
-            #self.conn = cx.connect(cc)
-            #self.conn = cx.connect('foltan/foltanKONTOprePROJEKT@orcl_obelix')
-            self.conn = cx.connect(self.username + '/' + self.password
-                                   + '@' + self.ip_adress + ':' + self.port +
-                                   '/' + self.sid, mode=cx.SYSDBA)
+            #self.conn = cx.connect(self.username + '/' + self.password
+            #                       + '@' + self.ip_adress + ':' + self.port +
+            #                       '/' + self.sid, mode=cx.SYSDBA)
             check = True
         except Exception as e:
             self.conn = None
