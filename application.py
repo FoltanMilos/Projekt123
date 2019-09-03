@@ -39,24 +39,24 @@ class Application:
         self.models = []
 
         # init data
-        self.data = dt.Data()
+        #self.data = dt.Data()
 
         # init model
-        self.active_model = md_cnn.Model_cnn(self.data,self.db_connect)
-        self.active_model.create_model()
+        #self.active_model = md_cnn.Model_cnn(self.data,self.db_connect)
+        #self.active_model.create_model()
 
-        if(train == False):
-            self.active_model.load_model()
+        #if(train == False):
+         #   self.active_model.load_model()
             #print(self.active_model.model_summary())
 
-        else:
-            history_train = self.active_model.train(self.data.train_set, self.data.valid_set)
-            print(history_train)
-            #self.active_model.test_model(self.data.test_data, self.data.test_labels)
-            print(self.active_model.model_summary())
+        ##else:
+         #   history_train = self.active_model.train(self.data.train_set, self.data.valid_set)
+         #   print(history_train)
+         #   #self.active_model.test_model(self.data.test_data, self.data.test_labels)
+         #   print(self.active_model.model_summary())
 
         #TEST MILOS
-        self.active_model.predict_image_flow()
+        #self.active_model.predict_image_flow()
 
     # registruje model do zoznamu modelov
     def register_model(self,model):
