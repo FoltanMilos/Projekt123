@@ -4,23 +4,24 @@ class DB_manip:
 
     # vytvorenie connectu do DB
     def __init__(self):
-        self.ip_adress = 'obelix.fri.uniza.sk'   # #158.193.151.201
+        self.ip_adress = '158.193.151.201' #'obelix.fri.uniza.sk'
         self.username = 'foltan'
-        self.password = 'foltanKONTOprePROJEKT'
+        self.password = 'h123456'
         self.port = '1521'
-        self.sid = 'orcl'  #orcl.fri.uniza.sk ,
+        self.sid = 'orcl.fri.uniza.sk'
         self.schema = 'FOLTAN'
 
         check = False
         try:
             dsn_tns = cx.makedsn(self.ip_adress, self.port,
-                                         service_name = 'orcl.fri.uniza.sk') #
-            self.conn = cx.connect(user='foltan', password='foltanKONTOprePROJEKT', dsn=dsn_tns)
-
-
-            #self.conn = cx.connect(self.username + '/' + self.password
-            #                       + '@' + self.ip_adress + ':' + self.port +
-            #                       '/' + self.sid, mode=cx.SYSDBA)
+                                         sid = 'orcl')
+            print(dsn_tns)
+            self.conn = cx.connect(user=self.username, password=self.password, dsn=dsn_tns)
+            #ALTERNATE CONNECTION LINK
+            #IF NOT WORKING DO FOLOWING:
+            #   1 : Change NTS credentials to NONE in sqlnet.ora file (find it in windows explorer finder)
+            #   2 : Restart ORACLETNS service in windows services
+            #self.conn = cx.connect(r'foltan/h123456@obelix.fri.uniza.sk:1521/orcl.fri.uniza.sk', mode=cx.SYSDBA)
             check = True
         except Exception as e:
             self.conn = None
@@ -36,13 +37,6 @@ class DB_manip:
             print("Db: ORACLE")
             print("Version: " + str(versioning[0]))
             print('################################')
-            #cur = self.conn.cursor()
-            cur = self.select_statement("Select * from "+self.schema+".proj_user")
-            for result in cur:
-                print(result)
-            cur.close()
-            self.conn.close()
-
 
     # VRACIA result set, ked nieco selectujes pouzi toto
     # davaj si nameisto * nazvy collumnov, budes ich mat uspor. v sete
