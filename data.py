@@ -103,7 +103,7 @@ class Data:
 
     def load_state(self):
         ret_data_set = self.ref_model.ref_user.ref_db.select_statement(
-            "select D_ID, M_ID, D_NAME, D_PATH, D_PATH_TYPE from PROJECTUSER.proj_data where m_id=" + str(self.ref_model.m_id) + "")
+            "select D_ID, M_ID, D_NAME, D_PATH, D_PATH_TYPE from proj_data where m_id=" + str(self.ref_model.m_id) + "")
         if (len(ret_data_set) < 2):
             print("MODEL HAS NO DATA!!!!!!!!!!!!!!!!!!!!!!!!!")
         for row in ret_data_set:
@@ -116,7 +116,7 @@ class Data:
         oo = 0
         if(self.is_new):
             for path_dict in self.paths:
-                self.ref_model.ref_user.ref_db.insert_statement("insert into PROJECTUSER.proj_data( M_ID, D_NAME, D_PATH, D_PATH_TYPE) "
+                self.ref_model.ref_user.ref_db.insert_statement("insert into proj_data( M_ID, D_NAME, D_PATH, D_PATH_TYPE) "
                     "values(:2, :3, :4, :5)",(self.ref_model.m_id,self.name,self.paths[path_dict],path_dict))
             #self.ref_model.ref_user.ref_db.commit()
         elif(self.is_changed):

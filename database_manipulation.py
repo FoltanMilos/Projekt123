@@ -9,7 +9,6 @@ class DB_manip:
         self.password = 'h123456'
         self.port = '1521'
         self.sid = 'orcl.fri.uniza.sk'
-        self.schema = 'FOLTAN'
 
         check = False
         try:
