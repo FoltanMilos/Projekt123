@@ -11,11 +11,9 @@ class Application:
 
     global data                 # instancia triedy data
 
-    global models               # zoznam vsetkych modelov, ktore su implementovane v aplikacii
-
     global user
 
-    global list_user
+    global list_user            # list vsetkych userov v aplikacii
 
     def __init__(self,train):
         # kontrola dependences
@@ -25,53 +23,30 @@ class Application:
         # pripojenie na DB
         self.db_connect = dm.DB_manip()
 
-        # testovanie prepojenia na userov
+        # nacitanie userov applikacii
+        # nacitava sa len jeden aktivny, nie je potrebne drzat vsetkych
         self.list_user = []
-        self.user = user.User(self,3,self.db_connect)
-        self.list_user.append(self.user)
-        self.user.load_user_data()
-        self.user.save_user_data()
+        self.load_actual_users()
+
+        #nacitanie jedneho useera
+        #self.user = user.User(self,3,self.db_connect)
+        #self.list_user.append(self.user)
+        #self.user.load_user_data()
 
 
-
-        # initialization
-        self.models = []
-
-        # init data
-        #self.data = dt.Data()
-
-        # init model
-        #self.active_model = md_cnn.Model_cnn(self.data,self.db_connect)
-        #self.active_model.create_model()
-
-        #if(train == False):
-         #   self.active_model.load_model()
-            #print(self.active_model.model_summary())
-
-        ##else:
-         #   history_train = self.active_model.train(self.data.train_set, self.data.valid_set)
-         #   print(history_train)
-         #   #self.active_model.test_model(self.data.test_data, self.data.test_labels)
-         #   print(self.active_model.model_summary())
-
-        #TEST MILOS
-        #self.active_model.predict_image_flow()
-
-    # registruje model do zoznamu modelov
-    def register_model(self,model):
-        self.models.append(model)
-
+    """Najde usera, ktory je v zozname nacitanych userov ak je pouzivanie vsetkych userov potrebne
+    
+    :param id: id_usera
+    """
     def find_user_by_id(self,id):
         for user in self.list_user:
             if(user.u_id==id):
                 return user
         return None
 
+    """Nahra vsetkych userov do pamate, len nenahra ich udaje. Ked sa prepnu useri, treba ich nechad cascadovo
+    naloadovat
+    """
+    def load_actual_users(self):
+        self.list_user = user.User.load_all_users_no_cascade(self,self.db_connect)
 
-
-    def predict(self):
-        pass
-        # z aktivneho modelu
-        #img = self.data.train_data[1]
-        #return self.active_model.predict_image(img)
-        #return self.active_model.model_generated_predictions(self.data.test_data,self.data.test_labels)

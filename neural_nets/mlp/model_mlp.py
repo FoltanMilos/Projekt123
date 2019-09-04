@@ -1,6 +1,10 @@
 import interface.model_interface as interface
 
 class Model_mlp(interface.ModelInterface):
+
+    def __init__(self):
+        pass
+
     def test_model(self, test_data, test_labels):
         pass
 
