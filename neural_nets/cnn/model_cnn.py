@@ -197,7 +197,7 @@ class Model_cnn(interface.ModelInterface):
 		# ulozenie modelu
 		if(self.is_new):
 			# neexistuje este model
-			self.ref_user.ref_db.update_statement("Insert into PROJECTUSER.proj_model(u_id,r_id,m_weights_path,m_structure_path)"
+			self.ref_user.ref_db.update_statement("Insert into proj_model(u_id,r_id,m_weights_path,m_structure_path)"
 									 "values("+str(self.ref_user.u_id)+","+str(self.r_id)+","+str(self.path_weights)+","+str(self.path_struct)+")")
 		else:
 			pass

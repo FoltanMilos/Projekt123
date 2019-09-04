@@ -16,7 +16,7 @@ class DB_manip:
                                          sid = 'orcl')
             print(dsn_tns)
             self.conn = cx.connect(user=self.username, password=self.password, dsn=dsn_tns)
-            #ALTERNATE CONNECTION LINK
+            #ALTERNATIVE CONNECTION LINK
             #IF NOT WORKING DO FOLOWING:
             #   1 : Change NTS credentials to NONE in sqlnet.ora file (find it in windows explorer finder)
             #   2 : Restart ORACLETNS service in windows services

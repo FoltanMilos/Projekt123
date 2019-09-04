@@ -25,10 +25,9 @@ class Application:
         # pripojenie na DB
         self.db_connect = dm.DB_manip()
 
-
         # testovanie prepojenia na userov
         self.list_user = []
-        self.user = user.User(self,1,self.db_connect)
+        self.user = user.User(self,3,self.db_connect)
         self.list_user.append(self.user)
         self.user.load_user_data()
         self.user.save_user_data()

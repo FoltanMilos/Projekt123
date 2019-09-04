@@ -111,8 +111,8 @@ class Results_set:
 
 	# loading
 	def load_state(self):
-		ret_set_all = self.ref_model.ref_user.ref_db.select_statement("Select R_ID, R_MATRIX_A, R_MATRIX_B, R_MATRIX_C, R_MATRIX_D, R_SAMPLES_COUNT from PROJECTUSER.proj_result"
-				" join PROJECTUSER.PROJ_MODEL using(r_id) where m_id="+str(self.ref_model.m_id) +"")
+		ret_set_all = self.ref_model.ref_user.ref_db.select_statement("Select R_ID, R_MATRIX_A, R_MATRIX_B, R_MATRIX_C, R_MATRIX_D, R_SAMPLES_COUNT from proj_result"
+				" join PROJ_MODEL using(r_id) where m_id="+str(self.ref_model.m_id) +"")
 		if(len(ret_set_all) > 1 ):
 			print("MODEL BY MAL MAT LEN JEDEN RESULT SET")
 		for ret_set in ret_set_all:
@@ -128,16 +128,16 @@ class Results_set:
 
 	def save_state(self):
 		print("saving result set")
-		check = self.ref_model.ref_user.ref_db.select_statement("select r_id from PROJECTUSER.proj_result where r_id="+str(self.r_id) +"")
+		check = self.ref_model.ref_user.ref_db.select_statement("select r_id from proj_result where r_id="+str(self.r_id) +"")
 		if(len(check)<1):
 			# insert TODO: ID SA DOPLNI AZ PRIDANIM DO TABULKY
-			self.ref_model.ref_user.ref_db.update_statement("insert into PROJECTUSER.proj_result"
+			self.ref_model.ref_user.ref_db.update_statement("insert into proj_result"
 				"(R_ID, R_MATRIX_A, R_MATRIX_B, R_MATRIX_C, R_MATRIX_D, R_SAMPLES_COUNT) values"
 				"("+str(self.r_id)+","+str(self.result_matrix[1, 1])+","+str(self.result_matrix[0, 1])+","
 				""+str(self.result_matrix[1, 0])+","+str(self.result_matrix[0,0])+","+str(self.samples_count)+")")
 
 		else:
-			self.ref_model.ref_user.ref_db.update_statement("update PROJECTUSER.proj_result "
+			self.ref_model.ref_user.ref_db.update_statement("update proj_result "
 				"SET R_MATRIX_A="+str(self.result_matrix[1, 1])+","
 				" R_MATRIX_B="+str(self.result_matrix[0, 1])+","
 				" R_MATRIX_C="+str(self.result_matrix[1, 0])+","
