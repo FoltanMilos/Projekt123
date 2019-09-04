@@ -33,7 +33,7 @@ class User:
 												 "where u_id ="+str(self.u_id)+" ")
 		for loaded_model in ret_models:
 			if(loaded_model[4] == n_type.Nn_type.CNN.value): #TODO: na CNN
-				mod = cnn.Model_cnn(self.ref_app)
+				mod = cnn.Model_cnn(self,self.ref_app)
 				mod.load_state(loaded_model)
 				self.models.append(mod)
 			elif(loaded_model[4] == n_type.Nn_type.MLP.value):
@@ -44,7 +44,10 @@ class User:
 				pass
 
 	def save_user_data(self):
-		# modely
+		if(self.is_changed==False):
+			pass
+
+
 		print("saving from user")
 		for md in self.models:
 			md.save_state()

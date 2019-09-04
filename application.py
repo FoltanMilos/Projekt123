@@ -1,9 +1,6 @@
 import sys
 import keras
 import user
-import data as dt
-import neural_nets.cnn.model_cnn as md_cnn
-import nn_type
 import database_manipulation as dm
 
 class Application:
@@ -11,9 +8,9 @@ class Application:
 
     global data                 # instancia triedy data
 
-    global user
-
     global list_user            # list vsetkych userov v aplikacii
+
+    global active_user          # aktivny pouzivatel, ktory je prihlaseny
 
     def __init__(self,train):
         # kontrola dependences
@@ -28,10 +25,9 @@ class Application:
         self.list_user = []
         self.load_actual_users()
 
-        #nacitanie jedneho useera
-        #self.user = user.User(self,3,self.db_connect)
-        #self.list_user.append(self.user)
-        #self.user.load_user_data()
+        #testovanie
+        self.active_user = self.list_user.pop(0)
+        self.active_user.load_user_data()
 
 
     """Najde usera, ktory je v zozname nacitanych userov ak je pouzivanie vsetkych userov potrebne
@@ -49,4 +45,8 @@ class Application:
     """
     def load_actual_users(self):
         self.list_user = user.User.load_all_users_no_cascade(self,self.db_connect)
+
+
+
+
 

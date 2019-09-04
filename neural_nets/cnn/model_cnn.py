@@ -25,12 +25,11 @@ class Model_cnn(interface.ModelInterface):
 	#resulty modelu
 	global result_processing
 
-	global ref_user
+	global ref_user						# referencia na uzivatela, ktoremu model patri
 
-	# Konstruktor
-	def __init__(self,ref_app=None,ref_data=None):
+	def __init__(self,ref_user,ref_app=None,ref_data=None):
 		self.is_new = True				# ci je novo vytvoreny
-
+		self.ref_user = ref_user
 
 		self.path_struct = None
 		self.path_weights = None
@@ -173,7 +172,7 @@ class Model_cnn(interface.ModelInterface):
 
 	def load_state(self,state):
 		self.m_id = int(state[0])
-		self.ref_user = self.ref_app.find_user_by_id(int(state[2]))
+		#self.ref_user = self.ref_app.find_user_by_id(int(state[2]))
 		self.path_struct = state[6]
 		self.path_weights = state[5]
 		self.is_new = False
