@@ -2,15 +2,18 @@ import sys
 import keras
 import user
 import database_manipulation as dm
+import pdb
+import string
+import random
 
 class Application:
     global active_model         # instancia triedy modelu, s ktorym sa pracuje
 
     global data                 # instancia triedy data
 
-    global list_user            # list vsetkych userov v aplikacii
+    global list_active_user            # list vsetkych userov v aplikacii
 
-    global active_user          # aktivny pouzivatel, ktory je prihlaseny
+
 
     def __init__(self,train):
         # kontrola dependences
@@ -19,25 +22,23 @@ class Application:
         print("Aplication started: OK (main)")
         # pripojenie na DB
         self.db_connect = dm.DB_manip()
-
         # nacitanie userov applikacii
         # nacitava sa len jeden aktivny, nie je potrebne drzat vsetkych
-        self.list_user = []
+        self.list_active_user = []
         self.load_actual_users()
-
         #testovanie
         self.active_user = self.list_user.pop(0)
         self.active_user.load_user_data()
 
 
-        self.active_user.save_user_data()
+        # self.active_user.save_user_data()
 
     """Najde usera, ktory je v zozname nacitanych userov ak je pouzivanie vsetkych userov potrebne
     
     :param id: id_usera
     """
     def find_user_by_id(self,id):
-        for user in self.list_user:
+        for user in self.list_active_user:
             if(user.u_id==id):
                 return user
         return None
@@ -46,7 +47,7 @@ class Application:
     naloadovat
     """
     def load_actual_users(self):
-        self.list_user = user.User.load_all_users_no_cascade(self,self.db_connect)
+        self.list_active_user = user.User.load_all_users_no_cascade(self,self.db_connect)
 
 
     """Vymeni aktivneho uzivatela s ulozenim povodneho ak je treba
@@ -58,4 +59,33 @@ class Application:
             self.active_user=self.active_user
         else:
             self.active_user = usr
+
+    def validate_user(self, credentials):
+        res = self.db_connect.select_statement("select * from proj_user where u_name ='"+ credentials['username'] +"'")
+        for row in res:
+            pdb.set_trace()
+            if row[2] == credentials['pass']:
+                identifier = self.generate_unique_string()
+                logged_user = user.User(self,row[0],self.db_connect, identifier)
+                # logged_user.load_user_data()
+                self.list_active_user.append(logged_user)
+                return {'identity':identifier, 'name': row[1]}
+            else:
+                return False
+
+    def in_use(self,string):
+        result = False
+        for usr in self.list_active_user:
+            if string == usr.ref_app:
+                result = True
+                break
+        return result
+
+    def generate_unique_string(self):
+        alphabet = string.ascii_letters
+        result = ''.join(random.choice(alphabet) for i in range(32))
+        while(self.in_use(result)):
+            result= ''.join(random.choice(alphabet) for i in range(32))
+        return result
+
 

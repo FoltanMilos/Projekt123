@@ -21,12 +21,16 @@ class User:
 
 	global access		# pristup usera
 
-	def __init__(self,ref_app,user_id,ref_db):
+	global indentifier 	# frontend identifier
+
+
+	def __init__(self,ref_app,user_id,ref_db,identifier):
 		self.models = []
 		self.u_id = user_id
 		self.ref_app = ref_app
 		self.ref_db = ref_db
 		self.is_changed = False
+		self.indentifier = identifier
 
 	def load_user_data(self):
 		ret_models = self.ref_db.select_statement("select * from proj_model "

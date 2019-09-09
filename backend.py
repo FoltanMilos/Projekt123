@@ -106,7 +106,11 @@ def createImage():
 @app.route('/login', methods=["POST"])
 def login():
     data = flask.request.get_json()
-    print(data)
+    res = application.validate_user(data)
+    if res == False:
+        return flask.Response('invalid credentials', 401)
+    else:
+        return flask.make_response(json.dumps(res))
 # with open('dataset/cnn/images/ISIC_0024306.jpg', 'rb') as file:
 #     tmp =  base64.b64encode(file.read())
 #     tmp = tmp.decode('utf-8')
