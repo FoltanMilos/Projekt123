@@ -22,6 +22,8 @@ class Data:
 
     global name                     # nazov datasetu
 
+    global d_id                     # id data
+
     def __init__(self,ref_model):
         self.ref_model= ref_model
         self.paths = {"T":None,
@@ -32,6 +34,8 @@ class Data:
                                                 shear_range=0.2,
                                                 zoom_range=0.2,
                                                 horizontal_flip=True)
+        self.is_new=False
+        self.is_changed=False
         #self.load_train_set()
         #self.load_test_set()
         #self.load_validation_set()
@@ -107,21 +111,22 @@ class Data:
         if (len(ret_data_set) < 2):
             print("MODEL HAS NO DATA!!!!!!!!!!!!!!!!!!!!!!!!!")
         for row in ret_data_set:
+            self.d_id = row[0]
             self.paths[row[4]] = row[3]
             self.name = row[2]
         self.is_new = True
 
     def save_state(self):
-        print("[SAVE]: data")
-        oo = 0
         if(self.is_new):
             for path_dict in self.paths:
-                self.ref_model.ref_user.ref_db.insert_statement("insert into proj_data( M_ID, D_NAME, D_PATH, D_PATH_TYPE) "
-                    "values(:2, :3, :4, :5)",(self.ref_model.m_id,self.name,self.paths[path_dict],path_dict))
-            #self.ref_model.ref_user.ref_db.commit()
+                returned_id_data = self.ref_model.ref_user.ref_db.insert_returning_identity("insert into proj_data( M_ID, D_NAME, D_PATH, D_PATH_TYPE) values "
+                    "("+str(self.ref_model.m_id)+",'"+str(self.name)+"','"+str(self.paths[path_dict])+"','"+str(path_dict)+"')","d_id")
         elif(self.is_changed):
             pass
-            # update
+            for path_dict in self.paths:
+                self.ref_model.ref_user.ref_db.update_statement("update proj_data "
+                        "set m_id:=:1 d_name:=:2 d_path:=:3 d_path_type:=:4 where d_id="+self.d_id+"",
+                        (self.ref_model.m_id,self.name,self.paths[path_dict],path_dict))
         else:
             pass
-            # uz tam su
+        return returned_id_data

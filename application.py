@@ -30,6 +30,8 @@ class Application:
         self.active_user.load_user_data()
 
 
+        self.active_user.save_user_data()
+
     """Najde usera, ktory je v zozname nacitanych userov ak je pouzivanie vsetkych userov potrebne
     
     :param id: id_usera
@@ -47,6 +49,13 @@ class Application:
         self.list_user = user.User.load_all_users_no_cascade(self,self.db_connect)
 
 
-
-
+    """Vymeni aktivneho uzivatela s ulozenim povodneho ak je treba
+    """
+    def swap_active_user(self,user_id):
+        self.active_user.save_user_data()
+        usr = self.find_user_by_id(user_id)
+        if(usr==None):
+            self.active_user=self.active_user
+        else:
+            self.active_user = usr
 

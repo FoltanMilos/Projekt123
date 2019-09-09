@@ -27,9 +27,15 @@ class Model_cnn(interface.ModelInterface):
 
 	global ref_user						# referencia na uzivatela, ktoremu model patri
 
+	global is_new						# ci je novo vytvoreny model
+
+	global is_changed 					# ci bola zmenena
+
 	def __init__(self,ref_user,ref_app=None,ref_data=None):
 		self.is_new = True				# ci je novo vytvoreny
 		self.ref_user = ref_user
+		self.is_changed = False
+		self.is_new = False
 
 		self.path_struct = None
 		self.path_weights = None
@@ -190,7 +196,13 @@ class Model_cnn(interface.ModelInterface):
 
 
 	def save_state(self):
-		# ulozenie resultov
+		if (self.is_changed == False):
+			#netreba menit nic v modely
+			pass
+		else:
+			self.ref_user.ref_db.update_statement("update proj_model ......")
+
+		# CASCADE SAVING - kontrola ci treba aj dalej robit save
 		saved_r_id = self.ref_res_proc.save_state()    # potrebujem len pre novy model
 
 		# ulozenie modelu
@@ -198,10 +210,6 @@ class Model_cnn(interface.ModelInterface):
 			# neexistuje este model
 			self.ref_user.ref_db.update_statement("Insert into proj_model(u_id,r_id,m_weights_path,m_structure_path)"
 									 "values("+str(self.ref_user.u_id)+","+str(self.r_id)+","+str(self.path_weights)+","+str(self.path_struct)+")")
-		else:
-			pass
-			# alebo do nothing ?????????????????
-			#self.ref_user.ref_db.update_statement("update PROJECTUSER.proj_model ")
 
 		# ulozenie dat
 		self.ref_data.save_state()

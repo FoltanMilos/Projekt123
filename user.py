@@ -4,17 +4,17 @@ import neural_nets.genetic_alg.model_gen_alg as gen
 import nn_type as n_type
 
 class User:
-	global u_id         #user id
+	global u_id         # user id
 
-	global models       #modely
+	global models       # modely
 
-	global ref_db       #connect na DB
+	global ref_db       # connect na DB
 
-	global active_model #aktivny model predikcii
+	global active_model # aktivny model predikcii
 
-	global ref_app      #na apku odkaz
+	global ref_app      # na apku odkaz
 
-	global is_changed   #ak sa nieco zmenilo, bude treba UPDATE, inac sa nic nerobi
+	global is_changed   # ak sa nieco zmenilo, bude treba UPDATE, inac sa nic nerobi
 
 	# from db
 	global name			# meno usera
@@ -32,7 +32,7 @@ class User:
 		ret_models = self.ref_db.select_statement("select * from proj_model "
 												 "where u_id ="+str(self.u_id)+" ")
 		for loaded_model in ret_models:
-			if(loaded_model[4] == n_type.Nn_type.CNN.value): #TODO: na CNN
+			if(loaded_model[4] == n_type.Nn_type.CNN.value):
 				mod = cnn.Model_cnn(self,self.ref_app)
 				mod.load_state(loaded_model)
 				self.models.append(mod)
@@ -45,12 +45,18 @@ class User:
 
 	def save_user_data(self):
 		if(self.is_changed==False):
+			#nemusime nic ukladat v USEROVI
 			pass
+		else:
+			self.ref_db.update_statement("update proj_user  .......")
 
-
-		print("saving from user")
+		# CASCADE SAVING - treba vsetko pozriet, ci nie je zmena
 		for md in self.models:
 			md.save_state()
+
+		# commit
+		self.ref_db.commit()
+
 
 	def register_model(self,model):
 		self.models.append(model)

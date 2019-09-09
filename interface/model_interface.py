@@ -4,8 +4,7 @@ from abc import ABC, abstractmethod
 ##              pevne definovanie rozhrania pre webove service      #
 ### --------------------------------------------------------------###
 class ModelInterface(ABC):
-    pass
-
+    
     @abstractmethod
     def train(self, train_data, train_labels):
         raise NotImplementedError

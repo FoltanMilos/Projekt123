@@ -8,9 +8,15 @@ class Results_set:
 
 	global r_id					# result set id
 
+	global is_changed			# ci sa nieco modifikovalo
+
+	global is_new				# ci su novo vytvorene pre db
+
 	def __init__(self,ref_model):
 		# referencia na model, aby sa vedelo, ktoremu modelu patri (1 model = 1 ResultSet)
 		self.ref_model = ref_model
+		self.is_changed = False
+		self.is_new = False
 
 		# clasifikacny model bude mat maticu 2x2
 		self.result_matrix = np.zeros(shape=(2,2))
@@ -124,24 +130,24 @@ class Results_set:
 			self.result_matrix[0, 1] = ret_set[2]
 			self.result_matrix[1, 1] = ret_set[1]
 			print(self.result_matrix)
-		print("")
 
 	def save_state(self):
-		print("saving result set")
-		check = self.ref_model.ref_user.ref_db.select_statement("select r_id from proj_result where r_id="+str(self.r_id) +"")
-		if(len(check)<1):
-			# insert TODO: ID SA DOPLNI AZ PRIDANIM DO TABULKY
-			self.ref_model.ref_user.ref_db.update_statement("insert into proj_result"
-				"(R_ID, R_MATRIX_A, R_MATRIX_B, R_MATRIX_C, R_MATRIX_D, R_SAMPLES_COUNT) values"
-				"("+str(self.r_id)+","+str(self.result_matrix[1, 1])+","+str(self.result_matrix[0, 1])+","
-				""+str(self.result_matrix[1, 0])+","+str(self.result_matrix[0,0])+","+str(self.samples_count)+")")
-
-		else:
+		self.is_new = True;
+		if(self.is_changed==True):
+			# update len
 			self.ref_model.ref_user.ref_db.update_statement("update proj_result "
-				"SET R_MATRIX_A="+str(self.result_matrix[1, 1])+","
-				" R_MATRIX_B="+str(self.result_matrix[0, 1])+","
-				" R_MATRIX_C="+str(self.result_matrix[1, 0])+","
-				" R_MATRIX_D="+str(self.result_matrix[0,0])+","
-				" R_SAMPLES_COUNT="+str(self.samples_count)+" where r_id="+str(self.r_id) +"")
-			#return -1 # iba update
-		return self.r_id
+				"SET R_MATRIX_A=" + str(self.result_matrix[1, 1]) + ","
+				" R_MATRIX_B=" + str(self.result_matrix[0, 1]) + ","
+				" R_MATRIX_C=" + str(self.result_matrix[1, 0]) + ","
+				" R_MATRIX_D=" + str(self.result_matrix[0, 0]) + ","
+				" R_SAMPLES_COUNT=" + str(self.samples_count) + " where r_id=" + str(self.r_id) + "")
+			return self.r_id
+		elif(self.is_new==True):
+			# insert
+			returned_id = self.ref_model.ref_user.ref_db.insert_returning_identity("insert INTO proj_result"
+				"(R_MATRIX_A, R_MATRIX_B, R_MATRIX_C, R_MATRIX_D, R_SAMPLES_COUNT) values "
+																				   #values(:1,:2,:3,:4,:5,:6)
+				#(self.r_id,self.result_matrix[1, 1],self.result_matrix[0, 1],self.result_matrix[1, 0],self.result_matrix[0,0],self.samples_count))
+				"("+str(self.result_matrix[1, 1])+","+str(self.result_matrix[0, 1])+","
+				+ str(self.result_matrix[1, 0])+","+str(self.result_matrix[0,0])+","+str(self.samples_count)+")","r_id")
+			return returned_id

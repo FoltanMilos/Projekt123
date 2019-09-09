@@ -85,3 +85,14 @@ class DB_manip:
             #py_var = cr.var(cx.NUMBER)
             cr.execute(insert,rows)
             return True
+
+    def insert_returning_identity(self,returning_insert,id_name):
+        if (self.conn is None):
+            print("Nepodarilo sa pripojit na DB!")
+            return False
+        else:
+            cr = self.conn.cursor()
+            newest_id_wrapper = cr.var(cx.NUMBER)
+            sql_params = {"newest_id_sql_param": newest_id_wrapper}
+            cr.execute(returning_insert + " returning "+id_name+" into :id",id=newest_id_wrapper)
+        return newest_id_wrapper.getvalue()
