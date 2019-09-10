@@ -11,7 +11,7 @@ class Application:
 
     global data                 # instancia triedy data
 
-    global list_active_user            # list vsetkych userov v aplikacii
+    global list_active_user     # list vsetkych userov v aplikacii
 
 
 
@@ -25,13 +25,16 @@ class Application:
         # nacitanie userov applikacii
         # nacitava sa len jeden aktivny, nie je potrebne drzat vsetkych
         self.list_active_user = []
-        self.load_actual_users()
+        #self.load_actual_users()  # len na testovanie
         #testovanie
-        self.active_user = self.list_user.pop(0)
-        self.active_user.load_user_data()
+        sr = user.User(self,3,self.db_connect,self.generate_unique_string())
+        sr.load_user_data()
+        self.list_active_user.append(sr)
 
+        #TESTOVANIE
+        modelForTest = sr.models.pop(0)
+        modelForTest
 
-        # self.active_user.save_user_data()
 
     """Najde usera, ktory je v zozname nacitanych userov ak je pouzivanie vsetkych userov potrebne
     
