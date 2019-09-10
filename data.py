@@ -36,9 +36,6 @@ class Data:
                                                 horizontal_flip=True)
         self.is_new=False
         self.is_changed=False
-        #self.load_train_set()
-        #self.load_test_set()
-        #self.load_validation_set()
 
     # LOADING AS FILE ITERATOR
     def load_train_set(self):
