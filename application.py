@@ -27,13 +27,13 @@ class Application:
         self.list_active_user = []
         #self.load_actual_users()  # len na testovanie
         #testovanie
-        sr = user.User(self,3,self.db_connect,self.generate_unique_string())
-        sr.load_user_data()
-        self.list_active_user.append(sr)
-
+        # sr = user.User(self,3,self.db_connect,self.generate_unique_string())
+        # sr.load_user_data()
+        # self.list_active_user.append(sr)
+        #
         #TESTOVANIE
-        modelForTest = sr.models.pop(0)
-        modelForTest
+        # modelForTest = sr.models.pop(0)
+        # modelForTest
 
 
     """Najde usera, ktory je v zozname nacitanych userov ak je pouzivanie vsetkych userov potrebne
@@ -66,11 +66,10 @@ class Application:
     def validate_user(self, credentials):
         res = self.db_connect.select_statement("select * from proj_user where u_name ='"+ credentials['username'] +"'")
         for row in res:
-            pdb.set_trace()
             if row[2] == credentials['pass']:
                 identifier = self.generate_unique_string()
                 logged_user = user.User(self,row[0],self.db_connect, identifier)
-                # logged_user.load_user_data()
+                logged_user.load_user_data()
                 self.list_active_user.append(logged_user)
                 return {'identity':identifier, 'name': row[1]}
             else:
@@ -91,4 +90,15 @@ class Application:
             result= ''.join(random.choice(alphabet) for i in range(32))
         return result
 
+    def find_user_by_identification(self, identification):
+        for usr in self.list_active_user:
+            if(usr.indentifier == identification):
+                return usr
+        return False
+
+    def get_models(self, user):
+        jsonarray = []
+        for model in user.models:
+            jsonarray.append(model.model.to_json())
+        return jsonarray
 

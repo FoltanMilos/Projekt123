@@ -117,6 +117,15 @@ def login():
 #     res = json.dumps(tmp)
 #     print(res)
 
+@app.route('/models', methods=["GET"])
+def get_models():
+    auth = request.headers.get('Authorization')
+    usr = application.find_user_by_identification(auth)
+    if(usr != False):
+        res = application.get_models(usr)
+        return flask.make_response(json.dumps({'models': res}))
+    return flask.Response('Access Denied', 403)
+
 ## SPUSTENIE SERVERA
 if __name__ == "__main__":
     print(("* Loading Keras model and Flask starting server..."
