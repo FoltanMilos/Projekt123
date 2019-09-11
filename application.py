@@ -102,3 +102,8 @@ class Application:
             jsonarray.append(model.model.to_json())
         return jsonarray
 
+    def logout_user(self,user):
+        try:
+            self.list_active_user.remove(user)
+        except Exception as e:
+            return False

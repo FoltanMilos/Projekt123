@@ -123,8 +123,19 @@ def get_models():
     usr = application.find_user_by_identification(auth)
     if(usr != False):
         res = application.get_models(usr)
-        return flask.make_response(json.dumps({'models': res}))
+        return flask.make_response(json.dumps({'models': res},ensure_ascii=False,indent=2))
     return flask.Response('Access Denied', 403)
+
+
+@app.route('/logout', methods=["GET"])
+def logout():
+    auth = request.headers.get('Authorization')
+    usr = application.find_user_by_identification(auth)
+    if(usr != False):
+        res = application.logout_user(usr)
+        if res != False:
+            return flask.make_response()
+    return flask.Response('Invalid identifier', 403)
 
 ## SPUSTENIE SERVERA
 if __name__ == "__main__":
