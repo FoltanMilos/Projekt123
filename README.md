@@ -3,8 +3,10 @@ Program projektovej vyucby
 # špecifikácia
     - python 3.6.7 interpreter
     - keras 2.2.2
+    - tensorflow 1.14.0
+    - flask 1.1.1
     - angular 7
-    - oracle 11g 
+    - oracle 12c
 # informácie
     - neural_nets:
         * CNN 

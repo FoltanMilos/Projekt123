@@ -106,12 +106,36 @@ def createImage():
 @app.route('/login', methods=["POST"])
 def login():
     data = flask.request.get_json()
-    print(data)
+    res = application.validate_user(data)
+    if res == False:
+        return flask.Response('invalid credentials', 401)
+    else:
+        return flask.make_response(json.dumps(res))
 # with open('dataset/cnn/images/ISIC_0024306.jpg', 'rb') as file:
 #     tmp =  base64.b64encode(file.read())
 #     tmp = tmp.decode('utf-8')
 #     res = json.dumps(tmp)
 #     print(res)
+
+@app.route('/models', methods=["GET"])
+def get_models():
+    auth = request.headers.get('Authorization')
+    usr = application.find_user_by_identification(auth)
+    if(usr != False):
+        res = application.get_models(usr)
+        return flask.make_response(json.dumps({'models': res},ensure_ascii=False,indent=2))
+    return flask.Response('Access Denied', 403)
+
+
+@app.route('/logout', methods=["GET"])
+def logout():
+    auth = request.headers.get('Authorization')
+    usr = application.find_user_by_identification(auth)
+    if(usr != False):
+        res = application.logout_user(usr)
+        if res != False:
+            return flask.make_response()
+    return flask.Response('Invalid identifier', 403)
 
 ## SPUSTENIE SERVERA
 if __name__ == "__main__":

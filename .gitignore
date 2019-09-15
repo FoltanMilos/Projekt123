@@ -105,6 +105,7 @@ venv.bak/
 .mypy_cache/
 
 #dependencies
+dataset/
 dataset/images/
 dataset/description(10015)/
 dataset/images/
@@ -113,3 +114,4 @@ dataset/test/
 dataset/train/
 dataset/validation/
 logs/
+saved_model/

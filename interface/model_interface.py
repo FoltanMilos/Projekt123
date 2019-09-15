@@ -4,8 +4,7 @@ from abc import ABC, abstractmethod
 ##              pevne definovanie rozhrania pre webove service      #
 ### --------------------------------------------------------------###
 class ModelInterface(ABC):
-    pass
-
+    
     @abstractmethod
     def train(self, train_data, train_labels):
         raise NotImplementedError
@@ -32,4 +31,12 @@ class ModelInterface(ABC):
 
     @abstractmethod
     def predict_image(self, img):
+        raise NotImplementedError
+
+    @abstractmethod
+    def load_state(self,state):
+        raise NotImplementedError
+
+    @abstractmethod
+    def save_state(self):
         raise NotImplementedError

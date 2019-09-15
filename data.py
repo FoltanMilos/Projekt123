@@ -4,29 +4,45 @@ from keras.preprocessing import image as img_proc
 import os
 class Data:
     global train_set
-    #global train_labels
+
     global valid_set
-    #global valid_labels
+
     global test_set
-    # global test_labels
 
-    # file iterator
-    global train_datagen
+    global train_datagen            # file iterator
 
-    def __init__(self):
-        self.path = os.getcwd()
+
+    global paths                    # cesty k suborom
+
+    global ref_model                # ref k modelu
+
+    global is_changed               # ak sa zmenia dake cesty treba update
+
+    global is_new                   # treba ulozit
+
+    global name                     # nazov datasetu
+
+    global d_id                     # id data
+
+    def __init__(self,ref_model):
+        self.ref_model= ref_model
+        self.paths = {"T":None,
+                      "R":None,
+                      "V":None}
+        self.is_new = None
         self.train_datagen = ImageDataGenerator(rescale=1. / 255,
                                                 shear_range=0.2,
                                                 zoom_range=0.2,
                                                 horizontal_flip=True)
-        self.load_train_set()
-        self.load_test_set()
-        self.load_validation_set()
+        self.is_new=False
+        self.is_changed=False
 
     # LOADING AS FILE ITERATOR
     def load_train_set(self):
         self.train_set = self.train_datagen.flow_from_directory(
-            self.path + '\\dataset\\cnn\\train\\',
+            #self.path + '\\dataset\\cnn\\train\\',
+            self.paths["R"],
+            #'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\cnn\\train\\',
             target_size=(64, 64),
             batch_size=16,
             shuffle=False,
@@ -37,7 +53,9 @@ class Data:
 
     def load_test_set(self):
         self.test_set = self.train_datagen.flow_from_directory(
-            self.path + '\\dataset\\cnn\\test\\',
+            ##self.path + '\\dataset\\cnn\\test\\',
+            #'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\cnn\\test\\',
+            self.paths["T"],
             target_size=(64, 64),
             batch_size=16,
             shuffle=False,
@@ -47,7 +65,9 @@ class Data:
 
     def load_validation_set(self):
         self.valid_set = self.train_datagen.flow_from_directory(
-            self.path + '\\dataset\\cnn\\validation\\',
+            #self.path + '\\dataset\\cnn\\validation\\',
+            #'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\cnn\\validation\\',
+            self.paths["V"],
             target_size=(64, 64),
             batch_size=16,
             shuffle=False,
@@ -82,3 +102,28 @@ class Data:
         image = np.expand_dims(image, axis=0)
         return image
 
+    def load_state(self):
+        ret_data_set = self.ref_model.ref_user.ref_db.select_statement(
+            "select D_ID, M_ID, D_NAME, D_PATH, D_PATH_TYPE from proj_data where m_id=" + str(self.ref_model.m_id) + "")
+        if (len(ret_data_set) < 2):
+            print("MODEL HAS NO DATA!!!!!!!!!!!!!!!!!!!!!!!!!")
+        for row in ret_data_set:
+            self.d_id = row[0]
+            self.paths[row[4]] = row[3]
+            self.name = row[2]
+        self.is_new = True
+
+    def save_state(self):
+        if(self.is_new):
+            for path_dict in self.paths:
+                returned_id_data = self.ref_model.ref_user.ref_db.insert_returning_identity("insert into proj_data( M_ID, D_NAME, D_PATH, D_PATH_TYPE) values "
+                    "("+str(self.ref_model.m_id)+",'"+str(self.name)+"','"+str(self.paths[path_dict])+"','"+str(path_dict)+"')","d_id")
+        elif(self.is_changed):
+            pass
+            for path_dict in self.paths:
+                self.ref_model.ref_user.ref_db.update_statement("update proj_data "
+                        "set m_id:=:1 d_name:=:2 d_path:=:3 d_path_type:=:4 where d_id="+self.d_id+"",
+                        (self.ref_model.m_id,self.name,self.paths[path_dict],path_dict))
+        else:
+            pass
+        return returned_id_data
