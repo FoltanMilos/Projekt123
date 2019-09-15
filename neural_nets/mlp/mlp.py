@@ -67,12 +67,12 @@ class Mlp:
             for j in range(len(weights[i])):
                 self.layers[i].neurons[j] = weights[i][j]
 
-    def save_model(self):
-        with open('saved_model/mlp/someSavedModel.txt', 'w') as fp:
+    def save_model(self, filepath):
+        with open(filepath, 'w') as fp:
             json.dump({'learning rate': self.learning_rate, 'activation_function': self.activation_function, 'epoch_count': self.epoch_count, 'weights': self.get_weights()}, fp)
 
-    def load_model(self):
-        with open('saved_model/mlp/someSavedModel.txt', 'r') as fp:
+    def load_model(self, filepath):
+        with open(filepath, 'r') as fp:
             model = json.load(fp)
             self.__init_layers__([len(layer) for layer in model['weights']])
             self.set_weights(model['weights'])
