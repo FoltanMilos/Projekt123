@@ -7,6 +7,7 @@ Program projektovej vyucby
     - flask 1.1.1
     - angular 7
     - oracle 12c
+    - numpy - 1.16.4
 # informácie
     - neural_nets:
         * CNN 
