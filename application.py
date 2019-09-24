@@ -35,9 +35,9 @@ class Application:
         # modelForTest = sr.models.pop(0)
         # modelForTest
 
-        self.db_connect.insert_returning_identity("")
+        # self.db_connect.insert_returning_identity("")
 
-        self.active_user.save_user_data()
+        #self.active_user.save_user_data()
 
     """Najde usera, ktory je v zozname nacitanych userov ak je pouzivanie vsetkych userov potrebne
     
