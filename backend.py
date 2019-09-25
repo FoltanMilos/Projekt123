@@ -139,7 +139,7 @@ def logout():
             return flask.make_response()
     return flask.Response('Invalid identifier', 403)
 
-@app.route('/modelBuilder',method=['GET'])
+@app.route('/modelBuilder',methods=['GET'])
 def modelBuilder():
     lay = el.EnumLayer.DENSE
     ll = el.EnumLayerParameters.getValues(lay)
