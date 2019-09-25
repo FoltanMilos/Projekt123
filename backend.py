@@ -9,6 +9,8 @@ import csv
 import os
 import binascii
 import config
+import model_builder_enums as el;
+
 # server application instance
 app = Flask(__name__)
 CORS(app, resources={"*": {"origins": "*"}})
@@ -136,6 +138,17 @@ def logout():
         if res != False:
             return flask.make_response()
     return flask.Response('Invalid identifier', 403)
+
+@app.route('/modelBuilder',method=['GET'])
+def modelBuilder():
+    lay = el.EnumLayer.DENSE
+    ll = el.EnumLayerParameters.getValues(lay)
+    print(ll)
+    return flask.make_response('modelBuilderExample',200)
+
+
+
+
 
 ## SPUSTENIE SERVERA
 if __name__ == "__main__":

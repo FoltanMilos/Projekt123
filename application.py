@@ -5,7 +5,7 @@ import database_manipulation as dm
 import pdb
 import string
 import random
-import enum_layer
+import model_builder_enums
 
 class Application:
     global active_model         # instancia triedy modelu, s ktorym sa pracuje
@@ -32,9 +32,11 @@ class Application:
         sr.load_user_data()
         self.list_active_user.append(sr)
 
-        lay = enum_layer.EnumLayer.CONV2D
-        ll = enum_layer.EnumLayerParameters.getValues(lay)
+
+        lay = model_builder_enums.EnumLayer.DENSE
+        ll = model_builder_enums.EnumLayerParameters.getValues(lay)
         print(ll)
+
         #
         #TESTOVANIE
         # modelForTest = sr.models.pop(0)

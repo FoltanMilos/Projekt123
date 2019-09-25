@@ -38,18 +38,21 @@ class EnumLayerParameters(Enum):
             raise Exception("Musi byt pouzita trieda enumu vrstvy")
         else:
             # vratenie atributov na nastavenie pre danu vrstvu
+            r = []
             if(enum_layer is EnumLayer.DENSE):
-                return list(EnumLayerParameters.NEURON_COUNT)
+                r.append(EnumLayerParameters.NEURON_COUNT)
+                return r
             elif(enum_layer is EnumLayer.CONV2D):
-                r = []
+
                 r.append(EnumLayerParameters.KERNEL_SIZE)
                 r.append(EnumLayerParameters.INPUT_SHAPE)
                 r.append(EnumLayerParameters.PADDING)
                 return  r
             elif (enum_layer is EnumLayer.CONV2D):
-                return list(EnumLayerParameters.POOL_SIZE)
+                r.append(EnumLayerParameters.POOL_SIZE)
+                return r
             elif (enum_layer is EnumLayer.FLATTENING):
-                return list()
+                return r
 
 
 
