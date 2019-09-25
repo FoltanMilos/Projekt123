@@ -1,13 +1,15 @@
-from layer import Layer
-#import layer as Layer
+from neural_nets.mlp.layer import Layer
 from numpy import dot
+import json
 
 
 class Mlp:
 
-    def __init__(self, layer_sizes, learning_rate=0.5, activation_function="sigmoid", epoch_count=10):
+    def __init__(self, layer_sizes, learning_rate=0.5, activation_function="sigmoid", epoch_count=10, weights=None):
         self.set_hyperparameters(learning_rate, activation_function, epoch_count)
-        self.layers = [Layer(layer_sizes[j], 0 if j == 0 else layer_sizes[j-1]) for j in range(len(layer_sizes))]
+        self.__init_layers__(layer_sizes)
+        if weights is not None:
+            self.set_weights(weights)
 
     def learn(self, inputs, labels):
         for i in range(1, self.epoch_count+1):
@@ -51,3 +53,30 @@ class Mlp:
 
     def reset_weights(self):
         self.__init__([len(layer.neurons) for layer in self.layers], self.learning_rate, self.activation_function, self.epoch_count)
+
+    def get_weights(self):
+        return [[neuron.weights for neuron in layer.neurons] for layer in self.layers]
+
+    def set_weights(self, weights):
+        assert len(self.layers) == len(weights)
+        for i in range(len(weights)):
+            assert len(self.layers[i].neurons) == len(weights[i])
+            for j in range(len(weights[i])):
+                assert len(self.layers[i].neurons[j]) == len(weights[i][j])
+        for i in range(len(weights)):
+            for j in range(len(weights[i])):
+                self.layers[i].neurons[j] = weights[i][j]
+
+    def save_model(self, filepath):
+        with open(filepath, 'w') as fp:
+            json.dump({'learning rate': self.learning_rate, 'activation_function': self.activation_function, 'epoch_count': self.epoch_count, 'weights': self.get_weights()}, fp)
+
+    def load_model(self, filepath):
+        with open(filepath, 'r') as fp:
+            model = json.load(fp)
+            self.__init_layers__([len(layer) for layer in model['weights']])
+            self.set_weights(model['weights'])
+            self.set_hyperparameters(model['learning_rate'], model['activation_function'], model['epoch_count'])
+
+    def __init_layers__(self, layer_sizes):
+        self.layers = [Layer(layer_sizes[j], 0 if j == 0 else layer_sizes[j - 1]) for j in range(len(layer_sizes))]
