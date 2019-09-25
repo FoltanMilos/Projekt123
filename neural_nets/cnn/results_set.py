@@ -151,3 +151,10 @@ class Results_set:
 				"("+str(self.result_matrix[1, 1])+","+str(self.result_matrix[0, 1])+","
 				+ str(self.result_matrix[1, 0])+","+str(self.result_matrix[0,0])+","+str(self.samples_count)+")","r_id")
 			return returned_id
+
+			#self.ref_model.ref_user.ref_db.insert_statement("insert INTO proj_result"
+			#	"(R_ID, R_MATRIX_A, R_MATRIX_B, R_MATRIX_C, R_MATRIX_D, R_SAMPLES_COUNT) values(:1,:2,:3,:4,:5,:6) ",
+			#	(self.r_id,self.result_matrix[1, 1],self.result_matrix[0, 1],self.result_matrix[1, 0],self.result_matrix[0,0],self.samples_count))
+			#	#"("+str(self.r_id)+","+str(self.result_matrix[1, 1])+","+str(self.result_matrix[0, 1])+","
+			#	#""+str(self.result_matrix[1, 0])+","+str(self.result_matrix[0,0])+","+str(self.samples_count)+") returning r_id")
+			#return r_id_tmp

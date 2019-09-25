@@ -35,6 +35,9 @@ class Application:
         # modelForTest = sr.models.pop(0)
         # modelForTest
 
+        # self.db_connect.insert_returning_identity("")
+
+        #self.active_user.save_user_data()
 
     """Najde usera, ktory je v zozname nacitanych userov ak je pouzivanie vsetkych userov potrebne
     
@@ -101,6 +104,17 @@ class Application:
         for model in user.models:
             jsonarray.append(model.model.to_json())
         return jsonarray
+
+    """Vymeni aktivneho uzivatela s ulozenim povodneho ak je treba
+    """
+    def swap_active_user(self,user_id):
+        self.active_user.save_user_data()
+        usr = self.find_user_by_id(user_id)
+        if(usr==None):
+            self.active_user=self.active_user
+        else:
+            self.active_user
+
 
     def logout_user(self,user):
         try:

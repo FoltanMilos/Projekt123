@@ -115,3 +115,4 @@ dataset/train/
 dataset/validation/
 logs/
 saved_model/
+sql_scripts/SKRIPT-PROJECT.sql

@@ -94,5 +94,7 @@ class DB_manip:
             cr = self.conn.cursor()
             newest_id_wrapper = cr.var(cx.NUMBER)
             sql_params = {"newest_id_sql_param": newest_id_wrapper}
+
             cr.execute(returning_insert + " returning "+id_name+" into :id",id=newest_id_wrapper)
+            # cr.execute("insert into milos_test ( name ) values ('my hypervisor') returning id into :id",id=newest_id_wrapper)
         return newest_id_wrapper.getvalue()
