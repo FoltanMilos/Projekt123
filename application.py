@@ -5,6 +5,7 @@ import database_manipulation as dm
 import pdb
 import string
 import random
+import enum_layer
 
 class Application:
     global active_model         # instancia triedy modelu, s ktorym sa pracuje
@@ -27,9 +28,13 @@ class Application:
         self.list_active_user = []
         #self.load_actual_users()  # len na testovanie
         #testovanie
-        # sr = user.User(self,3,self.db_connect,self.generate_unique_string())
-        # sr.load_user_data()
-        # self.list_active_user.append(sr)
+        sr = user.User(self,3,self.db_connect,self.generate_unique_string())
+        sr.load_user_data()
+        self.list_active_user.append(sr)
+
+        lay = enum_layer.EnumLayer.CONV2D
+        ll = enum_layer.EnumLayerParameters.getValues(lay)
+        print(ll)
         #
         #TESTOVANIE
         # modelForTest = sr.models.pop(0)

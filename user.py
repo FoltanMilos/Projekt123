@@ -34,7 +34,7 @@ class User:
 
 	def load_user_data(self):
 		ret_models = self.ref_db.select_statement("select * from proj_model "
-												 "where u_id ="+str(self.u_id)+" ")
+												 "where u_id ="+str(self.u_id)+"")
 		for loaded_model in ret_models:
 			if(loaded_model[4] == n_type.Nn_type.CNN.value):
 				mod = cnn.Model_cnn(self,self.ref_app)

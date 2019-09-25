@@ -31,7 +31,7 @@ def loadImages():
     req = request.get_json()
     
     result = []
-    with open('dataset/cnn/description/metadata.csv','r') as metadata:
+    with open('dataset/main_dataset/description/metadata.csv','r') as metadata:
         data = []
         for line in metadata:
             tmp = line.split(';')
@@ -43,7 +43,7 @@ def loadImages():
         for i in range(low, high):
             if i > len(data):
                 break
-            with open('dataset/cnn/images/'+data[i]['name'], 'rb') as file:
+            with open('dataset/main_dataset/images/'+data[i]['name'], 'rb') as file:
                 tmp = base64.b64encode(file.read())
                 result.append(tmp.decode('utf-8'))
         metadata = {}
@@ -52,11 +52,11 @@ def loadImages():
         metadata['all'] = len(data)
         jsonData = json.dumps({'data': result,'metadata': metadata})
         return flask.make_response(jsonData)
-#    with open('dataset/cnn/images/ISIC_0024306.jpg', 'rb') as file:
+#    with open('dataset/main_dataset/images/ISIC_0024306.jpg', 'rb') as file:
 #         tmp = base64.b64encode(file.read())
 #         result.append(tmp.decode('utf-8'))
 
-#     with open('dataset/cnn/images/ISIC_0024307.jpg', 'rb') as file:
+#     with open('dataset/main_dataset/images/ISIC_0024307.jpg', 'rb') as file:
 #         tmp = base64.b64encode(file.read())
 #         result.append(tmp.decode('utf-8'))
 #         
@@ -111,7 +111,7 @@ def login():
         return flask.Response('invalid credentials', 401)
     else:
         return flask.make_response(json.dumps(res))
-# with open('dataset/cnn/images/ISIC_0024306.jpg', 'rb') as file:
+# with open('dataset/main_dataset/images/ISIC_0024306.jpg', 'rb') as file:
 #     tmp =  base64.b64encode(file.read())
 #     tmp = tmp.decode('utf-8')
 #     res = json.dumps(tmp)

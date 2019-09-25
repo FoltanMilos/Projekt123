@@ -122,13 +122,13 @@ class Model_cnn(interface.ModelInterface):
 
 	# Nahranie uz vytvoreneho modelu
 	def load_model(self):
-		tf.global_variables_initializer()
-		json_file = open(self.path_struct, 'r') #'saved_model/cnn/model.json'
+		#tf.global_variables_initializer()
+		json_file = open(self.path_struct, 'r') #'saved_model/main_dataset/model.json'
 		loaded_model_json = json_file.read()
 		json_file.close()
 		self.model = model_from_json(loaded_model_json)
 		# nastavenie ulozenych vah
-		self.model.load_weights(self.path_weights)  #"saved_model/cnn/model.h5"
+		self.model.load_weights(self.path_weights)  #"saved_model/main_dataset/model.h5"
 		self.model.compile(loss='binary_crossentropy', optimizer='adadelta', metrics=['accuracy'])
 		self.test_model()
 		print("Loaded model from disk")
@@ -136,10 +136,10 @@ class Model_cnn(interface.ModelInterface):
 	# ulozenie modelu
 	def save_model(self):
 		json_model = self.model.to_json()
-		with open(self.path_struct, "w") as json_file:  #"saved_model/cnn/model.json"
+		with open(self.path_struct, "w") as json_file:  #"saved_model/main_dataset/model.json"
 			json_file.write(json_model)
 		#ulozenie vah
-		self.model.save_weights(self.path_weights) #"saved_model/cnn/model.h5"
+		self.model.save_weights(self.path_weights) #"saved_model/main_dataset/model.h5"
 		self.test_model()
 		print("Saved model to disk")
 
@@ -166,7 +166,7 @@ class Model_cnn(interface.ModelInterface):
 
 
 	def predict_image_flow(self):
-		image_exante_set =  self.ref_data.load_image_exante_flow('C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\cnn\\test\\')
+		image_exante_set =  self.ref_data.load_image_exante_flow('C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\main_dataset\\test\\')
 		image_exante_set.reset()
 		result_set = self.model.predict_generator(image_exante_set,
 												  steps=len(image_exante_set.filenames),

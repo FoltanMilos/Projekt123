@@ -2,7 +2,7 @@ import os
 import config as conf
 import glob
 
-path = 'dataset/cnn'
+path = 'dataset/main_dataset'
 img_format = '.jpg'
 ratio_index = 0
 
@@ -40,7 +40,7 @@ def create_sets():
     print_path = ''
     print_max = 0
     p_index = 0
-    for img_path in glob.iglob("dataset/cnn/processed/benign/*.jpg"):
+    for img_path in glob.iglob("dataset/main_dataset/processed/benign/*.jpg"):
         with open(img_path, 'rb') as file:
             filedata = file.read()
             if(ratio_index <= conf.count_train_benign):
@@ -75,7 +75,7 @@ def create_sets():
     # malignants setting
     ratio_index = 0
     print("---------------MALIG----------------------")
-    for img_path in glob.iglob("dataset/cnn/processed/malignant/*.jpg"):
+    for img_path in glob.iglob("dataset/main_dataset/processed/malignant/*.jpg"):
         with open(img_path, 'rb') as file:
             filedata = file.read()
             if(ratio_index <= conf.count_train_malig):
