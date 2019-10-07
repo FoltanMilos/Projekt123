@@ -11,6 +11,7 @@ Program projektovej vyucby
     - Cx-Oracle - 7.2.3
     - keras-preprocesing - 1.0.2
     - keras Applications - 1.0.4
+    - flash-Cors - 3.0.8
 # informácie
     - neural_nets:
         * CNN 
