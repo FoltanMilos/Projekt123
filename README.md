@@ -8,6 +8,9 @@ Program projektovej vyucby
     - angular 7
     - oracle 12c
     - numpy - 1.16.4
+    - Cx-Oracle - 7.2.3
+    - keras-preprocesing - 1.0.2
+    - keras Applications - 1.0.4
 # informácie
     - neural_nets:
         * CNN 
