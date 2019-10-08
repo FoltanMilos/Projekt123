@@ -105,14 +105,10 @@ venv.bak/
 .mypy_cache/
 
 #dependencies
-dataset/
-dataset/images/
-dataset/description(10015)/
-dataset/images/
-dataset/processed/
-dataset/test/
-dataset/train/
-dataset/validation/
+dataset/main_dataset/images/**
+dataset/main_dataset/description/**
+dataset/main_dataset/description(10015)
+dataset/processed
 logs/
-saved_model/
-sql_scripts/SKRIPT-PROJECT.sql
+saved_model/cnn/**
+saved_model/mlp/**

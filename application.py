@@ -33,14 +33,10 @@ class Application:
         self.list_active_user.append(sr)
 
 
-        lay = model_builder_enums.EnumLayer.DENSE
-        ll = model_builder_enums.EnumLayerParameters.getValues(lay)
-        print(ll)
-
-        #
         #TESTOVANIE
-        # modelForTest = sr.models.pop(0)
-        # modelForTest
+        modelForTest = sr.models.pop(0)
+        modelForTest
+
 
         # self.db_connect.insert_returning_identity("")
 
