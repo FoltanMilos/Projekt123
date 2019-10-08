@@ -9,7 +9,8 @@ import csv
 import os
 import binascii
 import config
-import model_builder_enums as el;
+import model_builder_enums as el
+import pdb
 
 # server application instance
 app = Flask(__name__)
@@ -63,8 +64,15 @@ def loadImages():
 #         result.append(tmp.decode('utf-8'))
 #         
 
+@app.route("/datasets", methods=["GET"])
+def get_datatests():
+    tmp = os.listdir('dataset')
+    print(tmp)
+    return flask.make_response(json.dumps(tmp))
 
-@app.route("/predict",methods=["POST"])
+
+
+@app.route("/predict", methods=["POST"])
 def predict():
     form = flask.request.get_json()
     image = form.get('photo')
@@ -141,10 +149,8 @@ def logout():
 
 @app.route('/modelBuilder',methods=['GET'])
 def modelBuilder():
-    lay = el.EnumLayer.DENSE
-    ll = el.EnumLayerParameters.getValues(lay)
-    print(ll)
-    return flask.make_response('modelBuilderExample',200)
+    resJson = el.to_json()
+    return flask.make_response(json.dumps((resJson)),200)
 
 
 
