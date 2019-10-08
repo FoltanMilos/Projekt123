@@ -108,7 +108,7 @@ venv.bak/
 dataset/main_dataset/images/**
 dataset/main_dataset/description/**
 dataset/main_dataset/description(10015)
-dataset/processed
+dataset/main_dataset/processed
 logs/
 saved_model/cnn/**
 saved_model/mlp/**
