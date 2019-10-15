@@ -1,4 +1,4 @@
-from neural_nets.mlp.layer import Layer
+from src.models.mlp.layer import Layer
 from numpy import dot
 import json
 

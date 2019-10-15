@@ -5,9 +5,9 @@ from keras.layers import Conv2D, MaxPooling2D, BatchNormalization
 import numpy as np
 from keras.models import model_from_json
 from src import config as conf, data as dt
-import interface.model_interface as interface
+import src.interface.model_interface as interface
 import keras.initializers
-import neural_nets.cnn.results_set as ResultSet
+import src.models.cnn.results_set as ResultSet
 
 
 class Model_cnn(interface.ModelInterface):

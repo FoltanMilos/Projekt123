@@ -1,6 +1,7 @@
 from flask import Flask,request
 import flask
-from src import application as neuralNetworkApplication, config, config as conf, model_builder_enums as el
+from src import application as neuralNetworkApplication, config, config as conf
+from src.enum import enum_model_builder as el
 import base64
 import json
 from flask_cors import CORS

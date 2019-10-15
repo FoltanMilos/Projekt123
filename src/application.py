@@ -1,6 +1,7 @@
 import sys
 import keras
-from src import database_manipulation as dm, user
+from src import user
+from src.db import database_manipulation as dm
 import string
 import random
 

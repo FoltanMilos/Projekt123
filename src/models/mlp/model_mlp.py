@@ -1,6 +1,6 @@
-import interface.model_interface as interface
-from neural_nets.mlp.cv_wrapper import CrossValidation
-from neural_nets.mlp.mlp import Mlp
+import src.interface.model_interface as interface
+from src.models.mlp.cv_wrapper import CrossValidation
+from src.models.mlp.mlp import Mlp
 
 
 class Model_mlp(interface.ModelInterface):

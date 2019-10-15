@@ -1,6 +1,6 @@
-import neural_nets.cnn.model_cnn as cnn
-import neural_nets.mlp.model_mlp as mlp
-from src import nn_type as n_type
+import src.models.cnn.model_cnn as cnn
+import src.models.mlp.model_mlp as mlp
+from src.enum import enum_model as n_type
 
 
 class User:

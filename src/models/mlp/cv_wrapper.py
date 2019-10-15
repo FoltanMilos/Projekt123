@@ -1,5 +1,5 @@
 from math import floor
-from neural_nets.mlp.mlp import Mlp
+from src.models.mlp.mlp import Mlp
 
 
 class CrossValidation:
