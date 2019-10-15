@@ -1,7 +1,7 @@
 import neural_nets.cnn.model_cnn as cnn
 import neural_nets.mlp.model_mlp as mlp
-import neural_nets.genetic_alg.model_gen_alg as gen
-import nn_type as n_type
+from src import nn_type as n_type
+
 
 class User:
 	global u_id         # user id

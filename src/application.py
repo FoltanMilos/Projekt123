@@ -1,11 +1,9 @@
 import sys
 import keras
-import user
-import database_manipulation as dm
-import pdb
+from src import database_manipulation as dm, user
 import string
 import random
-import model_builder_enums
+
 
 class Application:
     global active_model         # instancia triedy modelu, s ktorym sa pracuje
@@ -28,7 +26,7 @@ class Application:
         self.list_active_user = []
         #self.load_actual_users()  # len na testovanie
         #testovanie
-        sr = user.User(self,3,self.db_connect,self.generate_unique_string())
+        sr = user.User(self, 3, self.db_connect, self.generate_unique_string())
         sr.load_user_data()
         self.list_active_user.append(sr)
 
@@ -56,7 +54,7 @@ class Application:
     naloadovat
     """
     def load_actual_users(self):
-        self.list_active_user = user.User.load_all_users_no_cascade(self,self.db_connect)
+        self.list_active_user = user.User.load_all_users_no_cascade(self, self.db_connect)
 
 
     """Vymeni aktivneho uzivatela s ulozenim povodneho ak je treba
@@ -74,7 +72,7 @@ class Application:
         for row in res:
             if row[2] == credentials['pass']:
                 identifier = self.generate_unique_string()
-                logged_user = user.User(self,row[0],self.db_connect, identifier)
+                logged_user = user.User(self, row[0], self.db_connect, identifier)
                 logged_user.load_user_data()
                 self.list_active_user.append(logged_user)
                 return {'identity':identifier, 'name': row[1]}

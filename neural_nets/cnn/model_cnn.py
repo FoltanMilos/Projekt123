@@ -1,17 +1,14 @@
-from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
+from keras.callbacks import EarlyStopping
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Flatten, Activation
+from keras.layers import Dense, Flatten, Activation
 from keras.layers import Conv2D, MaxPooling2D, BatchNormalization
 import numpy as np
 from keras.models import model_from_json
-import tensorflow as tf
-import config as conf
+from src import config as conf, data as dt
 import interface.model_interface as interface
-import neural_nets.cnn.callbacks as CallBack
 import keras.initializers
 import neural_nets.cnn.results_set as ResultSet
-import nn_type as n_type
-import data as dt
+
 
 class Model_cnn(interface.ModelInterface):
 	global model                        # instancia modelu keras

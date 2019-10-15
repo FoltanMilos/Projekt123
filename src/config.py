@@ -26,6 +26,9 @@ load_model = False   # TRUE trenuje novy model
 initializer_seed = None
 threshold = 0.4999
 
+# server
+server_host = 0000
+server_port = 8000
 
 ## kym nie je db - cesty TEST
 path_train = 'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\main_dataset\\train\\'

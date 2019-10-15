@@ -1,5 +1,6 @@
 import numpy as np
-import config as conf
+from src import config as conf
+
 
 class Results_set:
 	""" Trieda zodpoveda za procesing vystupov zo siete """

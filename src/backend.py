@@ -1,16 +1,11 @@
 from flask import Flask,request
 import flask
-import application as neuralNetworkApplication
-import nn_type
+from src import application as neuralNetworkApplication, config, config as conf, model_builder_enums as el
 import base64
 import json
 from flask_cors import CORS
-import csv
 import os
 import binascii
-import config
-import model_builder_enums as el
-import pdb
 
 # server application instance
 app = Flask(__name__)
@@ -160,4 +155,4 @@ def modelBuilder():
 if __name__ == "__main__":
     print(("* Loading Keras model and Flask starting server..."
            "please wait until server has fully started"))
-    app.run(host=0000, port=8000)
+    app.run(host=conf.server_host, port=conf.server_port)
