@@ -39,6 +39,8 @@ class User:
 			if(loaded_model[4] == n_type.Nn_type.CNN.value):
 				mod = cnn.Model_cnn(self,self.ref_app)
 				mod.load_state(loaded_model)
+				if(loaded_model[3] is not None):
+					self.active_model = mod
 				self.models.append(mod)
 			elif(loaded_model[4] == n_type.Nn_type.MLP.value):
 				mod = mlp.Model_mlp()
@@ -65,8 +67,14 @@ class User:
 	def register_model(self,model):
 		self.models.append(model)
 
-	def get_active_model(self):
-		return self.models.pop()
+	def switch_active_model(self,new_act_model_id):
+		for md in self.models:
+			if(md.m_id == new_act_model_id):
+				# prehodenie v DB
+				self.ref_db.update_statement("update proj_model set m_active=null where m_id="+self.active_model.m_id)
+				self.ref_db.update_statement("update proj_model set m_active='A' where m_id="+md._m_id)
+				self.active_model = md
+				return
 
 	@staticmethod
 	def load_all_users_no_cascade(app,db):

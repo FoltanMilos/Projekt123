@@ -6,27 +6,27 @@ from abc import ABC, abstractmethod
 class ModelInterface(ABC):
     
     @abstractmethod
-    def train(self, train_data, train_labels):
+    def train(self):
         raise NotImplementedError
 
     @abstractmethod
-    def test_model(self):
+    def test(self):
         raise NotImplementedError
 
     @abstractmethod
-    def model_summary(self):
+    def summary(self):
         raise NotImplementedError
 
     @abstractmethod
-    def create_model(self):
+    def create(self):
         raise NotImplementedError
 
     @abstractmethod
-    def load_model(self):
+    def load(self):
         raise NotImplementedError
 
     @abstractmethod
-    def save_model(self):
+    def save(self):
         raise NotImplementedError
 
     @abstractmethod

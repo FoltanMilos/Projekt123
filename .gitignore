@@ -114,3 +114,4 @@ logs/
 saved_model/cnn/model.h5
 saved_model/cnn/model.json
 saved_model/mlp/**
+/dataset/small_dataset/

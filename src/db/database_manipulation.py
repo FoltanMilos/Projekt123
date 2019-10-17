@@ -10,32 +10,22 @@ class DB_manip:
         self.port = '1521'
         self.sid = 'orcl.fri.uniza.sk'
 
-        check = False
-        try:
-            dsn_tns = cx.makedsn(self.ip_adress, self.port,
-                                         sid = 'orcl')
-            print(dsn_tns)
-            self.conn = cx.connect(user=self.username, password=self.password, dsn=dsn_tns)
-            #ALTERNATIVE CONNECTION LINK
-            #IF NOT WORKING DO FOLOWING:
-            #   1 : Change NTS credentials to NONE in sqlnet.ora file (find it in windows explorer finder)
-            #   2 : Restart ORACLETNS service in windows services
-            #self.conn = cx.connect(r'foltan/h123456@obelix.fri.uniza.sk:1521/orcl.fri.uniza.sk', mode=cx.SYSDBA)
-            check = True
-        except Exception as e:
-            self.conn = None
-            print(e)
-            print("Chyba pripojenia na DB!")
+        dsn_tns = cx.makedsn(self.ip_adress, self.port,
+                                     sid = 'orcl')
+        self.conn = cx.connect(user=self.username, password=self.password, dsn=dsn_tns)
+        #ALTERNATIVE CONNECTION LINK
+        #IF NOT WORKING DO FOLOWING:
+        #   1 : Change NTS credentials to NONE in sqlnet.ora file (find it in windows explorer finder)
+        #   2 : Restart ORACLETNS service in windows services
+        #self.conn = cx.connect(r'foltan/h123456@obelix.fri.uniza.sk:1521/orcl.fri.uniza.sk', mode=cx.SYSDBA)
 
-        # kontrola ci sa podarilo pripojit
-        if(check == True):
-            self.conn.autocommit = False
-            print('################################')
-            print("Pripojenie na db uspesne!")
-            versioning = self.conn.version.split('.')
-            print("Db: ORACLE")
-            print("Version: " + str(versioning[0]))
-            print('################################')
+        self.conn.autocommit = False
+        print('################################')
+        print("Pripojenie na db uspesne!")
+        versioning = self.conn.version.split('.')
+        print("Db: ORACLE")
+        print("Version: " + str(versioning[0]))
+        print('################################')
 
     # VRACIA result set, ked nieco selectujes pouzi toto
     # davaj si nameisto * nazvy collumnov, budes ich mat uspor. v sete
@@ -97,4 +87,4 @@ class DB_manip:
 
             cr.execute(returning_insert + " returning "+id_name+" into :id",id=newest_id_wrapper)
             # cr.execute("insert into milos_test ( name ) values ('my hypervisor') returning id into :id",id=newest_id_wrapper)
-        return newest_id_wrapper.getvalue()
+        return newest_id_wrapper.getvalue()[0]

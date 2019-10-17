@@ -13,11 +13,11 @@ class Results_set:
 
 	global is_new				# ci su novo vytvorene pre db
 
-	def __init__(self,ref_model):
+	def __init__(self,ref_model,is_new):
 		# referencia na model, aby sa vedelo, ktoremu modelu patri (1 model = 1 ResultSet)
 		self.ref_model = ref_model
 		self.is_changed = False
-		self.is_new = False
+		self.is_new = is_new
 
 		# clasifikacny model bude mat maticu 2x2
 		self.result_matrix = np.zeros(shape=(2,2))
@@ -34,7 +34,7 @@ class Results_set:
 		# [predicted]                                            #
 		#--------------------------------------------------------#
 
-		# pocet vzorie
+		# pocet vzoriek
 		self.samples_count = 0
 
 	def process_result_matrix(self,predction_array,true_lab_array):
@@ -118,7 +118,7 @@ class Results_set:
 
 	# loading
 	def load_state(self):
-		ret_set_all = self.ref_model.ref_user.ref_db.select_statement("Select R_ID, R_MATRIX_A, R_MATRIX_B, R_MATRIX_C, R_MATRIX_D, R_SAMPLES_COUNT from proj_result"
+		ret_set_all = self.ref_model.ref_app.ref_db.select_statement("Select R_ID, R_MATRIX_A, R_MATRIX_B, R_MATRIX_C, R_MATRIX_D, R_SAMPLES_COUNT from proj_result"
 				" join PROJ_MODEL using(r_id) where m_id="+str(self.ref_model.m_id) +"")
 		if(len(ret_set_all) > 1 ):
 			print("MODEL BY MAL MAT LEN JEDEN RESULT SET")
@@ -133,29 +133,21 @@ class Results_set:
 			print(self.result_matrix)
 
 	def save_state(self):
-		self.is_new = True;
-		if(self.is_changed==True):
+		if self.is_changed :
 			# update len
-			self.ref_model.ref_user.ref_db.update_statement("update proj_result "
+			self.ref_model.ref_app.ref_db.update_statement("update proj_result "
 				"SET R_MATRIX_A=" + str(self.result_matrix[1, 1]) + ","
 				" R_MATRIX_B=" + str(self.result_matrix[0, 1]) + ","
 				" R_MATRIX_C=" + str(self.result_matrix[1, 0]) + ","
 				" R_MATRIX_D=" + str(self.result_matrix[0, 0]) + ","
 				" R_SAMPLES_COUNT=" + str(self.samples_count) + " where r_id=" + str(self.r_id) + "")
 			return self.r_id
-		elif(self.is_new==True):
+		elif self.is_new:
 			# insert
-			returned_id = self.ref_model.ref_user.ref_db.insert_returning_identity("insert INTO proj_result"
+			self.r_id = self.ref_model.ref_app.ref_db.insert_returning_identity("insert INTO proj_result"
 				"(R_MATRIX_A, R_MATRIX_B, R_MATRIX_C, R_MATRIX_D, R_SAMPLES_COUNT) values "
-																				   #values(:1,:2,:3,:4,:5,:6)
+																				   #values(:1,:2,:3,:4,:5,:41)
 				#(self.r_id,self.result_matrix[1, 1],self.result_matrix[0, 1],self.result_matrix[1, 0],self.result_matrix[0,0],self.samples_count))
 				"("+str(self.result_matrix[1, 1])+","+str(self.result_matrix[0, 1])+","
 				+ str(self.result_matrix[1, 0])+","+str(self.result_matrix[0,0])+","+str(self.samples_count)+")","r_id")
-			return returned_id
-
-			#self.ref_model.ref_user.ref_db.insert_statement("insert INTO proj_result"
-			#	"(R_ID, R_MATRIX_A, R_MATRIX_B, R_MATRIX_C, R_MATRIX_D, R_SAMPLES_COUNT) values(:1,:2,:3,:4,:5,:6) ",
-			#	(self.r_id,self.result_matrix[1, 1],self.result_matrix[0, 1],self.result_matrix[1, 0],self.result_matrix[0,0],self.samples_count))
-			#	#"("+str(self.r_id)+","+str(self.result_matrix[1, 1])+","+str(self.result_matrix[0, 1])+","
-			#	#""+str(self.result_matrix[1, 0])+","+str(self.result_matrix[0,0])+","+str(self.samples_count)+") returning r_id")
-			#return r_id_tmp
+			return self.r_id

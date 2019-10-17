@@ -7,6 +7,8 @@ import json
 from flask_cors import CORS
 import os
 import binascii
+from io import BytesIO
+from PIL import Image
 
 # server application instance
 app = Flask(__name__)
@@ -28,9 +30,9 @@ counters = {}
 @app.route("/loadImages",methods=["POST"])
 def loadImages():
     req = request.get_json()
-    
     result = []
-    with open('dataset/main_dataset/description/metadata.csv','r') as metadata:
+    #TODO: nech sa overi user, a nacitaju sa tie datasety co sa maju
+    with open('dataset/main_dataset/description/metadata_all_with_X.csv','r') as metadata:
         data = []
         for line in metadata:
             tmp = line.split(';')
@@ -51,14 +53,6 @@ def loadImages():
         metadata['all'] = len(data)
         jsonData = json.dumps({'data': result,'metadata': metadata})
         return flask.make_response(jsonData)
-#    with open('dataset/main_dataset/images/ISIC_0024306.jpg', 'rb') as file:
-#         tmp = base64.b64encode(file.read())
-#         result.append(tmp.decode('utf-8'))
-
-#     with open('dataset/main_dataset/images/ISIC_0024307.jpg', 'rb') as file:
-#         tmp = base64.b64encode(file.read())
-#         result.append(tmp.decode('utf-8'))
-#         
 
 @app.route("/datasets", methods=["GET"])
 def get_datatests():
@@ -72,7 +66,17 @@ def get_datatests():
 def predict():
     form = flask.request.get_json()
     image = form.get('photo')
-    
+    static_model =  True
+    #static_model = form.get('is_static')
+
+    # treba odrezat cestu, lebo je v otm prilozena
+    jpgtxt = base64.standard_b64decode(image.split(',')[1])
+    img = Image.open(BytesIO(jpgtxt))
+
+    if(static_model):
+        result = application.active_model.predict_image(img)
+    else:
+        result = application.active_user.active_model.predict_image(img)
     return flask.make_response()
 
 @app.route("/train", methods=["POST"])
@@ -117,16 +121,14 @@ def login():
         return flask.Response('invalid credentials', 401)
     else:
         return flask.make_response(json.dumps(res))
-# with open('dataset/main_dataset/images/ISIC_0024306.jpg', 'rb') as file:
-#     tmp =  base64.b64encode(file.read())
-#     tmp = tmp.decode('utf-8')
-#     res = json.dumps(tmp)
-#     print(res)
 
 @app.route('/models', methods=["GET"])
 def get_models():
+    print("getModel")
     auth = request.headers.get('Authorization')
+    print("using MOCK - 3 ")
     usr = application.find_user_by_identification(auth)
+    usr = application.find_user_by_id(3)
     if(usr != False):
         res = application.get_models(usr)
         return flask.make_response(json.dumps({'models': res},ensure_ascii=False,indent=2))
@@ -143,14 +145,20 @@ def logout():
             return flask.make_response()
     return flask.Response('Invalid identifier', 403)
 
-@app.route('/modelBuilder',methods=['GET'])
+@app.route('/builder',methods=['GET']) #modelBuilder
 def modelBuilder():
     resJson = el.to_json()
     return flask.make_response(json.dumps((resJson)),200)
 
-
-
-
+@app.route('/setActiveModel',methods=['GET'])
+def setActiveModel():
+    auth = request.headers.get('Authorization')
+    new_model_id = 4
+    #new_model_id = request.headers.get('NewModelId')
+    usr = application.find_user_by_identification(auth)
+    if (usr != False):
+        usr.switch_active_model(new_model_id)
+    return flask.make_response()
 
 ## SPUSTENIE SERVERA
 if __name__ == "__main__":

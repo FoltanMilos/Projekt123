@@ -13,7 +13,10 @@ class Application:
 
     global list_active_user     # list vsetkych userov v aplikacii
 
+    global ref_db               # referencia na databazu
 
+    global active_user          # instancia pre ulahceie pristupu k ulozene userovi
+                                # ak jeho token nesedi, treba update cez najdenie usera
 
     def __init__(self,train):
         # kontrola dependences
@@ -21,20 +24,37 @@ class Application:
         print("Keras version: " + keras.__version__)
         print("Aplication started: OK (main)")
         # pripojenie na DB
-        self.db_connect = dm.DB_manip()
-        # nacitanie userov applikacii
-        # nacitava sa len jeden aktivny, nie je potrebne drzat vsetkych
+        self.ref_db = dm.DB_manip()
+
         self.list_active_user = []
-        #self.load_actual_users()  # len na testovanie
+        self.active_model = None
+
+
         #testovanie
-        sr = user.User(self, 3, self.db_connect, self.generate_unique_string())
-        sr.load_user_data()
-        self.list_active_user.append(sr)
+        import src.models.cnn.model_cnn as mc
+        import src.data as dt
+
+        sr = user.User(self, 3, self.ref_db, self.generate_unique_string())
+        model = mc.Model_cnn("Newestone model",sr,self)
+        model.create()
+        dat = dt.Data(model)
+        dat.paths = {"T": 'dataset/small_dataset/test',
+                      "R": 'dataset/small_dataset/train',
+                      "V": 'dataset/small_dataset/validation'}
+
+        # tadeto sa budu menit datasety
+        model.change_ref_data(dat)
+        model.train()
+
+        model.summary()
+        #sr.load_user_data()
+        #self.list_active_user.append(sr)
+        #self.active_user = sr
 
 
         #TESTOVANIE
-        modelForTest = sr.models.pop(0)
-        modelForTest
+     #3   modelForTest = sr.models.pop(0)
+    #  modelForTest
 
 
         # self.db_connect.insert_returning_identity("")
@@ -42,10 +62,11 @@ class Application:
         #self.active_user.save_user_data()
 
     """Najde usera, ktory je v zozname nacitanych userov ak je pouzivanie vsetkych userov potrebne
-    
     :param id: id_usera
     """
     def find_user_by_id(self,id):
+        if self.active_user.u_id == id:
+            return self.active_user;
         for user in self.list_active_user:
             if(user.u_id==id):
                 return user
@@ -55,7 +76,7 @@ class Application:
     naloadovat
     """
     def load_actual_users(self):
-        self.list_active_user = user.User.load_all_users_no_cascade(self, self.db_connect)
+        self.list_active_user = user.User.load_all_users_no_cascade(self, self.ref_db)
 
 
     """Vymeni aktivneho uzivatela s ulozenim povodneho ak je treba
@@ -69,11 +90,11 @@ class Application:
             self.active_user = usr
 
     def validate_user(self, credentials):
-        res = self.db_connect.select_statement("select * from proj_user where u_name ='"+ credentials['username'] +"'")
+        res = self.ref_db.select_statement("select * from proj_user where u_name ='"+ credentials['username'] +"'")
         for row in res:
             if row[2] == credentials['pass']:
                 identifier = self.generate_unique_string()
-                logged_user = user.User(self, row[0], self.db_connect, identifier)
+                logged_user = user.User(self, row[0], self.ref_db, identifier)
                 logged_user.load_user_data()
                 self.list_active_user.append(logged_user)
                 return {'identity':identifier, 'name': row[1]}
@@ -96,9 +117,13 @@ class Application:
         return result
 
     def find_user_by_identification(self, identification):
-        for usr in self.list_active_user:
-            if(usr.indentifier == identification):
-                return usr
+        # zrychleny check na active usera pre rychlost
+        if self.active_user.indentifier == identification:
+            return self.active_user
+        else:
+            for usr in self.list_active_user:
+                if(usr.indentifier == identification):
+                    return usr
         return False
 
     def get_models(self, user):
@@ -123,3 +148,5 @@ class Application:
             self.list_active_user.remove(user)
         except Exception as e:
             return False
+
+

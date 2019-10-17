@@ -1,7 +1,7 @@
 import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
 from keras.preprocessing import image as img_proc
-import os
+import config as conf
 
 class Data:
     global train_set
@@ -11,7 +11,6 @@ class Data:
     global test_set
 
     global train_datagen            # file iterator
-
 
     global paths                    # cesty k suborom
 
@@ -44,7 +43,7 @@ class Data:
             #self.path + '\\dataset\\main_dataset\\train\\',
             self.paths["R"],
             #'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\main_dataset\\train\\',
-            target_size=(64, 64),
+            target_size=(conf.IMG_SIZE_X, conf.IMG_SIZE_Y),
             batch_size=16,
             shuffle=False,
             #save_to_dir='C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\main_dataset\\ssss',
@@ -57,7 +56,7 @@ class Data:
             ##self.path + '\\dataset\\main_dataset\\test\\',
             #'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\main_dataset\\test\\',
             self.paths["T"],
-            target_size=(64, 64),
+            target_size=(conf.IMG_SIZE_X, conf.IMG_SIZE_Y),
             batch_size=16,
             shuffle=False,
             classes=["malignant", "bening"],
@@ -69,7 +68,7 @@ class Data:
             #self.path + '\\dataset\\main_dataset\\validation\\',
             #'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\main_dataset\\validation\\',
             self.paths["V"],
-            target_size=(64, 64),
+            target_size=(conf.IMG_SIZE_X, conf.IMG_SIZE_Y),
             batch_size=16,
             shuffle=False,
             classes=["malignant", "bening"],
@@ -80,7 +79,7 @@ class Data:
         """ Dovoluje nacitat viacero fotiek zo suboru"""
         images_exante_set = self.train_datagen.flow_from_directory(
             dir_full_path,
-            target_size=(64, 64),
+            target_size=(conf.IMG_SIZE_X, conf.IMG_SIZE_Y),
             batch_size=1,
             classes=["malignant", "bening"],
             shuffle=False,  # pre zachovanie poradia
@@ -92,19 +91,20 @@ class Data:
         image_exante = img_proc.load_img(
             file_full_path,
             #'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\main_dataset\\prediction\\malignant\\ISIC_0028679.jpg',
-            target_size=(64, 64))
+            target_size=(conf.IMG_SIZE_X, conf.IMG_SIZE_Y))
         image_exante = img_proc.img_to_array(image_exante)
         image_exante = np.expand_dims(image_exante, axis=0)
         return image_exante
 
     def preproces_image(self,image):
         image = img_proc.img_to_array(image)
-        image = image.reshape(shape=(64,64)) #OTESTOVAT
+
+        image.resize((64,64,3,1),refcheck=False)
         image = np.expand_dims(image, axis=0)
         return image
 
     def load_state(self):
-        ret_data_set = self.ref_model.ref_user.ref_db.select_statement(
+        ret_data_set = self.ref_model.ref_app.ref_db.select_statement(
             "select D_ID, M_ID, D_NAME, D_PATH, D_PATH_TYPE from proj_data where m_id=" + str(self.ref_model.m_id) + "")
         if (len(ret_data_set) < 2):
             print("MODEL HAS NO DATA!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -117,12 +117,12 @@ class Data:
     def save_state(self):
         if(self.is_new):
             for path_dict in self.paths:
-                returned_id_data = self.ref_model.ref_user.ref_db.insert_returning_identity("insert into proj_data( M_ID, D_NAME, D_PATH, D_PATH_TYPE) values "
+                returned_id_data = self.ref_model.ref_app.ref_db.insert_returning_identity("insert into proj_data( M_ID, D_NAME, D_PATH, D_PATH_TYPE) values "
                     "("+str(self.ref_model.m_id)+",'"+str(self.name)+"','"+str(self.paths[path_dict])+"','"+str(path_dict)+"')","d_id")
         elif(self.is_changed):
             pass
             for path_dict in self.paths:
-                self.ref_model.ref_user.ref_db.update_statement("update proj_data "
+                self.ref_model.ref_app.ref_db.update_statement("update proj_data "
                         "set m_id:=:1 d_name:=:2 d_path:=:3 d_path_type:=:4 where d_id="+self.d_id+"",
                         (self.ref_model.m_id,self.name,self.paths[path_dict],path_dict))
         else:
