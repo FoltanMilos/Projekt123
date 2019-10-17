@@ -141,6 +141,7 @@ class Results_set:
 				" R_MATRIX_C=" + str(self.result_matrix[1, 0]) + ","
 				" R_MATRIX_D=" + str(self.result_matrix[0, 0]) + ","
 				" R_SAMPLES_COUNT=" + str(self.samples_count) + " where r_id=" + str(self.r_id) + "")
+			self.ref_model.ref_app.ref_db.commit()
 			return self.r_id
 		elif self.is_new:
 			# insert
@@ -150,4 +151,5 @@ class Results_set:
 				#(self.r_id,self.result_matrix[1, 1],self.result_matrix[0, 1],self.result_matrix[1, 0],self.result_matrix[0,0],self.samples_count))
 				"("+str(self.result_matrix[1, 1])+","+str(self.result_matrix[0, 1])+","
 				+ str(self.result_matrix[1, 0])+","+str(self.result_matrix[0,0])+","+str(self.samples_count)+")","r_id")
+			self.ref_model.ref_app.ref_db.commit()
 			return self.r_id

@@ -69,8 +69,8 @@ class Model_cnn(interface.ModelInterface):
 									   patience=200,
 									   verbose=1)]),
 		self.is_changed = True
-		self.path_struct = '/saved_model/cnn/'+ str(int(self.m_id)) + '/model.json'
-		self.path_weights = '/saved_model/cnn/'+str(int(self.m_id)) + '/model.h5'
+		self.path_struct = 'saved_model/cnn/'+ str(int(self.m_id)) + '/model.json'
+		self.path_weights = 'saved_model/cnn/'+str(int(self.m_id)) + '/model.h5'
 		self.save()
 		self.is_new = False
 		self.save_state()
@@ -140,11 +140,11 @@ class Model_cnn(interface.ModelInterface):
 	# ulozenie modelu
 	def save(self):
 		json_model = self.model.to_json()
-		with open( self.path_struct, "w") as json_file:
+		with open( self.path_struct, "w+") as json_file:
 			json_file.write(json_model)
 		# ulozenie vah
-		self.model.save_weights(os.getcwd() + self.path_weights)
-		self.test()
+		self.model.save_weights(self.path_weights)
+		#self.test()
 		print("Saved model to disk")
 
 	# Model evaluation
@@ -208,15 +208,14 @@ class Model_cnn(interface.ModelInterface):
 				"insert into proj_model(u_id,r_id,m_type,m_weights_path,m_structure_path,model_name) values"
 				"("+str(self.ref_user.u_id)+", "+str(self.ref_res_proc.r_id)+",'CNN'"+",'"+"','"+"','"+str(self.name) +"')"
 				,"m_id")
-
-			#str(self.path_weights),str(self.path_struct )
-
 			# ak je novy model, treba  u vytvorit este aj folder
 			os.mkdir(os.getcwd() + '/saved_model/cnn/' + str(int(self.m_id)))
+			self.ref_app.ref_db.commit()
 
 		if self.is_changed and self.is_new == False:
-			self.ref_app.ref_db.update_statement("update proj_model set r_id="+str(self.ref_res_proc.r_id)+", m_weights_path="+str(self.path_weights)+
-												  ", m_structure_path="+str(self.path_struct)+", model_name="+str(self.name)+" where m_id="+str(self.m_id))
+			self.ref_app.ref_db.update_statement("update proj_model set r_id="+str(self.ref_res_proc.r_id)+", m_weights_path='"+str(self.path_weights)+
+						"', m_structure_path='"+str(self.path_struct)+"', model_name='"+str(self.name)+"' where m_id="+str(self.m_id))
+			self.ref_app.ref_db.commit()
 
 	def model_to_json(self):
 		pass
