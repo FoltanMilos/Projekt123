@@ -30,6 +30,7 @@ counters = {}
 @app.route("/loadImages",methods=["POST"])
 def loadImages():
     req = request.get_json()
+    
     result = []
     #TODO: nech sa overi user, a nacitaju sa tie datasety co sa maju
     with open('dataset/main_dataset/description/metadata_all_with_X.csv','r') as metadata:
@@ -145,20 +146,28 @@ def logout():
             return flask.make_response()
     return flask.Response('Invalid identifier', 403)
 
-@app.route('/builder',methods=['GET']) #modelBuilder
-def modelBuilder():
+@app.route('/builder',methods=['GET', 'POST'])
+def builder():
+    if (request.method == 'GET'):
+        return builderGetData()
+    elif (request.method == 'POST'):
+        return buildModel(flask.request.get_json())
+    else:
+        code = 404
+        return flask.make_response('not found',404)
+
+
+def builderGetData():
     resJson = el.to_json()
     return flask.make_response(json.dumps((resJson)),200)
 
-@app.route('/setActiveModel',methods=['GET'])
-def setActiveModel():
-    auth = request.headers.get('Authorization')
-    new_model_id = 4
-    #new_model_id = request.headers.get('NewModelId')
-    usr = application.find_user_by_identification(auth)
-    if (usr != False):
-        usr.switch_active_model(new_model_id)
-    return flask.make_response()
+def buildModel(jsonData):
+    print(jsonData)
+    return flask.Response('',200)
+
+
+
+
 
 ## SPUSTENIE SERVERA
 if __name__ == "__main__":
