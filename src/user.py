@@ -87,5 +87,21 @@ class User:
 			list_users.append(u)
 		return list_users
 
+	def create_model_from_builder(self,p_json):
+		new_model = None
+		if p_json["type"] == 'cnn':
+			new_model = cnn.Model_cnn(p_json["modelName"],self,self.ref_app)
+			new_model.create_model_from_json(p_json)
+		elif p_json["type"] == 'mlp':
+			# new model MLP
+			pass
+		elif p_json["type"] == 'gen':
+			pass
+		else:
+			raise Exception("neexistuje model")
+
+		self.switch_active_model(new_model)
+		self.models.append(new_model)
+
 
 

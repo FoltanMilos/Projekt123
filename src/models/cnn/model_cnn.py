@@ -223,11 +223,8 @@ class Model_cnn(interface.ModelInterface):
 		pass
 
 	def create_model_from_json(self,p_json):
-		p_json = json.loads('{ "layers": [ {"name":"Input Layer","neuron_count":64, "kernel_size": "3","input_shape": "'
-							'64x64"  "activation": "relu", "padding":"valid" },  {"name":"CONV2DLayer ", "shape": "300x300",   "kernel": "3x3",   "padding": "same",   "activation": "relu" }]}')
-
 		for lay in p_json["layers"]:
-			if lay["name"] == mb.EnumLayer.INPUT.value:
+			if lay["NAME"] == mb.EnumLayer.INPUT.value:
 				self.model.add(Conv2D(int(lay["count"]),
 									  kernel_size=int(lay["kernel_size"]),
 									  activation=str(lay["activation"]),
@@ -237,18 +234,18 @@ class Model_cnn(interface.ModelInterface):
 												   3)
 									  )
 							   )
-			elif lay["name"] == mb.EnumLayer.FLATTENING.value:
+			elif lay["NAME"] == mb.EnumLayer.FLATTENING.value:
 				self.model.add(Flatten())
-			elif lay["name"] == mb.EnumLayer.POOLING.value:
+			elif lay["NAME"] == mb.EnumLayer.POOLING.value:
 				self.model.add(MaxPooling2D(pool_size=(int(str(lay["pool size"])),
 													   int(str(lay["pool size"]))))
 							   )
-			elif lay["name"] == mb.EnumLayer.DENSE.value :
+			elif lay["NAME"] == mb.EnumLayer.DENSE.value :
 				self.model.add(Dense(int(str(lay["neuron_count"]))
 					, activation=str(lay["activation"])))
-			elif lay["name"] == mb.EnumLayer.BATCH_NORMALIZATION.value:
+			elif lay["NAME"] == mb.EnumLayer.BATCH_NORMALIZATION.value:
 				self.model.add(BatchNormalization())
-			elif lay["name"] == mb.EnumLayer.CONV2D.value:
+			elif lay["NAME"] == mb.EnumLayer.CONV2D.value:
 				self.model.add(Conv2D(int(lay["count"]),
 									  kernel_size=int(lay["kernel_size"]),
 									  activation=str(lay["activation"]),
@@ -256,10 +253,16 @@ class Model_cnn(interface.ModelInterface):
 									  )
 							   )
 		# este treba optimizer
-		optim_obj = p_json["optimizer"]
-		self.model.compile(loss=str(optim_obj["loss"]),
-						   optimizer=str(optim_obj["optimizer"]),
-						   metrics=[str(optim_obj["metrics"])])
+
+		#optim_obj = p_json["optimizer"]
+		#self.model.compile(loss=str(optim_obj["loss"]),
+		#				   optimizer=str(optim_obj["optimizer"]),
+		#				   metrics=[str(optim_obj["metrics"])])
+		self.model.compile(loss="binary_crossentropy",
+						   optimizer=self.optimizer,
+						   metrics=['accuracy'])
+		# ulozit to do DB
+		self.save_state()
 
 	def change_ref_data(self,new_ref_data):
 		self.ref_data = new_ref_data

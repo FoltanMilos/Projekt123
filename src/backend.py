@@ -163,6 +163,7 @@ def builderGetData():
 
 def buildModel(jsonData):
     print(jsonData)
+    application.active_user.create_model_from_builder(jsonData)
     return flask.Response('',200)
 
 
