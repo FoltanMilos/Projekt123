@@ -38,7 +38,7 @@ class EnumLayerParameters(Enum):
     POOL_SIZE = ("POOL_SIZE","pool size","number")
     LOSS = ("LOSS","loss","{}")
     OPTIMIZER = ("OPTIMIZER","optimizer","{}")
-    METRICS = ("METRICS","accuracy","{}")
+    METRICS = ("METRICS","accuracy","[{}]")
     NEURON_COUNT = ("NEURON_COUNT","neuron count", "number")
     ACTIVATION = ("ACTIVATION", 'activation', '{}')
     @staticmethod
