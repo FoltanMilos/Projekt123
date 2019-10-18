@@ -9,6 +9,8 @@ import src.interface.model_interface as interface
 import keras.initializers
 import src.models.cnn.results_set as ResultSet
 import os
+import json
+import src.enum.enum_model_builder as mb
 
 class Model_cnn(interface.ModelInterface):
 	global model                        # instancia modelu keras
@@ -188,8 +190,8 @@ class Model_cnn(interface.ModelInterface):
 		self.name = state[7]
 
 		# dotiahnutie dat
-		self.ref_data = dt.Data(self)
-		self.ref_data.load_state()
+		# self.ref_data = dt.Data(self)
+		# self.ref_data.load_state()
 
 		# dotiahnutie resutov
 		self.ref_res_proc = ResultSet.Results_set(self,False)
@@ -220,11 +222,45 @@ class Model_cnn(interface.ModelInterface):
 	def model_to_json(self):
 		pass
 
+	def create_model_from_json(self,p_json):
+		p_json = json.loads('{ "layers": [ {"name":"Input Layer","neuron_count":64, "kernel_size": "3","input_shape": "'
+							'64x64"  "activation": "relu", "padding":"valid" },  {"name":"CONV2DLayer ", "shape": "300x300",   "kernel": "3x3",   "padding": "same",   "activation": "relu" }]}')
+
+		for lay in p_json["layers"]:
+			if lay["name"] == mb.EnumLayer.INPUT.value:
+				self.model.add(Conv2D(int(lay["count"]),
+									  kernel_size=int(lay["kernel_size"]),
+									  activation=str(lay["activation"]),
+									  padding=str(lay["padding"]),
+									  input_shape=(int(str(lay["input_shape"]).split('x')[0]),
+												   int(str(lay["input_shape"]).split('x')[1]),
+												   3)
+									  )
+							   )
+			elif lay["name"] == mb.EnumLayer.FLATTENING.value:
+				self.model.add(Flatten())
+			elif lay["name"] == mb.EnumLayer.POOLING.value:
+				self.model.add(MaxPooling2D(pool_size=(int(str(lay["pool size"])),
+													   int(str(lay["pool size"]))))
+							   )
+			elif lay["name"] == mb.EnumLayer.DENSE.value :
+				self.model.add(Dense(int(str(lay["neuron_count"]))
+					, activation=str(lay["activation"])))
+			elif lay["name"] == mb.EnumLayer.BATCH_NORMALIZATION.value:
+				self.model.add(BatchNormalization())
+			elif lay["name"] == mb.EnumLayer.CONV2D.value:
+				self.model.add(Conv2D(int(lay["count"]),
+									  kernel_size=int(lay["kernel_size"]),
+									  activation=str(lay["activation"]),
+									  padding=str(lay["padding"])
+									  )
+							   )
+		# este treba optimizer
+		optim_obj = p_json["optimizer"]
+		self.model.compile(loss=str(optim_obj["loss"]),
+						   optimizer=str(optim_obj["optimizer"]),
+						   metrics=[str(optim_obj["metrics"])])
+
 	def change_ref_data(self,new_ref_data):
 		self.ref_data = new_ref_data
 		self.is_changed = True
-
-
-	# TODO: treba to dat do model interface
-	def create_model_from_json(self):
-		pass

@@ -35,18 +35,22 @@ class Application:
         import src.data as dt
 
         sr = user.User(self, 3, self.ref_db, self.generate_unique_string())
-        model = mc.Model_cnn("Newestone model",sr,self)
-        model.create()
-        dat = dt.Data(model)
-        dat.paths = {"T": 'dataset/small_dataset/test',
-                      "R": 'dataset/small_dataset/train',
-                      "V": 'dataset/small_dataset/validation'}
+        self.active_user = sr
+       # model = mc.Model_cnn("Newestone model",sr,self)
+        #model.create()
+        #dat = dt.Data(model)
+        #dat.paths = {"T": 'dataset/small_dataset/test',
+        #              "R": 'dataset/small_dataset/train',
+        #              "V": 'dataset/small_dataset/validation'}
 
         # tadeto sa budu menit datasety
-        model.change_ref_data(dat)
-        model.train()
+        #model.change_ref_data(dat)
+       # model.train()
+        #model.create_model_from_json("")
+        #model.summary()
 
-        model.summary()
+
+
         #sr.load_user_data()
         #self.list_active_user.append(sr)
         #self.active_user = sr
