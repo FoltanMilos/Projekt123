@@ -111,7 +111,4 @@ dataset/main_dataset/description/**
 dataset/main_dataset/description(10015)
 dataset/main_dataset/processed
 logs/
-saved_model/cnn/model.h5
-saved_model/cnn/model.json
-saved_model/mlp/**
 /dataset/small_dataset/

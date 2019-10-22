@@ -55,6 +55,14 @@ class Model_cnn(interface.ModelInterface):
 			self.bias_initializer = keras.initializers.RandomNormal(mean=0.0, stddev=0.05, seed=None)
 			self.save_state()
 
+	# Ulozenie historie trenovania
+	def save_train_history(self, train_history):
+		hist_path = 'saved_model/cnn/'+ str(int(self.m_id)) + '/history.txt'
+		f = open(hist_path, "w")
+		f.write(train_history)
+		print("Training history has been saved.")
+		f.close()
+
 
 	# Trenovanie
 	def train(self):
