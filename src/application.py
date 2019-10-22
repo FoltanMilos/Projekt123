@@ -1,9 +1,11 @@
 import sys
 import keras
-import user
-import database_manipulation as dm
+import src.user
+import src.db.database_manipulation as dm
 import string
 import random
+
+
 
 
 class Application:
@@ -18,7 +20,7 @@ class Application:
     global active_user          # instancia pre ulahceie pristupu k ulozene userovi
                                 # ak jeho token nesedi, treba update cez najdenie usera
 
-    def __init__(self,train):
+    def __init__(self):
         # kontrola dependences
         print("Interpreter version: " + sys.version)
         print("Keras version: " + keras.__version__)
@@ -29,19 +31,24 @@ class Application:
         self.list_active_user = []
         self.active_model = None
 
-        sr = user.User(self, 3, self.ref_db, self.generate_unique_string())
-        self.active_user = sr
-        model = mc.Model_cnn("Newestone model",sr,self)
-        model.create()
-        dat = dt.Data(model)
-        dat.paths = {"T": 'dataset/small_dataset/test',
-                      "R": 'dataset/small_dataset/train',
-                      "V": 'dataset/small_dataset/validation'}
+        # testovanie
+        #import src.models.cnn.model_cnn as mc
+        #import src.data as dt
+        #import src.user as user
+
+        #sr = user.User(self, 3, self.ref_db, self.generate_unique_string())
+        #self.active_user = sr
+        #model = mc.Model_cnn("Newestone model",sr,self)
+        #model.create()
+        #dat = dt.Data(model)
+        #dat.paths = {"T": 'dataset/small_dataset/test',
+        #              "R": 'dataset/small_dataset/train',
+        #              "V": 'dataset/small_dataset/validation'}
 
         # tadeto sa budu menit datasety
-        model.change_ref_data(dat)
-        history = model.train()
-        history
+        #model.change_ref_data(dat)
+        #history = model.train()
+        #history
 
 
 
@@ -49,15 +56,6 @@ class Application:
         #self.list_active_user.append(sr)
         #self.active_user = sr
 
-
-        #TESTOVANIE
-     #3   modelForTest = sr.models.pop(0)
-    #  modelForTest
-
-
-        # self.db_connect.insert_returning_identity("")
-
-        #self.active_user.save_user_data()
 
     """Najde usera, ktory je v zozname nacitanych userov ak je pouzivanie vsetkych userov potrebne
     :param id: id_usera
