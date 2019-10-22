@@ -8,9 +8,10 @@ sys.path.append('models/genetic_alg')
 sys.path.append('enum')
 sys.path.append('interface')
 
-import src.application as neuralNetworkApplication
-import src.config as conf
-import src.enum.enum_model_builder as el
+import application as neuralNetworkApplication
+import config as conf
+import config
+import enum_model_builder as el
 import base64
 import json
 from flask_cors import CORS
@@ -23,7 +24,7 @@ from PIL import Image
 app = Flask(__name__)
 CORS(app, resources={"*": {"origins": "*"}})
 # holds instance of application with neural network
-application = neuralNetworkApplication.Application()
+application = neuralNetworkApplication.Application(config.load_model)
 #application.active_model.validate_model_on_test_data(application.data.test_data,application.data.test_labels)
 counters = {}
 

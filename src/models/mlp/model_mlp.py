@@ -1,6 +1,6 @@
-import src.interface.model_interface as interface
-from src.models.mlp.cv_wrapper import CrossValidation
-from src.models.mlp.mlp import Mlp
+import model_interface as interface
+from cv_wrapper import CrossValidation
+from mlp import Mlp
 
 
 class Model_mlp(interface.ModelInterface):

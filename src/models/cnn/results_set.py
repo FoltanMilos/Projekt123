@@ -1,5 +1,5 @@
 import numpy as np
-import src.config as conf
+import config as conf
 
 
 class Results_set:

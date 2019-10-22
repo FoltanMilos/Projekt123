@@ -4,13 +4,14 @@ from keras.layers import Dense, Flatten, Activation
 from keras.layers import Conv2D, MaxPooling2D, BatchNormalization
 import numpy as np
 from keras.models import model_from_json
-import src.config as conf
-import src.interface.model_interface as interface
+import config as conf
+import data as dt
+import model_interface as interface
 import keras.initializers
-import src.models.cnn.results_set as ResultSet
+import results_set as ResultSet
 import os
 import json
-import src.enum.enum_model_builder as mb
+import enum_model_builder as mb
 
 class Model_cnn(interface.ModelInterface):
 	global model                        # instancia modelu keras

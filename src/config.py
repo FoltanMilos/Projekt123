@@ -15,6 +15,8 @@ test_ratio = 818
 count_test_malig = 117
 count_test_benign = 701
 
+##program params
+load_model = False   # TRUE trenuje novy model
 				# False nacita loadnuty
 initializer_seed = None
 threshold = 0.4999
