@@ -1,4 +1,4 @@
-from src.models.mlp.neuron import Neuron
+from neuron import Neuron
 
 
 class Layer:

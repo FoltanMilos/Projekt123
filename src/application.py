@@ -1,7 +1,7 @@
 import sys
 import keras
-from src import user
-from src.db import database_manipulation as dm
+import user
+import database_manipulation as dm
 import string
 import random
 
@@ -28,11 +28,6 @@ class Application:
 
         self.list_active_user = []
         self.active_model = None
-
-
-        #testovanie
-        import src.models.cnn.model_cnn as mc
-        import src.data as dt
 
         sr = user.User(self, 3, self.ref_db, self.generate_unique_string())
         self.active_user = sr

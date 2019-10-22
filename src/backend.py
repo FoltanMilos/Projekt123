@@ -1,7 +1,17 @@
 from flask import Flask,request
 import flask
-from src import application as neuralNetworkApplication, config, config as conf
-from src.enum import enum_model_builder as el
+import sys
+sys.path.append('db')
+sys.path.append('models/cnn')
+sys.path.append('models/mlp')
+sys.path.append('models/genetic_alg')
+sys.path.append('enum')
+sys.path.append('interface')
+
+import application as neuralNetworkApplication
+import config as conf
+import config
+import enum_model_builder as el
 import base64
 import json
 from flask_cors import CORS
