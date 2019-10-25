@@ -1,7 +1,7 @@
 import sys
 import keras
-import user
-import database_manipulation as dm
+import src.user
+import src.db.database_manipulation as dm
 import string
 import random
 
@@ -29,19 +29,19 @@ class Application:
         self.list_active_user = []
         self.active_model = None
 
-        sr = user.User(self, 3, self.ref_db, self.generate_unique_string())
-        self.active_user = sr
-        model = mc.Model_cnn("Newestone model",sr,self)
-        model.create()
-        dat = dt.Data(model)
-        dat.paths = {"T": 'dataset/small_dataset/test',
-                      "R": 'dataset/small_dataset/train',
-                      "V": 'dataset/small_dataset/validation'}
+       # sr = user.User(self, 3, self.ref_db, self.generate_unique_string())
+        #self.active_user = sr
+       # model = mc.Model_cnn("Newestone model",sr,self)
+        #model.create()
+        #dat = dt.Data(model)
+       # dat.paths = {"T": 'dataset/small_dataset/test',
+       #               "R": 'dataset/small_dataset/train',
+      #                "V": 'dataset/small_dataset/validation'}
 
         # tadeto sa budu menit datasety
-        model.change_ref_data(dat)
-        history = model.train()
-        history
+      #  model.change_ref_data(dat)
+      #  history = model.train()
+     #   history
 
 
 
