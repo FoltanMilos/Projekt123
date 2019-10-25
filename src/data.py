@@ -128,3 +128,18 @@ class Data:
         else:
             pass
         return returned_id_data
+
+    @staticmethod
+    def find_photo_description(ref_db, dataset_name):
+        res_path = ref_db.select_statement("select path_desc from proj_data where name='"+dataset_name+"'")
+        description = "daky namockovany popis"
+        return description
+        if res_path is not None:
+            with open(res_path) as file:
+                pass
+                #TODO: find in file, vratit vsetky zaznamy
+        return description
+
+    def to_json(self):
+        #TODO: informacie popratat do jsonu
+        return ""

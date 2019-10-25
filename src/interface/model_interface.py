@@ -4,6 +4,10 @@ from abc import ABC, abstractmethod
 ##              pevne definovanie rozhrania pre webove service      #
 ### --------------------------------------------------------------###
 class ModelInterface(ABC):
+    global training_file
+    global locked_by_training
+    global trained_on_dataset
+    global static
     
     @abstractmethod
     def train(self):
@@ -39,4 +43,8 @@ class ModelInterface(ABC):
 
     @abstractmethod
     def save_state(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    def load_train_session_file(self):
         raise NotImplementedError

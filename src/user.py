@@ -71,10 +71,11 @@ class User:
 		for md in self.models:
 			if(md.m_id == new_act_model_id):
 				# prehodenie v DB
-				self.ref_db.update_statement("update proj_model set m_active=null where m_id="+self.active_model.m_id)
-				self.ref_db.update_statement("update proj_model set m_active='A' where m_id="+md._m_id)
+				#self.ref_db.update_statement("update proj_model set m_active=null where m_id="+self.active_model.m_id)
+				#self.ref_db.update_statement("update proj_model set m_active='A' where m_id="+md._m_id)
 				self.active_model = md
-				return
+				return self.active_model
+		return None
 
 	@staticmethod
 	def load_all_users_no_cascade(app,db):
@@ -104,4 +105,9 @@ class User:
 		self.models.append(new_model)
 
 
+	def get_models(self):
+		jsonarray = []
+		for model in self.models:
+			jsonarray.append(model.model.to_json())
+		return jsonarray
 
