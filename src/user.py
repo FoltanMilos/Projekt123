@@ -1,6 +1,6 @@
-import model_cnn as cnn
-import model_mlp as mlp
-import enum_model as n_type
+import src.models.cnn.model_cnn as cnn
+import src.models.mlp.model_mlp as mlp
+import src.enum.enum_model as n_type
 
 
 class User:

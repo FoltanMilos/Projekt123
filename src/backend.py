@@ -75,16 +75,28 @@ def get_datatests():
 
 @app.route("/predict", methods=["POST"])
 def predict():
+    '''
+    Metoda zodpoveda signle predictu pre lognuteho/nelognuteho usera
+    :param:     @AUTHORIZATION
+                @PHOTO
+                @MODEL_ID
+    :return:    -PredictionResult.py (class)
+                -PopisObrazka --> len ak je obrazok z nasho setu
+    '''
     form = flask.request.get_json()
+
+
+    auth = request.headers.get('Authorization')
+
+
     image = form.get('photo')
-    static_model =  True
-    #static_model = form.get('is_static')
+
 
     # treba odrezat cestu, lebo je v otm prilozena
     jpgtxt = base64.standard_b64decode(image.split(',')[1])
     img = Image.open(BytesIO(jpgtxt))
 
-    if(static_model):
+    if(True):
         result = application.active_model.predict_image(img)
     else:
         result = application.active_user.active_model.predict_image(img)
@@ -175,6 +187,10 @@ def buildModel(jsonData):
     print(jsonData)
     application.active_user.create_model_from_builder(jsonData)
     return flask.Response('',200)
+
+
+
+
 
 
 
