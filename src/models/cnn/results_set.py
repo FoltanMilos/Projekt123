@@ -1,17 +1,21 @@
 import numpy as np
-import config as conf
+import src.config as conf
 
 
 class Results_set:
 	""" Trieda zodpoveda za procesing vystupov zo siete """
 
 	global ref_model			# referencia na model
-
 	global r_id					# result set id
-
 	global is_changed			# ci sa nieco modifikovalo
-
 	global is_new				# ci su novo vytvorene pre db
+
+	global result_json
+	global specificity
+	global accuracy
+	global senzitivity
+	global train_result_path
+	global test_result_path
 
 	def __init__(self,ref_model,is_new):
 		# referencia na model, aby sa vedelo, ktoremu modelu patri (1 model = 1 ResultSet)
@@ -36,6 +40,17 @@ class Results_set:
 
 		# pocet vzoriek
 		self.samples_count = 0
+		self.result_json = {}
+		self.result_json["Accuracy"] = 0
+		self.result_json["Specificity"] = 0
+		self.result_json["Senzitivity"] = 0
+		self.result_json["FalsePositives"] = 0
+		self.result_json["TrueNegatives"] = 0
+		self.result_json["TrainingTime"] = 0
+		self.result_json["Epochs"] = 0
+		self.result_json["Optimizer"] = 0
+		self.result_json["LearningRate"] = 0
+
 
 	def process_result_matrix(self,predction_array,true_lab_array):
 		# kontrola shapes
@@ -118,19 +133,18 @@ class Results_set:
 
 	# loading
 	def load_state(self):
-		ret_set_all = self.ref_model.ref_app.ref_db.select_statement("Select R_ID, R_MATRIX_A, R_MATRIX_B, R_MATRIX_C, R_MATRIX_D, R_SAMPLES_COUNT from proj_result"
-				" join PROJ_MODEL using(r_id) where m_id="+str(self.ref_model.m_id) +"")
-		if(len(ret_set_all) > 1 ):
-			print("MODEL BY MAL MAT LEN JEDEN RESULT SET")
+		ret_set_all = self.ref_model.ref_app.ref_db.select_statement("Select r.* from proj_result r"
+				" join PROJ_MODEL m on(r.r_id=m.r_id) where m.m_id="+str(self.ref_model.m_id) +"")
 		for ret_set in ret_set_all:
 			self.r_id=ret_set[0]
-			self.samples_count = ret_set[5]
-			self.result_matrix = np.zeros(shape=(2,2))
-			self.result_matrix[0,0] = ret_set[4]
-			self.result_matrix[1, 0] = ret_set[3]
-			self.result_matrix[0, 1] = ret_set[2]
-			self.result_matrix[1, 1] = ret_set[1]
-			print(self.result_matrix)
+			self.train_result_path = ret_set[1]
+			self.senzitivity = ret_set[2]
+			self.specificity = ret_set[3]
+			self.accuracy = ret_set[4]
+			self.test_result_path = ret_set[5]
+		self.is_new = False
+		self.is_changed = False
+
 
 	def save_state(self):
 		if self.is_changed :
@@ -153,3 +167,6 @@ class Results_set:
 				+ str(self.result_matrix[1, 0])+","+str(self.result_matrix[0,0])+","+str(self.samples_count)+")","r_id")
 			self.ref_model.ref_app.ref_db.commit()
 			return self.r_id
+
+	def to_json(self):
+		return self.result_json

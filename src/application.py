@@ -15,8 +15,6 @@ class Application:
 
     global active_static_model # staticky model aktivny
 
-    global data                 # instancia triedy data
-
     global list_active_user     # list vsetkych userov v aplikacii
 
     global ref_db               # referencia na databazu
@@ -35,9 +33,6 @@ class Application:
 
         # natiahnutie statickych modelov
         self.load_all_static_models()
-
-
-
 
 
     """Najde usera, ktory je v zozname nacitanych userov ak je pouzivanie vsetkych userov potrebne
@@ -92,7 +87,7 @@ class Application:
     def get_static_models(self):
         jsonarray = []
         for model in self.list_static_models:
-            jsonarray.append(model.model.to_json())
+            jsonarray.append(model.model.model_to_json())
         return jsonarray
 
     def swap_active_static_model(self,model_id):

@@ -172,7 +172,7 @@ def testing_session():
             head_test_session_info.append("model este nebol trenovany")
         else:
             # model bol uz trenovany, moze sa testovat
-            head_test_session_info.append(user_model.to_json)
+            head_test_session_info.append(user_model.model_to_json)
             head_test_session_info.append(user_model.ref_data.to_json)
 
         return flask.make_response(json.dumps(head_test_session_info))
@@ -307,20 +307,20 @@ def show_my_models():
     if auth is None:
         # nie je lognuty, vratim staticke modely, tie su natrenovane vzdy
         static_model = application.swap_active_static_model(model_id)
-        res_model_structure = static_model.to_json()
+        res_model_structure = static_model.model_to_json()
     else:
         # je lognuty, zistim ci su trenovane
         usr = application.find_user_by_identification(auth)
         usr_model = usr.switch_active_model(model_id)
         if usr_model.is_locked_by_training():
             # model sa prave trenuje, to vsak nevadi, len sa presmeruje na kartu kde je progress
-            res_model_structure = usr_model.to_json()
+            res_model_structure = usr_model.model_to_json()
         elif usr_model.is_trained_on_dataset() == False:
             # este vsak nebol trenovany, inde presmerovanie
-            res_model_structure = usr_model.to_json()
+            res_model_structure = usr_model.model_to_json()
         else:
             # tu je model cely natrenovany, smeruj hned na statistiky
-            res_model_structure = usr_model.to_json()
+            res_model_structure = usr_model.model_to_json()
 
     return flask.Response(json.dumps(res_model_structure))
 

@@ -48,3 +48,7 @@ class ModelInterface(ABC):
     @abstractmethod
     def load_train_session_file(self):
         raise NotImplementedError
+
+    @abstractmethod
+    def model_to_json(self):
+        raise NotImplementedError

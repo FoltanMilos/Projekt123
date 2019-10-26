@@ -11,6 +11,7 @@ import src.models.cnn.results_set as ResultSet
 import os
 import json
 import src.enum.enum_model_builder as mb
+import src.data as dt
 
 
 class Model_cnn(interface.ModelInterface):
@@ -34,8 +35,6 @@ class Model_cnn(interface.ModelInterface):
             # prazdna instania, do ktorej sa naloaduju data
             self.is_new = False
             self.is_changed = False
-            #self.result_processing.load_state()
-           # self.load_state()
         else:
             # instancia, ktora bola nanovo vytvorena. Pozor, vypyta si naspat ID z db, podla neho sa vytvaraju priecinky
             self.ref_data = ref_data
@@ -204,12 +203,12 @@ class Model_cnn(interface.ModelInterface):
         self.static = state[10]
 
         # dotiahnutie dat
-        # self.ref_data = dt.Data(self)
-        # self.ref_data.load_state()
+        self.ref_data = dt.Data(self)
+        self.ref_data.load_state()
 
         # dotiahnutie resutov
-       # self.ref_res_proc = ResultSet.Results_set(self, False)
-        #self.ref_res_proc.load_state()
+        self.ref_res_proc = ResultSet.Results_set(self, False)
+        self.ref_res_proc.load_state()
 
         # nacitanie modelu
         self.load()
@@ -237,7 +236,23 @@ class Model_cnn(interface.ModelInterface):
             self.ref_app.ref_db.commit()
 
     def model_to_json(self):
-        pass
+        ret_json = {}
+        headers = {}
+        layers = []
+        headers["Name"] = self.name
+        # z datasetu
+        dataset_json = None
+        if self.trained_on_dataset is not None:
+            dataset_json = self.ref_data.to_json()
+
+        # VRSTVY
+        #TODO: vrstvy
+        ret_json["model_header"] = headers
+        ret_json["data_header"] = dataset_json
+        ret_json["layers"] = layers
+        return json.dumps(ret_json)
+
+
 
     def create_model_from_json(self, p_json):
         for lay in p_json["layers"]:

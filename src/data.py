@@ -5,9 +5,7 @@ import src.config as conf
 
 class Data:
     global train_set
-
     global valid_set
-
     global test_set
 
     global train_datagen            # file iterator
@@ -15,14 +13,19 @@ class Data:
     global paths                    # cesty k suborom
 
     global ref_model                # ref k modelu
-
     global is_changed               # ak sa zmenia dake cesty treba update
-
     global is_new                   # treba ulozit
-
     global name                     # nazov datasetu
-
     global d_id                     # id data
+    global path_to_desc             # cesta k svojim popisom
+    global count                    # pocet fotiek v danom type setu T,R,V
+    global data_description         # popis modelu
+    global count_bening             # count_all - malig - unclassed
+    global count_malig
+    global count_unspecified
+    global link_dataset
+    global img_size
+    global count_all_pics           # v celom datasete T + R + V
 
     def __init__(self,ref_model):
         self.ref_model= ref_model
@@ -36,6 +39,15 @@ class Data:
                                                 horizontal_flip=True)
         self.is_new=False
         self.is_changed=False
+        self.count = -1
+        self.data_description = ""
+        self.path_to_desc = ""
+        self.count_bening = -1
+        self.count_malig = -1
+        self.count_unspecified = -1
+        self.link_dataset = ""
+        self.img_size = ""
+        self.count_all_pics = -1
 
     # LOADING AS FILE ITERATOR
     def load_train_set(self):
@@ -105,14 +117,22 @@ class Data:
 
     def load_state(self):
         ret_data_set = self.ref_model.ref_app.ref_db.select_statement(
-            "select D_ID, M_ID, D_NAME, D_PATH, D_PATH_TYPE from proj_data where m_id=" + str(self.ref_model.m_id) + "")
+            "select * from proj_data where m_id=" + str(self.ref_model.m_id) + "")
         if (len(ret_data_set) < 2):
             print("MODEL HAS NO DATA!!!!!!!!!!!!!!!!!!!!!!!!!")
         for row in ret_data_set:
             self.d_id = row[0]
             self.paths[row[4]] = row[3]
             self.name = row[2]
-        self.is_new = True
+            self.count = row[6]
+            self.data_description = row[7]
+            self.path_to_desc = row[5]
+            self.count_bening = row[8]
+            self.count_malig = row[9]
+            self.count_unspecified = row[10]
+            self.link_dataset = row[11]
+            self.img_size = row[12]
+            self.count_all_pics = row[13]
 
     def save_state(self):
         if(self.is_new):
@@ -141,5 +161,9 @@ class Data:
         return description
 
     def to_json(self):
-        #TODO: informacie popratat do jsonu
-        return ""
+        headers = {}
+        headers["DatasetUsed"] = "meno datasetu"
+        headers["DatasetDesc"] = "popis"
+        headers["CountPhoto"] = 1000
+        headers["PhotoSize"] = "100x100"
+        return headers
