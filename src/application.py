@@ -34,16 +34,6 @@ class Application:
         # natiahnutie statickych modelov
         self.load_all_static_models()
 
-
-    """Najde usera, ktory je v zozname nacitanych userov ak je pouzivanie vsetkych userov potrebne
-    :param id: id_usera
-    """
-    def find_user_by_id(self,id):
-        for user in self.list_active_user:
-            if(user.u_id==id):
-                return user
-        return None
-
     def validate_user(self, credentials):
         res = self.ref_db.select_statement("select * from proj_user where u_name ='"+ credentials['username'] +"'")
         for row in res:
