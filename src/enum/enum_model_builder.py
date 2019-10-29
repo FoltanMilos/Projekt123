@@ -84,7 +84,7 @@ class EnumLoss(Enum):
     def getValues():
         result = []
         for data in EnumLoss:
-            result.append({'id' : data.value[0], 'name': data.value[1]})
+            result.append({'id' : data.name[0], 'name': data.value[1]})
         return result
 
 class EnumOptimizer(Enum):
@@ -98,7 +98,7 @@ class EnumOptimizer(Enum):
     def getValues():
         result = []
         for data in EnumOptimizer:
-            result.append({'id' : data.value[0], 'name': data.value[1]})
+            result.append({'id' : data.name[0], 'name': data.value[1]})
         return result
 
 class EnumMetrics(Enum):
@@ -112,7 +112,7 @@ class EnumMetrics(Enum):
     def getValues():
         result = []
         for data in EnumMetrics:
-            result.append({'id' : data.value[0], 'name': data.value[1]})
+            result.append({'id' : data.name[0], 'name': data.value[1]})
         return result
 
 def to_json():
