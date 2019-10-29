@@ -125,7 +125,7 @@ def training_session():
     '''
     form = flask.request.get_json()
     auth = request.headers.get('Authorization')
-    model_id = form.get('model')
+    model_id = form.get('modelId')
     print("EndPoint: TrainingSession, Auth:{}, ModelId:{}".format(auth, model_id))
     file_train_session = None
     if auth is None:
@@ -330,17 +330,18 @@ def show_info_models():
 
     return flask.Response(json.dumps(res_model_structure))
 
-@app.route('/train', methods=["GET"])
+@app.route('/train', methods=["POST"])
 def train():
     form = flask.request.get_json()
     auth = request.headers.get('Authorization')
     model_id = form.get('model')
     print("EndPoint: TrainModel, Auth:{}, modelId: {}".format(auth, model_id))
     if auth is not None:
-        # uzivatel je prihlaseny, mozeme dat trenovat
-        usr = application.find_user_by_identification(auth)
-        model = usr.switch_active_model(model_id)
-        model.train()
+        pass
+    # uzivatel je prihlaseny, mozeme dat trenovat
+    usr = application.find_user_by_identification(auth)
+    model = usr.switch_active_model(model_id)
+    model.train()
     return flask.Response('OK',200)
 
 

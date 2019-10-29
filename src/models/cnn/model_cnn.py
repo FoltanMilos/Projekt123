@@ -205,8 +205,12 @@ class Model_cnn(interface.ModelInterface):
         self.path_struct = state[6]
         self.path_weights = state[5]
         self.is_new = False
+        self.is_changed = False
         self.name = state[7]
-        self.locked_by_training = state[8]
+        if state[8] == 'F':
+            self.locked_by_training = False
+        else:
+            self.locked_by_training = True
         self.trained_on_dataset = state[9]
         self.static = state[10]
 
@@ -252,6 +256,7 @@ class Model_cnn(interface.ModelInterface):
         headers["Name"] = self.name
         headers["Accuracy"] = random.randint(1,100) / 100.0
         headers["ModelId"] = self.m_id
+        headers["ModelType"] = "CNN"
 
         # z datasetu
         dataset_json = None
@@ -334,13 +339,13 @@ class Model_cnn(interface.ModelInterface):
             else:
                 # model uz bol trenovany
                 hist_path = 'saved_model/cnn/' + str(int(self.m_id)) + '/train_history'
-                ret = {}
+                ret = None
                 with open(hist_path, 'r') as file_histo:
-                    returning = file_histo.read()
-                ret['session'] = "10,10,15,15,15"
-                ret['epoch'] = "55"
-                ret['loss'] = "Mape"
-                ret['loss_val'] = "0.687"
+                    ret = file_histo.read()
+                #ret['session'] = "10,10,15,15,15"
+                #ret['epoch'] = "55"
+                #ret['loss'] = "Mape"
+                #ret['loss_val'] = "0.687"
                 return ret
 
     def is_locked_by_training(self):
