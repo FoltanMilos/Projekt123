@@ -158,7 +158,6 @@ class Model_cnn(interface.ModelInterface):
         # ulozenie vah
         self.model.save_weights(self.path_weights)
         # self.test()
-
         print("Saved model to disk")
 
     # Model evaluation
@@ -249,16 +248,16 @@ class Model_cnn(interface.ModelInterface):
         headers["Accuracy"] = random.randint(1,100) / 100.0
         headers["ModelId"] = self.m_id
 
-
         # z datasetu
         dataset_json = None
         if self.trained_on_dataset is not None:
             dataset_json = self.ref_data.to_json()
 
-        # VRSTVY
         ret_json["model_header"] = headers
         ret_json["data_header"] = dataset_json
-        ret_json["layers"] = open("saved_model/cnn/5/json.json", 'r')
+
+        with open("saved_model/cnn/5/json.json", 'r') as file:
+            ret_json["layers"] = json.loads(file.read())
 
         return ret_json
 
@@ -296,16 +295,17 @@ class Model_cnn(interface.ModelInterface):
                                       )
                                )
         # este treba optimizer
-
-        # optim_obj = p_json["optimizer"]
-        # self.model.compile(loss=str(optim_obj["loss"]),
-        #				   optimizer=str(optim_obj["optimizer"]),
-        #				   metrics=[str(optim_obj["metrics"])])
-        self.model.compile(loss="binary_crossentropy",
-                           optimizer=self.optimizer,
-                           metrics=['accuracy'])
+        optim_obj = p_json["optimizer"]
+        self.model.compile(loss=str(optim_obj["loss"]),
+        				   optimizer=str(optim_obj["optimizer"]),
+        				   metrics=[str(optim_obj["metrics"])])
         # ulozit to do DB
         self.save_state()
+
+        # ulozenie json create model
+        with open("saved_model/cnn/5/json.json", "w+") as json_file:
+            json_file.write(self.json_structure)
+
 
     def change_ref_data(self, new_ref_data):
         self.ref_data = new_ref_data

@@ -105,12 +105,17 @@ def predict():
     else:
         raise Exception("Nepovolena hodnota v atribute auth! [{}]".format(auth))
 
+    img_description_dict = {}
     if img_description:
         # ak je fotka nasa, mame aj popis niekde
         photo_desc = dt.Data.find_photo_description(application.ref_db,dataset_name)
-    #TODO: dumpnut tam aj photo_desc, dako takto cca bude vyzerat
-    json.loads('{ "dataset:":"datasetMain","gender":"zena","age":"150" }')
-    return flask.make_response(json.dumps(result))
+        #TODO: dumpnut tam aj photo_desc, dako takto cca bude vyzerat
+        img_description_dict["desc"] = json.loads('{ "dataset:":"datasetMain","gender":"zena","age":"150" }')
+
+    ress = {}
+    ress['result'] = str(result[0][0])
+    ress['imgDescription'] = img_description_dict["desc"]
+    return flask.make_response(json.dumps(ress))
 
 
 @app.route("/training_session", methods=["POST"])

@@ -85,7 +85,7 @@ class Application:
             if md.m_id == model_id:
                 self.active_static_model = md
                 return self.active_static_model
-        return None
+        return self.active_static_model
 
 
     def load_all_static_models(self):

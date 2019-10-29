@@ -108,7 +108,8 @@ class EnumMetrics(Enum):
     categorical_accuracy = ("categorical_accuracy","Categorical accuracy")
     sparse_categorical_accuracy = ("sparse_categorical_accuracy", "Sparse categorical accuracy")
 
-    def getValues(self):
+    @staticmethod
+    def getValues():
         result = []
         for data in EnumMetrics:
             result.append({'id' : data[0], 'name': data[1]})
@@ -132,6 +133,11 @@ def to_json():
                 parJson['possibleValues'] = eval("Enum" + str(par[0]).capitalize()).getValues()
             result.append(parJson)
         cnn[key+"Parameters"] = result
+
+    res['optimizer'] = {}
+    res['optimizer']['name'] = EnumOptimizer.getValues()
+    res['optimizer']['metrics'] = EnumMetrics.getValues()
+    res['optimizer']['loss'] = EnumLoss.getValues()
     res['cnn'] = cnn
     return res
 

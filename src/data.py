@@ -111,7 +111,7 @@ class Data:
     def preproces_image(self,image):
         image = img_proc.img_to_array(image)
 
-        image.resize((64,64,3,1),refcheck=False)
+        image.resize((64,64,3),refcheck=False)
         image = np.expand_dims(image, axis=0)
         return image
 
