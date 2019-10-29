@@ -138,7 +138,7 @@ def to_json():
     tmp['metrics'] = EnumMetrics.getValues()
     tmp['name'] = EnumOptimizer.getValues()
     tmp['loss'] = EnumLoss.getValues()
-    res['optimizer'] = tmp
+    cnn['optimizer'] = tmp
     res['cnn'] = cnn
     return res
 

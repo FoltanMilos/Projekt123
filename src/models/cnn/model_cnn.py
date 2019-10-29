@@ -318,7 +318,6 @@ class Model_cnn(interface.ModelInterface):
                   Subor   - model uz bol trenovany
                   None    - model este nebol trenovany nikdy
         '''
-        print('loading file')
         self.locked_by_training = False
         if self.locked_by_training:
             # neda sa vratit jeho train session, ked sa trenuje
@@ -329,7 +328,12 @@ class Model_cnn(interface.ModelInterface):
                 return None
             else:
                 # model uz bol trenovany
-                return "trainSession: [10,10,10,15,15,15], epoch: 5, loss:1000 ..."
+                ret = {}
+                ret['session'] = "10,10,15,15,15"
+                ret['epoch'] = "55"
+                ret['loss'] = "Mape"
+                ret['loss_val'] = "0.687"
+                return ret
         # TODO: najdenie suboru s historiu trainu
 
     def is_locked_by_training(self):
