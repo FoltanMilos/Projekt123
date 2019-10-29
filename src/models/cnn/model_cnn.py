@@ -15,6 +15,8 @@ import json
 import src.enum.enum_model_builder as mb
 import src.data as dt
 import random
+import tensorflow as tf
+from keras import  backend as K
 
 
 class Model_cnn(interface.ModelInterface):
@@ -141,7 +143,8 @@ class Model_cnn(interface.ModelInterface):
 
     # Nahranie uz vytvoreneho modelu
     def load(self):
-        # tf.global_variables_initializer()
+        K.clear_session()
+        tf.global_variables_initializer()
         json_file = open(self.path_struct, 'r')
         loaded_model_json = json_file.read()
         json_file.close()

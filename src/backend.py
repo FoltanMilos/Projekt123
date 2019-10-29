@@ -269,7 +269,7 @@ def buildModel(jsonData):
     auth = request.headers.get('Authorization')
     if auth is not None:
         usr = application.find_user_by_identification(auth)
-        if usr is None:
+        if usr is not None:
             usr.create_model_from_builder(jsonData)
     return flask.Response('Ok', 200)
 
