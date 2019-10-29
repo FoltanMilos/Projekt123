@@ -27,9 +27,11 @@ class Model_cnn(interface.ModelInterface):
     global ref_user  # referencia na uzivatela, ktoremu model patri
     global is_new  # ci je novo vytvoreny model
     global is_changed  # ci bola zmenena
+    global json_structure # struktura modelu z buildera
 
     def __init__(self, model_name, ref_user, ref_app, ref_data=None):
         # povinne parametre
+        self.json_structure = None
         self.ref_user = ref_user
         self.ref_app = ref_app
         if model_name == "":
@@ -156,6 +158,7 @@ class Model_cnn(interface.ModelInterface):
         # ulozenie vah
         self.model.save_weights(self.path_weights)
         # self.test()
+
         print("Saved model to disk")
 
     # Model evaluation
@@ -244,6 +247,8 @@ class Model_cnn(interface.ModelInterface):
         #hlavicka modelu
         headers["Name"] = self.name
         headers["Accuracy"] = random.randint(1,100) / 100.0
+        headers["ModelId"] = self.m_id
+
 
         # z datasetu
         dataset_json = None
@@ -253,14 +258,14 @@ class Model_cnn(interface.ModelInterface):
         # VRSTVY
         ret_json["model_header"] = headers
         ret_json["data_header"] = dataset_json
-        ret_json["layers"] = layers
-
+        ret_json["layers"] = open("saved_model/cnn/5/json.json", 'r')
 
         return ret_json
 
 
 
     def create_model_from_json(self, p_json):
+        self.json_structure = p_json
         for lay in p_json["layers"]:
             if lay["NAME"] == mb.EnumLayer.INPUT.value:
                 self.model.add(Conv2D(int(lay["count"]),

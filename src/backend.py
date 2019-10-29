@@ -293,8 +293,8 @@ def re_test():
     print("EndPoint: ReTest, Auth:{}, ModelId:{}".format(auth, model_id))
     return flask.Response('este nikto nerobil', 200)
 
-@app.route('/show_my_models', methods=["GET"])
-def show_my_models():
+@app.route('/info_models', methods=["GET"])
+def show_info_models():
     '''
     Zobrazuje modelovye struktury
     :return: vrati udaje k modelovym strukturam
@@ -302,7 +302,7 @@ def show_my_models():
     form = flask.request.get_json()
     auth = request.headers.get('Authorization')
     model_id = form.get('model')
-    print("EndPoint: ShowMyModels, Auth:{}".format(auth))
+    print("EndPoint: ShowMyModels, Auth:{}, modelId: {}".format(auth,model_id))
     res_model_structure = None
     if auth is None:
         # nie je lognuty, vratim staticke modely, tie su natrenovane vzdy
