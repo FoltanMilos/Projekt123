@@ -84,7 +84,7 @@ class EnumLoss(Enum):
     def getValues():
         result = []
         for data in EnumLoss:
-            result.append({'id' : data[0], 'name': data[1]})
+            result.append({'id' : data.value[0], 'name': data.value[1]})
         return result
 
 class EnumOptimizer(Enum):
@@ -98,7 +98,7 @@ class EnumOptimizer(Enum):
     def getValues():
         result = []
         for data in EnumOptimizer:
-            result.append({'id' : data[0], 'name': data[1]})
+            result.append({'id' : data.value[0], 'name': data.value[1]})
         return result
 
 class EnumMetrics(Enum):
@@ -112,7 +112,7 @@ class EnumMetrics(Enum):
     def getValues():
         result = []
         for data in EnumMetrics:
-            result.append({'id' : data[0], 'name': data[1]})
+            result.append({'id' : data.value[0], 'name': data.value[1]})
         return result
 
 def to_json():
@@ -134,10 +134,11 @@ def to_json():
             result.append(parJson)
         cnn[key+"Parameters"] = result
 
-    res['optimizer'] = {}
-    res['optimizer']['name'] = EnumOptimizer.getValues()
-    res['optimizer']['metrics'] = EnumMetrics.getValues()
-    res['optimizer']['loss'] = EnumLoss.getValues()
+    tmp = {}
+    tmp['metrics'] = EnumMetrics.getValues()
+    tmp['name'] = EnumOptimizer.getValues()
+    tmp['loss'] = EnumLoss.getValues()
+    res['optimizer'] = tmp
     res['cnn'] = cnn
     return res
 
