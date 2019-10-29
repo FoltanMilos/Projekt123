@@ -117,7 +117,7 @@ def predict():
     return flask.make_response(json.dumps(ress))
 
 
-@app.route("/training_session", methods=["POST"])
+@app.route("/training-session", methods=["POST"])
 def training_session():
     '''
     Metoda vrati k modelu jeho historiu trenovania
@@ -148,7 +148,7 @@ def training_session():
     else:
         return flask.make_response(json.dumps(file_train_session))
 
-@app.route("/testing_session", methods=["POST"])
+@app.route("/testing-session", methods=["POST"])
 def testing_session():
     '''
     Metoda vrati k modelu jeho historiu testovania
@@ -243,7 +243,7 @@ def get_models():
 def logout():
     auth = request.headers.get('Authorization')
     usr = application.find_user_by_identification(auth)
-    if (usr != False):
+    if usr is not None:
         res = application.logout_user(usr)
         if res != False:
             return flask.make_response()
@@ -329,6 +329,20 @@ def show_info_models():
             res_model_structure = usr_model.model_to_json()
 
     return flask.Response(json.dumps(res_model_structure))
+
+@app.route('/train', methods=["GET"])
+def train():
+    form = flask.request.get_json()
+    auth = request.headers.get('Authorization')
+    model_id = form.get('model')
+    print("EndPoint: TrainModel, Auth:{}, modelId: {}".format(auth, model_id))
+    if auth is not None:
+        # uzivatel je prihlaseny, mozeme dat trenovat
+        usr = application.find_user_by_identification(auth)
+        model = usr.switch_active_model(model_id)
+        model.train()
+    return flask.Response('OK',200)
+
 
 
 

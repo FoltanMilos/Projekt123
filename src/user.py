@@ -74,8 +74,7 @@ class User:
 				#self.ref_db.update_statement("update proj_model set m_active=null where m_id="+self.active_model.m_id)
 				#self.ref_db.update_statement("update proj_model set m_active='A' where m_id="+md._m_id)
 				self.active_model = md
-				return self.active_model
-		return None
+		return self.active_model
 
 	@staticmethod
 	def load_all_users_no_cascade(app,db):
