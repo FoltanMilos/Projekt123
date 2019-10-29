@@ -65,7 +65,7 @@ class Application:
         for usr in self.list_active_user:
             if(usr.indentifier == identification):
                 return usr
-        return False
+        return None
 
     def logout_user(self,user):
         try:

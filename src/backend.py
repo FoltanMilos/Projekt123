@@ -266,11 +266,13 @@ def builderGetData():
     resJson = el.to_json()
     return flask.make_response(json.dumps((resJson)), 200)
 
-
 def buildModel(jsonData):
-    print(jsonData)
-    application.active_user.create_model_from_builder(jsonData)
-    return flask.Response('', 200)
+    auth = request.headers.get('Authorization')
+    if auth is not None:
+        usr = application.find_user_by_identification(auth)
+        if usr is None:
+            usr.create_model_from_builder(jsonData)
+    return flask.Response('Ok', 200)
 
 @app.route('/live_training_session', methods=["GET"])
 def live_training_session():

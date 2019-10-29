@@ -1,3 +1,5 @@
+import pickle
+
 from keras.callbacks import EarlyStopping
 from keras.models import Sequential
 from keras.layers import Dense, Flatten, Activation
@@ -61,11 +63,10 @@ class Model_cnn(interface.ModelInterface):
 
     # Ulozenie historie trenovania
     def save_train_history(self, train_history):
-        hist_path = 'saved_model/cnn/' + str(int(self.m_id)) + '/training_session.txt'
-        f = open(hist_path, "w")
-        f.write(train_history)
+        hist_path = 'saved_model/cnn/' + str(int(self.m_id)) + '/train_history'
+        with open(hist_path, 'wb') as file_histo:
+            pickle.dump(train_history.history, file_histo)
         print("Training history has been saved.")
-        f.close()
 
     # Trenovanie
     def train(self):
@@ -74,7 +75,7 @@ class Model_cnn(interface.ModelInterface):
             self.ref_data.load_validation_set()
         else:
             raise Exception("No instance DATA has been picked for training")
-        res = self.model.fit_generator(
+        train_hist = self.model.fit_generator(
             self.ref_data.train_set, steps_per_epoch=10, epochs=5,
             validation_data=self.ref_data.valid_set,
             validation_steps=5,
@@ -84,10 +85,11 @@ class Model_cnn(interface.ModelInterface):
         self.is_changed = True
         self.path_struct = 'saved_model/cnn/' + str(int(self.m_id)) + '/model.json'
         self.path_weights = 'saved_model/cnn/' + str(int(self.m_id)) + '/model.h5'
+        self.save_train_history(train_hist)
         self.save()
         self.is_new = False
         self.save_state()
-        return res
+        return train_hist
 
     # zlozenie modelu
     def summary(self):
@@ -328,13 +330,15 @@ class Model_cnn(interface.ModelInterface):
                 return None
             else:
                 # model uz bol trenovany
+                hist_path = 'saved_model/cnn/' + str(int(self.m_id)) + '/train_history'
                 ret = {}
+                with open(hist_path, 'r') as file_histo:
+                    returning = file_histo.read()
                 ret['session'] = "10,10,15,15,15"
                 ret['epoch'] = "55"
                 ret['loss'] = "Mape"
                 ret['loss_val'] = "0.687"
                 return ret
-        # TODO: najdenie suboru s historiu trainu
 
     def is_locked_by_training(self):
         return self.locked_by_training
