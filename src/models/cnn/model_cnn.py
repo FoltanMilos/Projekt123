@@ -12,6 +12,7 @@ import os
 import json
 import src.enum.enum_model_builder as mb
 import src.data as dt
+import random
 
 
 class Model_cnn(interface.ModelInterface):
@@ -239,18 +240,23 @@ class Model_cnn(interface.ModelInterface):
         ret_json = {}
         headers = {}
         layers = []
+
+        #hlavicka modelu
         headers["Name"] = self.name
+        headers["Accuracy"] = random.randint(1,100) / 100.0
+
         # z datasetu
         dataset_json = None
         if self.trained_on_dataset is not None:
             dataset_json = self.ref_data.to_json()
 
         # VRSTVY
-        #TODO: vrstvy
         ret_json["model_header"] = headers
         ret_json["data_header"] = dataset_json
         ret_json["layers"] = layers
-        return json.dumps(ret_json)
+
+
+        return ret_json
 
 
 

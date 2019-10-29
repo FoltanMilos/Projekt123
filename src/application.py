@@ -77,7 +77,7 @@ class Application:
     def get_static_models(self):
         jsonarray = []
         for model in self.list_static_models:
-            jsonarray.append(model.model.model_to_json())
+            jsonarray.append(model.model_to_json())
         return jsonarray
 
     def swap_active_static_model(self,model_id):
