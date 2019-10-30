@@ -38,13 +38,13 @@ class Model_cnn(interface.ModelInterface):
         self.json_structure = None
         self.ref_user = ref_user
         self.ref_app = ref_app
+        self.ref_data = ref_data
         if model_name == "":
             # prazdna instania, do ktorej sa naloaduju data
             self.is_new = False
             self.is_changed = False
         else:
             # instancia, ktora bola nanovo vytvorena. Pozor, vypyta si naspat ID z db, podla neho sa vytvaraju priecinky
-            self.ref_data = ref_data
             self.is_new = True
             self.is_changed = False
             self.name = model_name
@@ -61,7 +61,7 @@ class Model_cnn(interface.ModelInterface):
             #  initial learning rate and decay factor can be set, as in most other Keras optimizers.
             self.initializer = keras.initializers.glorot_uniform(conf.initializer_seed)
             self.bias_initializer = keras.initializers.RandomNormal(mean=0.0, stddev=0.05, seed=None)
-            self.save_state()
+            #self.save_state()
 
     # Ulozenie historie trenovania
     def save_train_history(self, train_history):
@@ -151,7 +151,7 @@ class Model_cnn(interface.ModelInterface):
         self.model = model_from_json(loaded_model_json)
         # nastavenie ulozenych vah
         self.model.load_weights(self.path_weights)
-        self.model.compile(loss='binary_crossentropy', optimizer='adadelta', metrics=['accuracy'])
+        #self.model.compile(loss='binary_crossentropy', optimizer='adadelta', metrics=['accuracy'])
         self.model._make_predict_function()
         print("Loaded model from disk")
 
@@ -275,46 +275,50 @@ class Model_cnn(interface.ModelInterface):
 
     def create_model_from_json(self, p_json):
         self.json_structure = p_json
+        self.name = p_json["modelName"]
         for lay in p_json["layers"]:
-            if lay["NAME"] == mb.EnumLayer.INPUT.value:
-                self.model.add(Conv2D(int(lay["count"]),
-                                      kernel_size=int(lay["kernel_size"]),
-                                      activation=str(lay["activation"]),
-                                      padding=str(lay["padding"]),
-                                      input_shape=(int(str(lay["input_shape"]).split('x')[0]),
-                                                   int(str(lay["input_shape"]).split('x')[1]),
+            if lay["class"] == mb.EnumLayer.INPUT.name.upper():
+                self.model.add(Conv2D(int(lay["NEURON_COUNT"]),
+                                      kernel_size=int(str(lay["KERNEL_SIZE"]).split('x')[0].split(',')[0]),
+                                      activation=str(lay["ACTIVATION"]).lower(),
+                                      padding=str(lay["PADDING"]).lower(),
+                                      input_shape=(int(str(lay["INPUT_SHAPE"]).split('x')[0].split(',')[0]),
+                                                   int(str(lay["INPUT_SHAPE"]).split('x')[0].split(',')[1]),
                                                    3)
                                       )
                                )
-            elif lay["NAME"] == mb.EnumLayer.FLATTENING.value:
+            elif lay["class"] == mb.EnumLayer.FLATTENING.name.upper():
                 self.model.add(Flatten())
-            elif lay["NAME"] == mb.EnumLayer.POOLING.value:
-                self.model.add(MaxPooling2D(pool_size=(int(str(lay["pool size"])),
-                                                       int(str(lay["pool size"]))))
+            elif lay["class"] == mb.EnumLayer.POOLING.value.upper():
+                self.model.add(MaxPooling2D(pool_size=(int(str(lay["POOL_SIZE"])),
+                                                       int(str(lay["POOL_SIZE"]))))
                                )
-            elif lay["NAME"] == mb.EnumLayer.DENSE.value:
-                self.model.add(Dense(int(str(lay["neuron_count"]))
-                                     , activation=str(lay["activation"])))
-            elif lay["NAME"] == mb.EnumLayer.BATCH_NORMALIZATION.value:
+            elif lay["class"] == mb.EnumLayer.DENSE.name.upper():
+                self.model.add(Dense(int(str(lay["NEURON_COUNT"]))
+                                     , activation=str(lay["ACTIVATION"]).lower()))
+            elif lay["class"] == mb.EnumLayer.BATCH_NORMALIZATION.value.upper():
                 self.model.add(BatchNormalization())
-            elif lay["NAME"] == mb.EnumLayer.CONV2D.value:
-                self.model.add(Conv2D(int(lay["count"]),
-                                      kernel_size=int(lay["kernel_size"]),
-                                      activation=str(lay["activation"]),
-                                      padding=str(lay["padding"])
+            elif lay["class"] == mb.EnumLayer.CONV2D.name.upper():
+                self.model.add(Conv2D(int(lay["NEURON_COUNT"]),
+                                      kernel_size=int(str(lay["KERNEL_SIZE"]).split('x')[0].split(',')[0]),
+                                      activation=str(lay["ACTIVATION"]).lower(),
+                                      #padding=str(lay["PADDING"])
                                       )
                                )
         # este treba optimizer
-        optim_obj = p_json["optimizer"]
-        self.model.compile(loss=str(optim_obj["loss"]),
-        				   optimizer=str(optim_obj["optimizer"]),
-        				   metrics=[str(optim_obj["metrics"])])
+        #self.model.compile(loss=str(p_json["loss"]),
+        #				   optimizer=str(p_json["optimizer"]),
+        #				   metrics=[str(p_json["metrics"])])
+        self.model.compile(loss="binary_crossentropy",
+                           optimizer=self.optimizer,
+                           metrics=['accuracy'])
         # ulozit to do DB
         self.save_state()
 
         # ulozenie json create model
         with open("saved_model/cnn/5/json.json", "w+") as json_file:
-            json_file.write(self.json_structure)
+            json.dump(self.json_structure,json_file)
+            #json_file.write(self.json_structure)
 
 
     def change_ref_data(self, new_ref_data):
@@ -328,7 +332,6 @@ class Model_cnn(interface.ModelInterface):
                   Subor   - model uz bol trenovany
                   None    - model este nebol trenovany nikdy
         '''
-        self.locked_by_training = False
         if self.locked_by_training:
             # neda sa vratit jeho train session, ked sa trenuje
             return True

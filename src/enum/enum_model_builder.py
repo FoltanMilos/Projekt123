@@ -34,7 +34,7 @@ class EnumLayerParameters(Enum):
     #attr = tuple(ID,display_name, ExpectedVale)
     KERNEL_SIZE = ("KERNEL_SIZE","kernel_size", ["number","number"])
     NAME = ("NAME","name","string")
-    PADDING  = ("PADDING","padding", "number")
+    PADDING  = ("PADDING","padding", "string")
     INPUT_SHAPE= ("INPUT_SHAPE","input shape", ["number","number"])
     POOL_SIZE = ("POOL_SIZE","pool size","number")
     LOSS = ("LOSS","loss","{}")
@@ -53,6 +53,7 @@ class EnumLayerParameters(Enum):
             return r
         elif(enum_layer is EnumLayer.CONV2D.value):
             r.append(EnumLayerParameters.KERNEL_SIZE.value)
+            r.append(EnumLayerParameters.NEURON_COUNT.value)
             r.append(EnumLayerParameters.INPUT_SHAPE.value)
             r.append(EnumLayerParameters.PADDING.value)
             r.append(EnumLayerParameters.ACTIVATION.value)

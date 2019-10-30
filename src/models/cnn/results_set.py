@@ -22,6 +22,12 @@ class Results_set:
 		self.ref_model = ref_model
 		self.is_changed = False
 		self.is_new = is_new
+		self.result_json = None
+		self.specificity= None
+		self.accuracy= None
+		self.senzitivity= None
+		self.train_result_path= None
+		self.test_result_path= None
 
 		# clasifikacny model bude mat maticu 2x2
 		self.result_matrix = np.zeros(shape=(2,2))
@@ -147,7 +153,7 @@ class Results_set:
 
 
 	def save_state(self):
-		if self.is_changed :
+		if self.is_changed and self.is_new == False :
 			# update len
 			self.ref_model.ref_app.ref_db.update_statement("update proj_result "
 				"SET R_MATRIX_A=" + str(self.result_matrix[1, 1]) + ","
@@ -160,11 +166,8 @@ class Results_set:
 		elif self.is_new:
 			# insert
 			self.r_id = self.ref_model.ref_app.ref_db.insert_returning_identity("insert INTO proj_result"
-				"(R_MATRIX_A, R_MATRIX_B, R_MATRIX_C, R_MATRIX_D, R_SAMPLES_COUNT) values "
-																				   #values(:1,:2,:3,:4,:5,:41)
-				#(self.r_id,self.result_matrix[1, 1],self.result_matrix[0, 1],self.result_matrix[1, 0],self.result_matrix[0,0],self.samples_count))
-				"("+str(self.result_matrix[1, 1])+","+str(self.result_matrix[0, 1])+","
-				+ str(self.result_matrix[1, 0])+","+str(self.result_matrix[0,0])+","+str(self.samples_count)+")","r_id")
+				"(MODEL_TRAIN_RESULT_PATH, SENSITIVITY, SPECIFICITY, ACCURACY, MODEL_TEST_RESULT_PATH) values "
+				"(NULL,NULL,NULL,NULL,NULL)","r_id")
 			self.ref_model.ref_app.ref_db.commit()
 			return self.r_id
 

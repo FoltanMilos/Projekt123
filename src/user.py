@@ -26,6 +26,9 @@ class User:
 
 	def __init__(self,ref_app,user_id,ref_db,identifier):
 		self.models = []
+		self.name = ""
+		self.access = ""
+		self.active_model = None
 		self.u_id = user_id
 		self.ref_app = ref_app
 		self.ref_db = ref_db

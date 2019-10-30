@@ -118,8 +118,6 @@ class Data:
     def load_state(self):
         ret_data_set = self.ref_model.ref_app.ref_db.select_statement(
             "select * from proj_data where m_id=" + str(self.ref_model.m_id) + "")
-        if (len(ret_data_set) < 2):
-            print("MODEL HAS NO DATA!!!!!!!!!!!!!!!!!!!!!!!!!")
         for row in ret_data_set:
             self.d_id = row[0]
             self.paths[row[4]] = row[3]

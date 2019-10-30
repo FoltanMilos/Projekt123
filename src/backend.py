@@ -105,6 +105,7 @@ def predict():
         raise Exception("Nepovolena hodnota v atribute auth! [{}]".format(auth))
 
     img_description_dict = {}
+    img_description_dict["desc"] = None
     if img_description:
         # ak je fotka nasa, mame aj popis niekde
         photo_desc = dt.Data.find_photo_description(application.ref_db,dataset_name)
@@ -234,7 +235,7 @@ def get_models():
     else:
         # je lognuty, vratim userove modely
         usr = application.find_user_by_identification(auth)
-        usr.get_models()
+        res = usr.get_models()
 
     return flask.make_response(json.dumps({'models': res}, ensure_ascii=False, indent=2))
 
@@ -271,7 +272,8 @@ def buildModel(jsonData):
         usr = application.find_user_by_identification(auth)
         if usr is not None:
             usr.create_model_from_builder(jsonData)
-    return flask.Response('Ok', 200)
+            return flask.Response('Ok', 200)
+    return flask.Response('Neautentifikovany user',403)
 
 @app.route('/live_training_session', methods=["GET"])
 def live_training_session():
@@ -334,14 +336,16 @@ def show_info_models():
 def train():
     form = flask.request.get_json()
     auth = request.headers.get('Authorization')
-    model_id = form.get('model')
+    model_id = form.get('modelId')
     print("EndPoint: TrainModel, Auth:{}, modelId: {}".format(auth, model_id))
     if auth is not None:
-        pass
-    # uzivatel je prihlaseny, mozeme dat trenovat
-    usr = application.find_user_by_identification(auth)
-    model = usr.switch_active_model(model_id)
-    model.train()
+        # uzivatel je prihlaseny, mozeme dat trenovat
+        usr = application.find_user_by_identification(auth)
+        model = usr.switch_active_model(model_id)
+        model.train()
+    else:
+        md = application.swap_active_static_model(model_id)
+        md.train()
     return flask.Response('OK',200)
 
 
