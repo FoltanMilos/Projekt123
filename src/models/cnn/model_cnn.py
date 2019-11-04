@@ -83,7 +83,7 @@ class Model_cnn(interface.ModelInterface):
 
     # Trenovanie
     def train(self,dataset_name):
-        self.load()
+        #self.load()
         if self.trained_on_dataset is None:
             # este nebol trenovany, treba vybrat dataset
             self.ref_data = dt.Data(self,dataset_name)
@@ -195,7 +195,7 @@ class Model_cnn(interface.ModelInterface):
             self.ref_data = dt.Data(self, dataset_name)
             self.ref_data.load_state()
         #K.clear_session()
-        self.load()
+        #self.load()
         result = self.model.evaluate_generator(self.ref_data.load_test_set())
         print('Evaluation completed:')
         i = 0
@@ -208,8 +208,8 @@ class Model_cnn(interface.ModelInterface):
     def predict_image(self, image=None):
         """Predikcia jedneho obrazku"""
         #K.clear_session()
-        self.load()
-        self.model._make_predict_function() ## mozno netreba
+        #self.load()
+       # self.model._make_predict_function() ## mozno netreba
         if (image is None):
             raise Exception("Error by predict image. Image is None!")
         image = self.ref_data.preproces_image(image)
@@ -218,7 +218,7 @@ class Model_cnn(interface.ModelInterface):
 
     # TODO: na predikciu dakeho vaciseho sbor
     def predict_image_flow(self):
-        self.load()
+        #self.load()
         image_exante_set = self.ref_data.load_image_exante_flow(
             'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\main_dataset\\validation\\')
         image_exante_set.reset()
@@ -254,7 +254,7 @@ class Model_cnn(interface.ModelInterface):
         self.ref_res_proc.load_state()
 
         # nacitanie modelu
-        #self.load()
+        self.load()
 
     def save_state(self):
         if self.is_new:

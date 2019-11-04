@@ -107,7 +107,7 @@ def predict():
         result = usr.switch_active_model().predict_image(img)
     else:
         raise Exception("Nepovolena hodnota v atribute auth! [{}]".format(auth))
-
+    print(result)
     img_description_dict = {}
     img_description_dict["desc"] = None
     if img_description:
