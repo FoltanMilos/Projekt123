@@ -37,19 +37,20 @@ class Application:
         ## testovanie no FE
         # VYHODIT
         import src.models.cnn.model_cnn as mc
-        credentials = {}
-        credentials['username'] = 'admin'
-        credentials['pass'] = 'admin'
-        self.validate_user(credentials)
-        self.list_active_user[0].indentifier = 'PFmEJpSKDdZTPNudgqtkMoobRGiFlfjk'
+        #credentials = {}
+        #credentials['username'] = 'admin'
+        #credentials['pass'] = 'admin'
+        #self.validate_user(credentials)
+        #self.list_active_user[0].indentifier = 'MgtKbChIBsFpumdwizuSeDnxXjBpDowo'
 
         #model = mc.Model_cnn("EXAMPLE",self.list_active_user[0],self,None)
-        ##model.is_new = True
+        #model.is_new = True
         #dc = {}
         #dc["modelName"] = "EXAMPLE"
         #model.create_model_from_json(dc)
 
         #model = self.list_static_models[0]
+        #hist = model.train("small_dataset")
         #hist_test = model.test("data(10015)")
 
        # hist = model.train("small_dataset")

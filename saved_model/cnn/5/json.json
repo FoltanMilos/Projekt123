@@ -1,1 +1,1 @@
-{"type": "cnn", "modelName": "ExampleModel", "metrics": null, "optimizer": null, "loss": null, "layers": [{"ACTIVATION": "RELU", "class": "DENSE", "NEURON_COUNT": "100", "NAME": "ss"}]}
+{"modelName": "EXAMPLE"}

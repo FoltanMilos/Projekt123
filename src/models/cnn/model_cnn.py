@@ -1,14 +1,14 @@
 import pickle
 
-from keras.callbacks import EarlyStopping
-from keras.models import Sequential
-from keras.layers import Dense, Flatten, Activation
-from keras.layers import Conv2D, MaxPooling2D, BatchNormalization
+from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Flatten, Activation
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, BatchNormalization
 import numpy as np
 from keras.models import model_from_json
 import src.config as conf
 import src.interface.model_interface as interface
-import keras.initializers
+import tensorflow.keras.initializers
 import src.models.cnn.results_set as ResultSet
 import os
 import json
@@ -16,8 +16,8 @@ import src.enum.enum_model_builder as mb
 import src.data as dt
 import random
 import tensorflow as tf
-from keras import  backend as K
-from keras.models import load_model
+from tensorflow.keras import  backend as K
+from tensorflow.keras.models import load_model
 
 
 class Model_cnn(interface.ModelInterface):
@@ -61,31 +61,29 @@ class Model_cnn(interface.ModelInterface):
             self.path_struct = None
             self.path_weights = None
             self.model = Sequential()
-        self.optimizer = keras.optimizers.Adadelta(lr=1.0, rho=0.95, epsilon=None, decay=0.0)
+        self.optimizer = tensorflow.keras.optimizers.Adadelta(lr=1.0, rho=0.95, epsilon=None, decay=0.0)
             # ADADELTA --> an adaptive learning rate method
             #  Adadelta is a more robust extension of Adagrad that adapts learning rates based on a moving window of gradient updates,
             #  instead of accumulating all past gradients. This way, Adadelta continues learning even when many updates have been done.
             #  Compared to Adagrad, in the original version of Adadelta you don't have to set an initial learning rate. In this version,
             #  initial learning rate and decay factor can be set, as in most other Keras optimizers.
-        self.initializer = keras.initializers.glorot_uniform(conf.initializer_seed)
-        self.bias_initializer = keras.initializers.RandomNormal(mean=0.0, stddev=0.05, seed=None)
+        self.initializer = tensorflow.keras.initializers.glorot_uniform(conf.initializer_seed)
+        self.bias_initializer = tensorflow.keras.initializers.RandomNormal(mean=0.0, stddev=0.05, seed=None)
             #self.save_state()
 
     # Ulozenie historie trenovania
     def save_train_history(self, train_history):
         hist_path = 'saved_model/cnn/' + str(int(self.m_id)) + '/train_history.json'
         with open(hist_path, 'w') as file_histo:
+            for i in range(len(train_history.history['accuracy'])):
+                train_history.history['accuracy'][i] = float(train_history.history['accuracy'][i])
+                train_history.history['val_accuracy'][i] = float(train_history.history['val_accuracy'][i])
             json.dump(train_history.history, file_histo)
         print("Training history has been saved.")
 
     # Trenovanie
     def train(self,dataset_name):
-        #self.model._make_predict_function()
         self.load()
-        self.optimizer = keras.optimizers.Adadelta(lr=1.0, rho=0.95, epsilon=None, decay=0.0)
-        self.model.compile(loss="binary_crossentropy",
-                           optimizer="adam",
-                           metrics=['accuracy'])
         if self.trained_on_dataset is None:
             # este nebol trenovany, treba vybrat dataset
             self.ref_data = dt.Data(self,dataset_name)
@@ -97,7 +95,7 @@ class Model_cnn(interface.ModelInterface):
             self.ref_data.train_set, steps_per_epoch=10, epochs=5,
             validation_data=self.ref_data.valid_set,
             validation_steps=5,
-            callbacks=[EarlyStopping(monitor='acc',
+            callbacks=[EarlyStopping(monitor='accuracy',
                                      patience=200,
                                      verbose=1)])
         # nastavenie parametrov
@@ -120,11 +118,12 @@ class Model_cnn(interface.ModelInterface):
         # VSTUPNA
         self.model.add(Conv2D(64,
                               kernel_size=3,
-                              activation='relu',
-                              padding='valid',
-                              bias_initializer=self.bias_initializer,
-                              input_shape=(conf.IMG_SIZE_X, conf.IMG_SIZE_Y, 3),
-                              kernel_initializer=self.initializer)
+                              #activation='relu',
+                              #padding='valid',
+                              #bias_initializer=self.bias_initializer,
+                              input_shape=(conf.IMG_SIZE_X, conf.IMG_SIZE_Y, 3)
+                              #kernel_initializer=self.initializer
+                              )
                        )
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
 
@@ -172,7 +171,7 @@ class Model_cnn(interface.ModelInterface):
         #self.model.load_weights(self.path_weights)
         self.model = load_model(self.path_struct)
         self.model._make_predict_function()
-        graph = tf.get_default_graph()
+        graph = tf.compat.v1.get_default_graph()
         print("Loaded model from disk")
        # except:
         #    print("Model este nema ulozene vahy a strukturu")
@@ -185,7 +184,7 @@ class Model_cnn(interface.ModelInterface):
         # ulozenie vah
         #self.model.save_weights(self.path_weights)
         # self.test()
-        self.model.save(self.path_struct)
+        self.model.save(self.path_struct,save_format='h5')
         print("Saved model to disk")
 
     # Model evaluation
@@ -195,9 +194,8 @@ class Model_cnn(interface.ModelInterface):
         if self.ref_data is None or ( dataset_name is not None and self.ref_data.name != dataset_name):
             self.ref_data = dt.Data(self, dataset_name)
             self.ref_data.load_state()
-        K.clear_session()
+        #K.clear_session()
         self.load()
-        #self.model._make_predict_function()
         result = self.model.evaluate_generator(self.ref_data.load_test_set())
         print('Evaluation completed:')
         i = 0
@@ -313,56 +311,50 @@ class Model_cnn(interface.ModelInterface):
         self.json_structure = p_json
         self.name = p_json["modelName"]
         self.model = Sequential()
-        with open('other_files/jsonCreate', 'r') as jsons:
-            p_json = json.load(jsons)
-        if None is None:
-            for lay in p_json["layers"]:
-                if lay["class"] == mb.EnumLayer.INPUT.name.upper():
-                    self.model.add(Conv2D(int(lay["NEURON_COUNT"]),
-                                          #kernel_size=int(str(lay["KERNEL_SIZE"]).split('x')[0].split(',')[0]),
-                                          (3,3),
-                                          activation=str(lay["ACTIVATION"]).lower(),
-                                          padding=str(lay["PADDING"]).lower(),
-                                          bias_initializer=self.bias_initializer,
-                                          input_shape=(64,64,3),
-                                          kernel_initializer=self.initializer
-                                          #input_shape=(int(str(lay["INPUT_SHAPE"]).split('x')[0].split(',')[0]),
-                                          #             int(str(lay["INPUT_SHAPE"]).split('x')[0].split(',')[1]),
-                                          #             3)
-                                          )
-                                   )
-                elif lay["class"] == mb.EnumLayer.FLATTENING.name.upper():
-                    self.model.add(Flatten())
-                elif lay["class"] == mb.EnumLayer.POOLING.name.upper():
-                    self.model.add(MaxPooling2D(pool_size=(int(str(lay["POOL_SIZE"])),
-                                                           int(str(lay["POOL_SIZE"]))))
-                                   )
-                elif lay["class"] == mb.EnumLayer.DENSE.name.upper():
-                    self.model.add(Dense(int(str(lay["NEURON_COUNT"]))
-                                         , activation=str(lay["ACTIVATION"]).lower()))
-                elif lay["class"] == mb.EnumLayer.BATCH_NORMALIZATION.name.upper():
-                    self.model.add(BatchNormalization())
-                elif lay["class"] == mb.EnumLayer.CONV2D.name.upper():
-                    self.model.add(Conv2D(int(lay["NEURON_COUNT"]),
-                                          #kernel_size=int(str(lay["KERNEL_SIZE"]).split('x')[0].split(',')[0]),
-                                          (3, 3),
-                                          #bias_initializer = self.bias_initializer,
-                                          activation=str(lay["ACTIVATION"]).lower(),
-                                          padding=str(lay["PADDING"]).lower()
-                                          )
-                                   )
-            self.model.compile(loss="binary_crossentropy",
-                                   optimizer="adam",
-                                   metrics=['accuracy'])
-        else:
-            self.create()
-        #self.train("small_dataset")
-        #self.create()
+        #with open('other_files/jsonCreate', 'r') as jsons:
+        #    p_json = json.load(jsons)
+        for lay in p_json["layers"]:
+            if lay["class"] == mb.EnumLayer.INPUT.name.upper():
+                self.model.add(Conv2D(int(lay["NEURON_COUNT"]),
+                                      #kernel_size=int(str(lay["KERNEL_SIZE"]).split('x')[0].split(',')[0]),
+                                      (3,3),
+                                      activation=str(lay["ACTIVATION"]).lower(),
+                                      padding=str(lay["PADDING"]).lower(),
+                                      bias_initializer=self.bias_initializer,
+                                      input_shape=(64,64,3)
+                                      #kernel_initializer=self.initializer
+                                      #input_shape=(int(str(lay["INPUT_SHAPE"]).split('x')[0].split(',')[0]),
+                                      #             int(str(lay["INPUT_SHAPE"]).split('x')[0].split(',')[1]),
+                                      #             3)
+                                      )
+                               )
+            elif lay["class"] == mb.EnumLayer.FLATTENING.name.upper():
+                self.model.add(Flatten())
+            elif lay["class"] == mb.EnumLayer.POOLING.name.upper():
+                self.model.add(MaxPooling2D(pool_size=(int(str(lay["POOL_SIZE"])),
+                                                       int(str(lay["POOL_SIZE"]))))
+                               )
+            elif lay["class"] == mb.EnumLayer.DENSE.name.upper():
+                self.model.add(Dense(int(str(lay["NEURON_COUNT"]))
+                                     , activation=str(lay["ACTIVATION"]).lower()))
+            elif lay["class"] == mb.EnumLayer.BATCH_NORMALIZATION.name.upper():
+                self.model.add(BatchNormalization())
+            elif lay["class"] == mb.EnumLayer.CONV2D.name.upper():
+                self.model.add(Conv2D(int(lay["NEURON_COUNT"]),
+                                      #kernel_size=int(str(lay["KERNEL_SIZE"]).split('x')[0].split(',')[0]),
+                                      (3, 3),
+                                      #bias_initializer = self.bias_initializer,
+                                      activation=str(lay["ACTIVATION"]).lower(),
+                                      padding=str(lay["PADDING"]).lower()
+                                      )
+                               )
+        self.model.compile(loss="binary_crossentropy",
+                               optimizer="adam",
+                               metrics=['accuracy'])
         # este treba optimizer
         #self.model.compile(loss=str(p_json["loss"]),
         #				   optimizer=str(p_json["optimizer"]),
         #				   metrics=[str(p_json["metrics"])])
-
 
         # ulozit to do DB
         self.save_state() # toto je kvoli vrateniu ID
