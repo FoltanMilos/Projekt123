@@ -160,7 +160,7 @@ class Model_cnn(interface.ModelInterface):
 
     # Nahranie uz vytvoreneho modelu
     def load(self):
-        K.clear_session()
+        #K.clear_session()
 
         #tf.global_variables_initializer()
         #try:
@@ -170,8 +170,8 @@ class Model_cnn(interface.ModelInterface):
         # nastavenie ulozenych vah
         #self.model.load_weights(self.path_weights)
         self.model = load_model(self.path_struct)
-        self.model._make_predict_function()
-        graph = tf.compat.v1.get_default_graph()
+        #self.model._make_predict_function()
+        #graph = tf.compat.v1.get_default_graph()
         print("Loaded model from disk")
        # except:
         #    print("Model este nema ulozene vahy a strukturu")
@@ -233,17 +233,17 @@ class Model_cnn(interface.ModelInterface):
 
     def load_state(self, state):
         self.m_id = int(state[0])
-        self.path_struct = state[6]
-        self.path_weights = state[5]
+        self.path_struct = state[5]
+        #self.path_weights = state[5]
         self.is_new = False
         self.is_changed = False
-        self.name = state[7]
-        if state[8] == 'F':
+        self.name = state[6]
+        if state[7] == 'F':
             self.locked_by_training = False
         else:
             self.locked_by_training = True
-        self.trained_on_dataset = state[9]
-        self.static = state[10]
+        self.trained_on_dataset = state[8]
+        self.static = state[9]
 
         # dotiahnutie dat
         self.ref_data = dt.Data(self,self.trained_on_dataset)
@@ -262,9 +262,9 @@ class Model_cnn(interface.ModelInterface):
             self.ref_res_proc.save_state()
             # insert
             self.m_id = self.ref_app.ref_db.insert_returning_identity(
-                "insert into proj_model(u_id,r_id,m_type,m_weights_path,m_structure_path,model_name) values"
+                "insert into proj_model(u_id,r_id,m_type,m_structure_path,model_name) values"
                 "(" + str(self.ref_user.u_id) + ", " + str(
-                    self.ref_res_proc.r_id) + ",'CNN'" + ",'" + "','" + "','" + str(self.name) + "')"
+                    self.ref_res_proc.r_id) + ",'CNN','" + "','" + str(self.name) + "')"
                 , "m_id")
             # ak je novy model, treba  u vytvorit este aj folder
             os.mkdir(os.getcwd() + '/saved_model/cnn/' + str(int(self.m_id)))
@@ -275,9 +275,8 @@ class Model_cnn(interface.ModelInterface):
             if self.trained_on_dataset is None:
                 dt = "NULL"
             self.ref_app.ref_db.update_statement(
-                "update proj_model set r_id=" + str(self.ref_res_proc.r_id) + ", m_weights_path='" + str(
-                    self.path_weights) +
-                "', m_structure_path='" + str(self.path_struct) + "', model_name='" + str(
+                "update proj_model set r_id=" + str(self.ref_res_proc.r_id) +
+                ", m_structure_path='" + str(self.path_struct) + "', model_name='" + str(
                     self.name) + "',trained_on_dataset=" + str(dt)+ "  where m_id=" + str(self.m_id))
             self.ref_app.ref_db.commit()
 
@@ -311,13 +310,12 @@ class Model_cnn(interface.ModelInterface):
         self.json_structure = p_json
         self.name = p_json["modelName"]
         self.model = Sequential()
-        #with open('other_files/jsonCreate', 'r') as jsons:
-        #    p_json = json.load(jsons)
+        with open('other_files/jsonCreate', 'r') as jsons:
+            p_json = json.load(jsons)
         for lay in p_json["layers"]:
             if lay["class"] == mb.EnumLayer.INPUT.name.upper():
                 self.model.add(Conv2D(int(lay["NEURON_COUNT"]),
-                                      #kernel_size=int(str(lay["KERNEL_SIZE"]).split('x')[0].split(',')[0]),
-                                      (3,3),
+                                      kernel_size=int(str(lay["KERNEL_SIZE"]).split('x')[0].split(',')[0]),
                                       activation=str(lay["ACTIVATION"]).lower(),
                                       padding=str(lay["PADDING"]).lower(),
                                       bias_initializer=self.bias_initializer,
@@ -341,8 +339,8 @@ class Model_cnn(interface.ModelInterface):
                 self.model.add(BatchNormalization())
             elif lay["class"] == mb.EnumLayer.CONV2D.name.upper():
                 self.model.add(Conv2D(int(lay["NEURON_COUNT"]),
-                                      #kernel_size=int(str(lay["KERNEL_SIZE"]).split('x')[0].split(',')[0]),
-                                      (3, 3),
+                                      kernel_size=int(str(lay["KERNEL_SIZE"]).split('x')[0].split(',')[0]),
+                                      #(3, 3),
                                       #bias_initializer = self.bias_initializer,
                                       activation=str(lay["ACTIVATION"]).lower(),
                                       padding=str(lay["PADDING"]).lower()
@@ -359,7 +357,7 @@ class Model_cnn(interface.ModelInterface):
         # ulozit to do DB
         self.save_state() # toto je kvoli vrateniu ID
         self.path_struct = 'saved_model/cnn/' + str(int(self.m_id)) + '/model'
-        self.path_weights = 'saved_model/cnn/' + str(int(self.m_id)) + '/model.h5'
+        #self.path_weights = 'saved_model/cnn/' + str(int(self.m_id)) + '/model.h5'
         self.is_new = False
         self.is_changed = True
         self.save_state() # treba ulozit cesty k suborom
