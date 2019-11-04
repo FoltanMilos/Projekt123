@@ -1,6 +1,9 @@
 from flask import Flask, request
 import flask
 import sys
+
+from scipy.sparse.data import _data_matrix
+
 import src.data as dt
 
 sys.path.append('db')
@@ -11,6 +14,7 @@ sys.path.append('enum')
 sys.path.append('interface')
 
 import src.application as neuralNetworkApplication
+import tensorflow as tf
 import src.config as conf
 import src.enum.enum_model_builder as el
 import base64
@@ -180,7 +184,7 @@ def testing_session():
             head_test_session_info.append(user_model.model_to_json)
             head_test_session_info.append(user_model.ref_data.to_json)
 
-        return flask.make_response(json.dumps(head_test_session_info))
+    return flask.make_response(json.dumps(head_test_session_info))
 
 
 @app.route('/dataset/new', methods=["POST"])
@@ -293,13 +297,26 @@ def re_train():
     print("EndPoint: ReTrain, Auth:{}, ModelId:{}".format(auth, model_id))
     return flask.Response('este nikto nerobil', 200)
 
-@app.route('/re_test', methods=["GET"])
-def re_test():
-    form = flask.request.get_json()
+@app.route('/test', methods=["POST"])
+def test():
+    #global graph
+    #form = flask.request.get_json()
+    form = request.form
     auth = request.headers.get('Authorization')
-    model_id = form.get('model')
-    print("EndPoint: ReTest, Auth:{}, ModelId:{}".format(auth, model_id))
-    return flask.Response('este nikto nerobil', 200)
+    model_id = int(form.get('modelId'))
+    dataset_name = form.get('datasetName')
+    print("EndPoint: Test, Auth:{}, ModelId:{}".format(auth, model_id))
+    res = None
+    if auth is not None:
+        # je niekto prihlaseny
+        usr = application.find_user_by_identification(auth)
+        if usr is not None:
+            user_model = usr.switch_active_model(model_id)
+            if dataset_name is None:
+                res = user_model.test(None)
+            else:
+                res = user_model.test(dataset_name)
+    return flask.Response(json.dumps({'results': res}, ensure_ascii=False, indent=2), 200)
 
 @app.route('/info_models', methods=["GET"])
 def show_info_models():
@@ -337,6 +354,7 @@ def train():
     form = flask.request.get_json()
     auth = request.headers.get('Authorization')
     model_id = form.get('modelId')
+    dataset_name = form.get('datasetName')
     print("EndPoint: TrainModel, Auth:{}, modelId: {}".format(auth, model_id))
     if auth is not None:
         # uzivatel je prihlaseny, mozeme dat trenovat
@@ -345,7 +363,8 @@ def train():
         model.train()
     else:
         md = application.swap_active_static_model(model_id)
-        md.train()
+        md.train("small_dataset")
+        # md.train(dataset_name)
     return flask.Response('OK',200)
 
 

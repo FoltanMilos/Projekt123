@@ -34,6 +34,27 @@ class Application:
         # natiahnutie statickych modelov
         self.load_all_static_models()
 
+        ## testovanie no FE
+        # VYHODIT
+        import src.models.cnn.model_cnn as mc
+        credentials = {}
+        credentials['username'] = 'admin'
+        credentials['pass'] = 'admin'
+        self.validate_user(credentials)
+        self.list_active_user[0].indentifier = 'PFmEJpSKDdZTPNudgqtkMoobRGiFlfjk'
+
+        #model = mc.Model_cnn("EXAMPLE",self.list_active_user[0],self,None)
+        ##model.is_new = True
+        #dc = {}
+        #dc["modelName"] = "EXAMPLE"
+        #model.create_model_from_json(dc)
+
+        #model = self.list_static_models[0]
+        #hist_test = model.test("data(10015)")
+
+       # hist = model.train("small_dataset")
+        #print(hist)
+
     def validate_user(self, credentials):
         res = self.ref_db.select_statement("select * from proj_user where u_name ='"+ credentials['username'] +"'")
         for row in res:

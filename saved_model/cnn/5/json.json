@@ -1,1 +1,1 @@
-{"loss": null, "metrics": null, "type": "cnn", "optimizer": null, "modelName": "ExampleModel", "layers": [{"NAME": "ss", "PADDING": "same", "class": "INPUT", "NEURON_COUNT": "100", "INPUT_SHAPE": "64,64", "ACTIVATION": "RELU", "KERNEL_SIZE": "3,3"}]}
+{"type": "cnn", "modelName": "ExampleModel", "metrics": null, "optimizer": null, "loss": null, "layers": [{"ACTIVATION": "RELU", "class": "DENSE", "NEURON_COUNT": "100", "NAME": "ss"}]}

@@ -27,12 +27,13 @@ class Data:
     global img_size
     global count_all_pics           # v celom datasete T + R + V
 
-    def __init__(self,ref_model):
+    def __init__(self,ref_model,dataset_name):
         self.ref_model= ref_model
         self.paths = {"T":None,
                       "R":None,
                       "V":None}
         self.is_new = None
+        self.name = dataset_name
         self.train_datagen = ImageDataGenerator(rescale=1. / 255,
                                                 shear_range=0.2,
                                                 zoom_range=0.2,
@@ -116,21 +117,23 @@ class Data:
         return image
 
     def load_state(self):
-        ret_data_set = self.ref_model.ref_app.ref_db.select_statement(
-            "select * from proj_data where m_id=" + str(self.ref_model.m_id) + "")
-        for row in ret_data_set:
-            self.d_id = row[0]
-            self.paths[row[4]] = row[3]
-            self.name = row[2]
-            self.count = row[6]
-            self.data_description = row[7]
-            self.path_to_desc = row[5]
-            self.count_bening = row[8]
-            self.count_malig = row[9]
-            self.count_unspecified = row[10]
-            self.link_dataset = row[11]
-            self.img_size = row[12]
-            self.count_all_pics = row[13]
+        if self.name is not None:
+            # KED MODEL ESTE NEMA PRIRADENE DATA LEBO NEBOL TRENOVANY
+            ret_data_set = self.ref_model.ref_app.ref_db.select_statement(
+                "select * from proj_data where d_name='" + str(self.name.lower()) + "'")
+            for row in ret_data_set:
+                self.d_id = row[0]
+                self.paths[row[4]] = row[3]
+                self.name = row[2]
+                self.count = row[6]
+                self.data_description = row[7]
+                self.path_to_desc = row[5]
+                self.count_bening = row[8]
+                self.count_malig = row[9]
+                self.count_unspecified = row[10]
+                self.link_dataset = row[11]
+                self.img_size = row[12]
+                self.count_all_pics = row[13]
 
     def save_state(self):
         if(self.is_new):

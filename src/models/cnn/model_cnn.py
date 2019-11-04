@@ -17,10 +17,11 @@ import src.data as dt
 import random
 import tensorflow as tf
 from keras import  backend as K
+from keras.models import load_model
 
 
 class Model_cnn(interface.ModelInterface):
-    global model  # instancia modelu keras
+    #global model  # instancia modelu keras
     global name  # nazov modelu
     global m_id  # model id
     global ref_data  # referencia na data patriace modelu
@@ -39,6 +40,13 @@ class Model_cnn(interface.ModelInterface):
         self.ref_user = ref_user
         self.ref_app = ref_app
         self.ref_data = ref_data
+        self.trained_on_dataset = None
+        self.training_file= None
+        self.locked_by_training= None
+        self.static = None
+        self.m_id = -1
+        self.model = None
+
         if model_name == "":
             # prazdna instania, do ktorej sa naloaduju data
             self.is_new = False
@@ -53,44 +61,54 @@ class Model_cnn(interface.ModelInterface):
             self.path_struct = None
             self.path_weights = None
             self.model = Sequential()
-            self.optimizer = keras.optimizers.Adadelta(lr=1.0, rho=0.95, epsilon=None, decay=0.0)
+        self.optimizer = keras.optimizers.Adadelta(lr=1.0, rho=0.95, epsilon=None, decay=0.0)
             # ADADELTA --> an adaptive learning rate method
             #  Adadelta is a more robust extension of Adagrad that adapts learning rates based on a moving window of gradient updates,
             #  instead of accumulating all past gradients. This way, Adadelta continues learning even when many updates have been done.
             #  Compared to Adagrad, in the original version of Adadelta you don't have to set an initial learning rate. In this version,
             #  initial learning rate and decay factor can be set, as in most other Keras optimizers.
-            self.initializer = keras.initializers.glorot_uniform(conf.initializer_seed)
-            self.bias_initializer = keras.initializers.RandomNormal(mean=0.0, stddev=0.05, seed=None)
+        self.initializer = keras.initializers.glorot_uniform(conf.initializer_seed)
+        self.bias_initializer = keras.initializers.RandomNormal(mean=0.0, stddev=0.05, seed=None)
             #self.save_state()
 
     # Ulozenie historie trenovania
     def save_train_history(self, train_history):
-        hist_path = 'saved_model/cnn/' + str(int(self.m_id)) + '/train_history'
-        with open(hist_path, 'wb') as file_histo:
-            pickle.dump(train_history.history, file_histo)
+        hist_path = 'saved_model/cnn/' + str(int(self.m_id)) + '/train_history.json'
+        with open(hist_path, 'w') as file_histo:
+            json.dump(train_history.history, file_histo)
         print("Training history has been saved.")
 
     # Trenovanie
-    def train(self):
-        if (self.ref_data != None):
-            self.ref_data.load_train_set()
-            self.ref_data.load_validation_set()
-        else:
-            raise Exception("No instance DATA has been picked for training")
+    def train(self,dataset_name):
+        #self.model._make_predict_function()
+        self.load()
+        self.optimizer = keras.optimizers.Adadelta(lr=1.0, rho=0.95, epsilon=None, decay=0.0)
+        self.model.compile(loss="binary_crossentropy",
+                           optimizer="adam",
+                           metrics=['accuracy'])
+        if self.trained_on_dataset is None:
+            # este nebol trenovany, treba vybrat dataset
+            self.ref_data = dt.Data(self,dataset_name)
+            self.ref_data.load_state()
+        self.ref_data.load_train_set()
+        self.ref_data.load_validation_set()
+
         train_hist = self.model.fit_generator(
             self.ref_data.train_set, steps_per_epoch=10, epochs=5,
             validation_data=self.ref_data.valid_set,
             validation_steps=5,
             callbacks=[EarlyStopping(monitor='acc',
                                      patience=200,
-                                     verbose=1)]),
+                                     verbose=1)])
+        # nastavenie parametrov
+        self.trained_on_dataset = self.ref_data.name
         self.is_changed = True
-        self.path_struct = 'saved_model/cnn/' + str(int(self.m_id)) + '/model.json'
-        self.path_weights = 'saved_model/cnn/' + str(int(self.m_id)) + '/model.h5'
-        self.save_train_history(train_hist)
-        self.save()
-        self.is_new = False
         self.save_state()
+        self.path_struct = 'saved_model/cnn/' + str(int(self.m_id)) + '/model'
+        self.path_weights = 'saved_model/cnn/' + str(int(self.m_id)) + '/model.h5'
+        self.save()
+        self.save_train_history(train_hist)
+        self.is_new = False
         return train_hist
 
     # zlozenie modelu
@@ -137,38 +155,49 @@ class Model_cnn(interface.ModelInterface):
 
         # compilovanie rmsprop ??mean_squared_error, rmsprop ?? najlepsie bola adadelta
         self.model.compile(loss="binary_crossentropy",
-                           optimizer=self.optimizer,
+                           optimizer="adam",
                            metrics=['accuracy'])
         return self.model
 
     # Nahranie uz vytvoreneho modelu
     def load(self):
         K.clear_session()
-        tf.global_variables_initializer()
-        json_file = open(self.path_struct, 'r')
-        loaded_model_json = json_file.read()
-        json_file.close()
-        self.model = model_from_json(loaded_model_json)
+
+        #tf.global_variables_initializer()
+        #try:
+        #with open(self.path_struct, 'r') as json_file:
+         #   loaded_model_json = json_file.read()
+          #  self.model = model_from_json(loaded_model_json)
         # nastavenie ulozenych vah
-        self.model.load_weights(self.path_weights)
-        #self.model.compile(loss='binary_crossentropy', optimizer='adadelta', metrics=['accuracy'])
+        #self.model.load_weights(self.path_weights)
+        self.model = load_model(self.path_struct)
         self.model._make_predict_function()
+        graph = tf.get_default_graph()
         print("Loaded model from disk")
+       # except:
+        #    print("Model este nema ulozene vahy a strukturu")
 
     # ulozenie modelu
     def save(self):
-        json_model = self.model.to_json()
-        with open(self.path_struct, "w+") as json_file:
-            json_file.write(json_model)
+        #json_model = self.model.to_json()
+        #with open(self.path_struct, "w+") as json_file:
+        #    json_file.write(json_model)
         # ulozenie vah
-        self.model.save_weights(self.path_weights)
+        #self.model.save_weights(self.path_weights)
         # self.test()
+        self.model.save(self.path_struct)
         print("Saved model to disk")
 
     # Model evaluation
-    def test(self):
+    def test(self, dataset_name):
         print('Model evaulation(Test set used):')
-        # result = self.model.evaluate(np.array(test_data), np.array(test_labels)[:,0], batch_size=1)
+        # este nebol trenovany, treba vybrat dataset
+        if self.ref_data is None or ( dataset_name is not None and self.ref_data.name != dataset_name):
+            self.ref_data = dt.Data(self, dataset_name)
+            self.ref_data.load_state()
+        K.clear_session()
+        self.load()
+        #self.model._make_predict_function()
         result = self.model.evaluate_generator(self.ref_data.load_test_set())
         print('Evaluation completed:')
         i = 0
@@ -180,6 +209,9 @@ class Model_cnn(interface.ModelInterface):
 
     def predict_image(self, image=None):
         """Predikcia jedneho obrazku"""
+        #K.clear_session()
+        self.load()
+        self.model._make_predict_function() ## mozno netreba
         if (image is None):
             raise Exception("Error by predict image. Image is None!")
         image = self.ref_data.preproces_image(image)
@@ -188,6 +220,7 @@ class Model_cnn(interface.ModelInterface):
 
     # TODO: na predikciu dakeho vaciseho sbor
     def predict_image_flow(self):
+        self.load()
         image_exante_set = self.ref_data.load_image_exante_flow(
             'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\main_dataset\\validation\\')
         image_exante_set.reset()
@@ -215,7 +248,7 @@ class Model_cnn(interface.ModelInterface):
         self.static = state[10]
 
         # dotiahnutie dat
-        self.ref_data = dt.Data(self)
+        self.ref_data = dt.Data(self,self.trained_on_dataset)
         self.ref_data.load_state()
 
         # dotiahnutie resutov
@@ -223,7 +256,7 @@ class Model_cnn(interface.ModelInterface):
         self.ref_res_proc.load_state()
 
         # nacitanie modelu
-        self.load()
+        #self.load()
 
     def save_state(self):
         if self.is_new:
@@ -240,11 +273,14 @@ class Model_cnn(interface.ModelInterface):
             self.ref_app.ref_db.commit()
 
         if self.is_changed and self.is_new == False:
+            dt = "'"+ str(self.trained_on_dataset) + "'"
+            if self.trained_on_dataset is None:
+                dt = "NULL"
             self.ref_app.ref_db.update_statement(
                 "update proj_model set r_id=" + str(self.ref_res_proc.r_id) + ", m_weights_path='" + str(
                     self.path_weights) +
                 "', m_structure_path='" + str(self.path_struct) + "', model_name='" + str(
-                    self.name) + "' where m_id=" + str(self.m_id))
+                    self.name) + "',trained_on_dataset=" + str(dt)+ "  where m_id=" + str(self.m_id))
             self.ref_app.ref_db.commit()
 
     def model_to_json(self):
@@ -276,53 +312,76 @@ class Model_cnn(interface.ModelInterface):
     def create_model_from_json(self, p_json):
         self.json_structure = p_json
         self.name = p_json["modelName"]
-        for lay in p_json["layers"]:
-            if lay["class"] == mb.EnumLayer.INPUT.name.upper():
-                self.model.add(Conv2D(int(lay["NEURON_COUNT"]),
-                                      kernel_size=int(str(lay["KERNEL_SIZE"]).split('x')[0].split(',')[0]),
-                                      activation=str(lay["ACTIVATION"]).lower(),
-                                      padding=str(lay["PADDING"]).lower(),
-                                      input_shape=(int(str(lay["INPUT_SHAPE"]).split('x')[0].split(',')[0]),
-                                                   int(str(lay["INPUT_SHAPE"]).split('x')[0].split(',')[1]),
-                                                   3)
-                                      )
-                               )
-            elif lay["class"] == mb.EnumLayer.FLATTENING.name.upper():
-                self.model.add(Flatten())
-            elif lay["class"] == mb.EnumLayer.POOLING.value.upper():
-                self.model.add(MaxPooling2D(pool_size=(int(str(lay["POOL_SIZE"])),
-                                                       int(str(lay["POOL_SIZE"]))))
-                               )
-            elif lay["class"] == mb.EnumLayer.DENSE.name.upper():
-                self.model.add(Dense(int(str(lay["NEURON_COUNT"]))
-                                     , activation=str(lay["ACTIVATION"]).lower()))
-            elif lay["class"] == mb.EnumLayer.BATCH_NORMALIZATION.value.upper():
-                self.model.add(BatchNormalization())
-            elif lay["class"] == mb.EnumLayer.CONV2D.name.upper():
-                self.model.add(Conv2D(int(lay["NEURON_COUNT"]),
-                                      kernel_size=int(str(lay["KERNEL_SIZE"]).split('x')[0].split(',')[0]),
-                                      activation=str(lay["ACTIVATION"]).lower(),
-                                      #padding=str(lay["PADDING"])
-                                      )
-                               )
+        self.model = Sequential()
+        with open('other_files/jsonCreate', 'r') as jsons:
+            p_json = json.load(jsons)
+        if None is None:
+            for lay in p_json["layers"]:
+                if lay["class"] == mb.EnumLayer.INPUT.name.upper():
+                    self.model.add(Conv2D(int(lay["NEURON_COUNT"]),
+                                          #kernel_size=int(str(lay["KERNEL_SIZE"]).split('x')[0].split(',')[0]),
+                                          (3,3),
+                                          activation=str(lay["ACTIVATION"]).lower(),
+                                          padding=str(lay["PADDING"]).lower(),
+                                          bias_initializer=self.bias_initializer,
+                                          input_shape=(64,64,3),
+                                          kernel_initializer=self.initializer
+                                          #input_shape=(int(str(lay["INPUT_SHAPE"]).split('x')[0].split(',')[0]),
+                                          #             int(str(lay["INPUT_SHAPE"]).split('x')[0].split(',')[1]),
+                                          #             3)
+                                          )
+                                   )
+                elif lay["class"] == mb.EnumLayer.FLATTENING.name.upper():
+                    self.model.add(Flatten())
+                elif lay["class"] == mb.EnumLayer.POOLING.name.upper():
+                    self.model.add(MaxPooling2D(pool_size=(int(str(lay["POOL_SIZE"])),
+                                                           int(str(lay["POOL_SIZE"]))))
+                                   )
+                elif lay["class"] == mb.EnumLayer.DENSE.name.upper():
+                    self.model.add(Dense(int(str(lay["NEURON_COUNT"]))
+                                         , activation=str(lay["ACTIVATION"]).lower()))
+                elif lay["class"] == mb.EnumLayer.BATCH_NORMALIZATION.name.upper():
+                    self.model.add(BatchNormalization())
+                elif lay["class"] == mb.EnumLayer.CONV2D.name.upper():
+                    self.model.add(Conv2D(int(lay["NEURON_COUNT"]),
+                                          #kernel_size=int(str(lay["KERNEL_SIZE"]).split('x')[0].split(',')[0]),
+                                          (3, 3),
+                                          #bias_initializer = self.bias_initializer,
+                                          activation=str(lay["ACTIVATION"]).lower(),
+                                          padding=str(lay["PADDING"]).lower()
+                                          )
+                                   )
+            self.model.compile(loss="binary_crossentropy",
+                                   optimizer="adam",
+                                   metrics=['accuracy'])
+        else:
+            self.create()
+        #self.train("small_dataset")
+        #self.create()
         # este treba optimizer
         #self.model.compile(loss=str(p_json["loss"]),
         #				   optimizer=str(p_json["optimizer"]),
         #				   metrics=[str(p_json["metrics"])])
-        self.model.compile(loss="binary_crossentropy",
-                           optimizer=self.optimizer,
-                           metrics=['accuracy'])
+
+
         # ulozit to do DB
-        self.save_state()
+        self.save_state() # toto je kvoli vrateniu ID
+        self.path_struct = 'saved_model/cnn/' + str(int(self.m_id)) + '/model'
+        self.path_weights = 'saved_model/cnn/' + str(int(self.m_id)) + '/model.h5'
+        self.is_new = False
+        self.is_changed = True
+        self.save_state() # treba ulozit cesty k suborom
+        #ulozenie struktury modelu
+        self.save()
 
         # ulozenie json create model
-        with open("saved_model/cnn/5/json.json", "w+") as json_file:
+        with open("saved_model/cnn/"+ str(int(self.m_id)) +"/json.json", "w+") as json_file:
             json.dump(self.json_structure,json_file)
-            #json_file.write(self.json_structure)
 
-
-    def change_ref_data(self, new_ref_data):
-        self.ref_data = new_ref_data
+    def change_ref_data(self, dataset_id):
+        self.ref_data = dt.Data(self)
+        self.ref_data.d_id = dataset_id
+        self.ref_data.load_state()
         self.is_changed = True
 
     def load_train_session_file(self):
@@ -341,14 +400,14 @@ class Model_cnn(interface.ModelInterface):
                 return None
             else:
                 # model uz bol trenovany
-                hist_path = 'saved_model/cnn/' + str(int(self.m_id)) + '/train_history'
+                hist_path = 'saved_model/cnn/' + str(int(self.m_id)) + '/train_history.json'
                 ret = None
-                with open(hist_path, 'r') as file_histo:
-                    ret = file_histo.read()
-                #ret['session'] = "10,10,15,15,15"
-                #ret['epoch'] = "55"
-                #ret['loss'] = "Mape"
-                #ret['loss_val'] = "0.687"
+                try:
+                    with open(hist_path, 'r') as file_histo:
+                        ret = json.load(file_histo)
+                    return ret
+                except:
+                    print("Model este nebol trenovany")
                 return ret
 
     def is_locked_by_training(self):

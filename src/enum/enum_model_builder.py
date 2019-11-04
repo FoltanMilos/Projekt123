@@ -50,6 +50,7 @@ class EnumLayerParameters(Enum):
         r.append(EnumLayerParameters.NAME.value)
         if(enum_layer is EnumLayer.DENSE.value):
             r.append(EnumLayerParameters.NEURON_COUNT.value)
+            r.append(EnumLayerParameters.ACTIVATION.value)
             return r
         elif(enum_layer is EnumLayer.CONV2D.value):
             r.append(EnumLayerParameters.KERNEL_SIZE.value)
