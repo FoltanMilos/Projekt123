@@ -166,28 +166,22 @@ def testing_session():
     auth = request.headers.get('Authorization')
     model_id = form.get('model')
     print("EndPoint: TestingSession, Auth:{}, ModelId:{}".format(auth, model_id))
-    head_test_session_info = {}
+    head_test_session_info = None
     if auth is None:
         # uzivatel nebol prihlaseny
         stat_model = application.swap_active_static_model(model_id)
-        head_test_session_info["model_info"] = stat_model.model_to_json()
-        head_test_session_info["dataset_info"] = stat_model.ref_data.to_json()
-        # TODO: testovanie bude prebiehat po batchoch, cize ked sa dohodneme na poctoch v zobrazeniach
-        # TODO: potom sa urci metoda ktora to spravi, cize realne to budeme testovat vypoctami
+        head_test_session_info = stat_model.load_test_session_file()
     elif auth is not None:
         # uzivatel je prihlaseny
         usr = application.find_user_by_identification(auth)
         user_model = usr.switch_active_model(model_id)
         if user_model.is_locked_by_training :
-            #head_test_session_info.append("model is locked by training")
             return flask.make_response("Model is locked by trainning!",200)
         elif user_model.is_trained_on_dataset==False:
-            #head_test_session_info.append("model este nebol trenovany")
             return flask.make_response("Model has not been trained yet!", 200)
         else:
             # model bol uz trenovany, moze sa testovat
-            head_test_session_info["model_info"] = user_model.model_to_json()
-            head_test_session_info["dataset_info"] = user_model.ref_data.to_json()
+            head_test_session_info = user_model.load_train_session_file()
     return flask.make_response(json.dumps(head_test_session_info))
 
 @app.route('/dataset/new', methods=["POST"])

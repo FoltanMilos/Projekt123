@@ -206,8 +206,36 @@ class Model_cnn(interface.ModelInterface):
             print('=========================')
             return result[0], result[1]
         else:
+            # co sa ulozi do suboru na precitanie
             data_to_return = self.ref_data.load_test_set()
             result = self.model.predict_generator(data_to_return,verbose = 1)
+            # process data results
+
+            # zapisanie historie testovania
+            test_history = {}
+            header = {}
+            results_list = []
+            # header
+            header["accuracy"] = self.ref_res_proc.accuracy
+            i = 0
+            for res in result:
+                universal_dict = {}
+                metada_dummy = resClass.Metadata("Male", "26", "Bening", "serial imaging showing no change", "True")
+                tmp_res = resClass.Result(res[0], "Bening", metada_dummy, None)
+                universal_dict["Result"] = tmp_res.to_json()
+                universal_dict["PhotoPath"] = data_to_return.filepaths[i]
+                results_list.append(universal_dict)
+                i += 1
+            test_history["tested_results"] = results_list
+            test_history["model_header"] = header
+            test_history["dataset_header"] = self.ref_data.to_json()
+            with open("saved_model/cnn/" + str(int(self.m_id)) + "/test_history.json", "w+") as json_file:
+                json.dump(test_history, json_file)
+
+            self.ref_res_proc.test_result_path = "saved_model/cnn/" + str(int(self.m_id)) + "/test_history.json"
+            self.ref_res_proc.is_changed = True
+            self.ref_res_proc.is_new = False
+            self.ref_res_proc.save_state()
             return result, data_to_return
 
     def predict_image(self, image=None):
@@ -291,8 +319,6 @@ class Model_cnn(interface.ModelInterface):
     def model_to_json(self):
         ret_json = {}
         headers = {}
-        layers = []
-
         #hlavicka modelu
         headers["Name"] = self.name
         headers["Accuracy"] = self.ref_res_proc.accuracy
@@ -307,12 +333,11 @@ class Model_cnn(interface.ModelInterface):
         ret_json["model_header"] = headers
         ret_json["data_header"] = dataset_json
 
+        # model a jeho vrstvy
         with open("saved_model/cnn/" +str(self.m_id) +"/json.json", 'r') as file:
             ret_json["layers"] = json.loads(file.read())
 
         return ret_json
-
-
 
     def create_model_from_json(self, p_json):
         self.json_structure = p_json
@@ -327,11 +352,11 @@ class Model_cnn(interface.ModelInterface):
                                       activation=str(lay["ACTIVATION"]).lower(),
                                       padding=str(lay["PADDING"]).lower(),
                                       bias_initializer=self.bias_initializer,
-                                      input_shape=(64,64,3)
+                                      #input_shape=(64,64,3),
                                       #kernel_initializer=self.initializer
-                                      #input_shape=(int(str(lay["INPUT_SHAPE"]).split('x')[0].split(',')[0]),
-                                      #             int(str(lay["INPUT_SHAPE"]).split('x')[0].split(',')[1]),
-                                      #             3)
+                                      input_shape=(int(str(lay["INPUT_SHAPE"]).split('x')[0].split(',')[0]),
+                                                   int(str(lay["INPUT_SHAPE"]).split('x')[0].split(',')[1]),
+                                                   3)
                                       )
                                )
             elif lay["class"] == mb.EnumLayer.FLATTENING.name.upper():
@@ -348,8 +373,6 @@ class Model_cnn(interface.ModelInterface):
             elif lay["class"] == mb.EnumLayer.CONV2D.name.upper():
                 self.model.add(Conv2D(int(lay["NEURON_COUNT"]),
                                       kernel_size=int(str(lay["KERNEL_SIZE"]).split('x')[0].split(',')[0]),
-                                      #(3, 3),
-                                      #bias_initializer = self.bias_initializer,
                                       activation=str(lay["ACTIVATION"]).lower(),
                                       padding=str(lay["PADDING"]).lower()
                                       )
@@ -365,7 +388,6 @@ class Model_cnn(interface.ModelInterface):
         # ulozit to do DB
         self.save_state() # toto je kvoli vrateniu ID
         self.path_struct = 'saved_model/cnn/' + str(int(self.m_id)) + '/model'
-        #self.path_weights = 'saved_model/cnn/' + str(int(self.m_id)) + '/model.h5'
         self.is_new = False
         self.is_changed = True
         self.save_state() # treba ulozit cesty k suborom
@@ -416,3 +438,11 @@ class Model_cnn(interface.ModelInterface):
             return False
         else:
             return True
+
+
+    def load_test_session_file(self):
+        ret = None
+        if self.ref_res_proc.test_result_path is not None:
+            with open(self.ref_res_proc.train_result_path, 'r') as file_histo:
+                ret = json.load(file_histo)
+        return ret
