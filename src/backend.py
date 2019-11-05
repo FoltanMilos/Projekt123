@@ -132,16 +132,20 @@ def training_session():
     auth = request.headers.get('Authorization')
     model_id = form.get('modelId')
     print("EndPoint: TrainingSession, Auth:{}, ModelId:{}".format(auth, model_id))
-    file_train_session = None
+    file_train_session = {}
     if auth is None:
         # uzivatel nebol prihlaseny
         stat_model = application.swap_active_static_model(model_id)
-        file_train_session = stat_model.load_train_session_file()
+        file_train_session["train_history"] = stat_model.load_train_session_file()
+        file_train_session["model_info"] = stat_model.model_to_json()
+        file_train_session["dataset_info"] = stat_model.ref_data.to_json()
     elif auth is not None:
         # uzivatel je prihlaseny
         usr = application.find_user_by_identification(auth)
         user_model= usr.switch_active_model(model_id)
-        file_train_session = user_model.load_train_session_file()
+        file_train_session["train_history"] = user_model.load_train_session_file()
+        file_train_session["model_info"] = user_model.model_to_json()
+        file_train_session["dataset_info"] = user_model.ref_data.to_json()
     else:
         raise Exception("Nepovolena hodnota v atribute auth! [{}]".format(auth))
 
@@ -151,7 +155,7 @@ def training_session():
         # model sa prave trenuje, treba presmerovat na live okno
         return flask.make_response('Model sa prave trenuje ', 200)
     else:
-        return flask.make_response(json.dumps(file_train_session))
+        return flask.make_response(json.dumps(file_train_session),200)
 
 @app.route("/testing-session", methods=["POST"])
 def testing_session():
@@ -367,9 +371,31 @@ def train():
         # md.train(dataset_name)
     return flask.Response('OK',200)
 
+@app.route('/create-user', methods=["POST"])
+def createUser():
+    form = flask.request.get_json()
+    username = form.get('username')
+    password = form.get('password')
+    print("EndPoint: CreateUser, username:{}, password: {}".format(username, password))
+    resut = application.create_user(username,password)
+    if resut:
+        # ok
+        return flask.Response('Your account has been created. You should log in', 200)
+    else:
+        # nieco sa pokazilo
+        return flask.Response('Something went wrong. Internal server error', 500)
 
-
-
+@app.route('/check-user-name', methods=["GET"])
+def checkUserName():
+    username = request.args.get('userName')
+    check_result = application.check_user_name(username)
+    print("EndPoint: ChekUserName, username:{}".format(username))
+    if check_result:
+        # nie je take meno, moze byt vytvoreny
+        return flask.Response('OK', 200)
+    else:
+        # je take meno, nesmie byt vytvorene
+        return flask.Response('Username already exists', 403)
 
 ## SPUSTENIE SERVERA
 if __name__ == "__main__":

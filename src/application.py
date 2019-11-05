@@ -127,3 +127,17 @@ class Application:
                 new_static_gen_model = None
                 new_static_gen_model.load_state(res_static_md)
                 self.list_static_models.append(new_static_gen_model)
+
+    def check_user_name(self,username):
+        result = self.ref_db.select_statement("select count(u_name) from proj_user where u_name="+username.lower())
+        if int(result[0]) > 0:
+            # nie je to ok, narusienie jedinecnosti
+            return False
+        else:
+            return True
+
+    def create_user(self, username, password):
+        result = self.ref_db.insert_statement("insert into proj_user(u_name,u_password,u_active,u_note,u_privileges)"
+                    " values(:1,:2,:3,:4,:5)",[username,password,'N','vytvoreny cez app','L'])
+        self.ref_db.commit()
+        return True
