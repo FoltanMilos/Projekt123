@@ -49,9 +49,9 @@ class Application:
         #dc["modelName"] = "EXAMPLE"
         #model.create_model_from_json(dc)
 
-        #model = self.list_static_models[0]
+        model = self.list_static_models[0]
         #hist = model.train("small_dataset")
-        #hist_test, dt = model.test("small_dataset")
+        hist_test, dt = model.test("small_dataset")
         #print("ss")
 
        # hist = model.train("small_dataset")

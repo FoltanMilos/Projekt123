@@ -29,6 +29,7 @@ class Results_set:
 		self.senzitivity= -1
 		self.train_result_path= None
 		self.test_result_path= None
+		self.test_accuracy = None
 
 		# clasifikacny model bude mat maticu 2x2
 		self.result_matrix = np.zeros(shape=(2,2))
@@ -58,71 +59,65 @@ class Results_set:
 		self.result_json["Optimizer"] = 0
 		self.result_json["LearningRate"] = 0
 
-	def process_result_matrix(self,predction_array,true_lab_array):
-		'''spracuje to ako maticu '''
-		# kontrola shapes
-		if(predction_array.shape[0]!= true_lab_array.shape[0] or predction_array.shape[1] != true_lab_array.shape[1]):
+	def process_result_matrix(self,predction_array,true_lab_array,threshold):
+		if(predction_array.shape[0]!= true_lab_array.shape[0]):
 			raise Exception("Result for matrix must be same shape. But shape is: prediction_array:{} true_lab_array{}".format(predction_array.shape,true_lab_array.shape))
 		index = 0
+		predction_array = predction_array > threshold
+		predction_array = predction_array.astype(int)
 		for predicted_value in predction_array:
-			self.result_matrix[predicted_value,true_lab_array[index]]=self.result_matrix[predicted_value,true_lab_array[index]]+1
+			self.result_matrix[predicted_value,int(true_lab_array[index])]+= 1
 			self.samples_count = self.samples_count+1
 			index = index + 1
+		print(self.result_matrix)
 
-	def process_results(self,prediction_array,true_lab_array,true_lab_names):
-		""" Spracovanie vysledkov generovanych cez predict_generator
-			prediction_array --->  obsahuje pole predpovedi
-			true_lab_array  ---> obsahuje pole vzorovych labelov"""
-		prediction_array_01 = prediction_array > conf.threshold
-		prediction_array_01 = prediction_array_01.astype(int)
-		self.process_result_matrix(predction_array=prediction_array_01,true_lab_array=true_lab_array)
-
-		#print(classification_report(single_predict_img.classes, res, target_names=target_names))
-		# proces string
-		result_string = ''
-		i = 0
-		for k in prediction_array:
-			result_string+="\nPhoto name: {:>28} " \
-						   "  --> Diagnosis: {} --- Percentage: {:04.2f}%".format(true_lab_names[i], prediction_array_01[i],k[0]*100)
-			i=i+1
-
-		# vysledky
-		result_string+="\n\nTable:\n------[TRUE LABELS]-------\n" \
-					   "---Malig(0)---Bening(1)---\n" \
-					   "[0]   {0}      {1}     ---\n" \
-					   "[1]   {2}      {3}     ---\n" \
-					   "--------------------------".format(self.result_matrix[0,0],self.result_matrix[0,1],self.result_matrix[1,0],self.result_matrix[1,1])
-		result_string+="\nSpecificity: {}".format(self.calc_specificity())
-		result_string += "\nSensitivity: {}".format(self.calc_sensitivity())
-		result_string += "\nAccuracy: {:04.2f}%".format(self.calc_accuracy()*100)
-		print(result_string)
-		return result_string
-
-
-	def process_single_result(self,single_result):
-		""" Spracuje samostatnu predikciu, nepozera sa na TRUE label,je to viac menej to, ze nievieme urcit diagnosis"""
-		percentage = 0
-		pass
+	#def process_results(self,prediction_array,true_lab_array,true_lab_names):
+	#	""" Spracovanie vysledkov generovanych cez predict_generator
+	#		prediction_array --->  obsahuje pole predpovedi
+	#		true_lab_array  ---> obsahuje pole vzorovych labelov"""
+	#	prediction_array_01 = prediction_array > conf.threshold
+	#	prediction_array_01 = prediction_array_01.astype(int)
+	##	# proces string
+	#	result_string = ''
+	#	i = 0
+	#	for k in prediction_array:
+	##					   "  --> Diagnosis: {} --- Percentage: {:04.2f}%".format(true_lab_names[i], prediction_array_01[i],k[0]*100)
+	#		i=i+1
+	#
+	#		# vysledky
+	#		result_string+="\n\nTable:\n------[TRUE LABELS]-------\n" \
+	#				   "---Malig(0)---Bening(1)---\n" \
+	#				   "[0]   {0}      {1}     ---\n" \
+	#				   "[1]   {2}      {3}     ---\n" \
+	#				   "--------------------------".format(self.result_matrix[0,0],self.result_matrix[0,1],self.result_matrix[1,0],self.result_matrix[1,1])
+	#	result_string+="\nSpecificity: {}".format(self.calc_specificity())
+	#	result_string += "\nSensitivity: {}".format(self.calc_sensitivity())
+	#	result_string += "\nAccuracy: {:04.2f}%".format(self.calc_accuracy()*100)
+	#	print(result_string)
+	#	return result_string
 
 	# --------------[STATISTICS]----------------------
 	def calc_sensitivity(self):
 		""" Spocita sensitivitu z matrix tabulky, vzorec: [a/(a+b)"""
 		if(self.samples_count <= 0):
 			raise Exception("Samples count should be > 0, but it is {}".format(self.samples_count))
-		return self.result_matrix[1,1]/(self.result_matrix[1,1]+self.result_matrix[0,1])
+		self.senzitivity = float(self.result_matrix[1,1])/(self.result_matrix[1,1]+self.result_matrix[0,1])
+		return self.senzitivity
 
 	def calc_specificity(self):
 		""" d / (c+d)"""
 		if(self.samples_count <= 0):
 			raise Exception("Samples count should be > 0, but it is {}".format(self.samples_count))
-		return self.result_matrix[0,0]/(self.result_matrix[0,0]+self.result_matrix[1,0])
+		self.specificity = float(self.result_matrix[0,0])/(self.result_matrix[0,0]+self.result_matrix[1,0])
+		return self.specificity
 
 	def calc_accuracy(self):
 		""" Presnost modelu, vzorec a + d / (a+b+c+d)
 			pre urcenie % je potrebne prenasobit 100"""
 		if (self.samples_count <= 0):
 			raise Exception("Samples count should be > 0, but it is {}".format(self.samples_count))
-		return (self.result_matrix[1,1] + self.result_matrix[0,0])/(self.samples_count)
+		self.test_accuracy = float(self.result_matrix[1,1] + self.result_matrix[0,0])/(self.samples_count)
+		return self.test_accuracy
 
 	def calc_positive_pred(self):
 		""" Ked model predpovie bening, tak aka je pravdepodobnost ze aj tak bude"""
@@ -148,6 +143,12 @@ class Results_set:
 			self.specificity = ret_set[3]
 			self.accuracy = ret_set[4]
 			self.test_result_path = ret_set[5]
+			if  ret_set[9] is not None:
+				spl = ret_set[9].split(",")
+				self.result_matrix[0,0] = int(spl[0])
+				self.result_matrix[0, 1] = int(spl[1])
+				self.result_matrix[1, 0] = int(spl[2])
+				self.result_matrix[1, 1] = int(spl[3])
 		self.is_new = False
 		self.is_changed = False
 
@@ -161,12 +162,14 @@ class Results_set:
 			sezi = -1 if self.senzitivity is None else str(self.senzitivity)
 			speci = -1 if self.specificity is None else str(self.specificity)
 			acc = -1 if self.accuracy is None else str(self.accuracy)
+			matrx = "'" + str(int(self.result_matrix[0,0])) +","+str(int(self.result_matrix[0,1])) +","+str(int(self.result_matrix[1,0])) +","+str(int(self.result_matrix[1,1])) +  "'"
 			# update len
 			self.ref_model.ref_app.ref_db.update_statement("update proj_result "
 				"SET model_train_result_path='" + str(self.train_result_path) + "',"
 				" sensitivity=" + str(sezi) + ","
 				" specificity=" + str(speci) + ","
 				" accuracy=" + str(acc) + ","
+				" test_matrix=" + str(matrx) + ","
 				" model_test_result_path=" + res_path + " where r_id=" + str(self.r_id) + "")
 			self.ref_model.ref_app.ref_db.commit()
 			return self.r_id

@@ -210,13 +210,17 @@ class Model_cnn(interface.ModelInterface):
             data_to_return = self.ref_data.load_test_set()
             result = self.model.predict_generator(data_to_return,verbose = 1)
             # process data results
-            #self.ref_res_proc.pr
+            self.ref_res_proc.process_result_matrix(result,data_to_return[0][1],threshold=0.75)
             # zapisanie historie testovania
             test_history = {}
             header = {}
             results_list = []
             # header
             header["accuracy"] = self.ref_res_proc.accuracy
+            header["specificity"] = self.ref_res_proc.specificity
+            header["senzitivity"] = self.ref_res_proc.senzitivity
+            header["positive predictions"] = self.ref_res_proc.calc_positive_pred()
+            header["negative predictions"] = self.ref_res_proc.cacl_negative_pred()
             i = 0
             for res in result:
                 universal_dict = {}
