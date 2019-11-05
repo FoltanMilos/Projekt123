@@ -118,7 +118,7 @@ def predict():
     #ress = {}
     #ress['result'] = result
     #ress['imgDescription'] = img_description_dict["desc"]
-    return flask.make_response(json.dumps({'data': result}))
+    return flask.make_response(json.dumps(result))
 
 
 @app.route("/training-session", methods=["POST"])

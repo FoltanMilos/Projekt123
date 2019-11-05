@@ -15,8 +15,8 @@ class Result:
 
     def to_json(self):
         ret_json = {}
-        ret_json["Classification result"] = self.result
-        ret_json["Clasification class"] = self.result_class
+        ret_json["Classification result"] = str(self.result)
+        ret_json["Clasification class"] = str(self.result_class)
         ret_json["prediction_info"] = "Vysledna hodnota ukazuje na percentualnu moznost vyskytu rakoviny. Je to " \
                                       "informacna hodnota. Nase odporucanie: Ak je hodnota velmi vysoka, navstivte svojho" \
                                       " lekara a poradte sa snim o moznom vybere znamienka"
@@ -36,7 +36,7 @@ class Metadata:
 
     def to_json(self):
         ret_val = {}
-        ret_val["Gender"] = self.gender
+        ret_val["Gender"] = str(self.gender)
         ret_val["Age"] = self.age
         ret_val["Real diagnosis"] = self.real_diagnosis
         ret_val["Desc clinical diagnostis"] = self.diagnosis_confirm_type
