@@ -1,5 +1,5 @@
 import pickle
-
+import src.models.result as resClass
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Flatten, Activation
@@ -208,14 +208,14 @@ class Model_cnn(interface.ModelInterface):
 
     def predict_image(self, image=None):
         """Predikcia jedneho obrazku"""
-        #K.clear_session()
-        #self.load()
-       # self.model._make_predict_function() ## mozno netreba
         if (image is None):
             raise Exception("Error by predict image. Image is None!")
         image = self.ref_data.preproces_image(image)
         predicted = self.model.predict(image)
-        return predicted
+        # vytvorenie triedy vysledku clasifikacie
+        metada_dummy = resClass.Metadata("Male","26","Bening","serial imaging showing no change","True")
+        result_class = resClass.Result(predicted[0][0],"Bening",metada_dummy,None)
+        return result_class.to_json()
 
     # TODO: na predikciu dakeho vaciseho sbor
     def predict_image_flow(self):

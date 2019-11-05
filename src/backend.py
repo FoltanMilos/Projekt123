@@ -115,11 +115,10 @@ def predict():
         photo_desc = dt.Data.find_photo_description(application.ref_db,dataset_name)
         #TODO: dumpnut tam aj photo_desc, dako takto cca bude vyzerat
         img_description_dict["desc"] = json.loads('{ "dataset:":"datasetMain","gender":"zena","age":"150" }')
-
-    ress = {}
-    ress['result'] = str(result[0][0])
-    ress['imgDescription'] = img_description_dict["desc"]
-    return flask.make_response(json.dumps(ress))
+    #ress = {}
+    #ress['result'] = result
+    #ress['imgDescription'] = img_description_dict["desc"]
+    return flask.make_response(json.dumps({'data': result}))
 
 
 @app.route("/training-session", methods=["POST"])
