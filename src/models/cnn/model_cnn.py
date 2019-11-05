@@ -303,7 +303,7 @@ class Model_cnn(interface.ModelInterface):
         ret_json["model_header"] = headers
         ret_json["data_header"] = dataset_json
 
-        with open(self.path_struct + "/json.json", 'r') as file:
+        with open("saved_model/cnn/" +str(self.m_id) +"/json.json", 'r') as file:
             ret_json["layers"] = json.loads(file.read())
 
         return ret_json
