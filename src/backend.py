@@ -110,14 +110,6 @@ def predict():
     print(result)
     img_description_dict = {}
     img_description_dict["desc"] = None
-    if img_description:
-        # ak je fotka nasa, mame aj popis niekde
-        photo_desc = dt.Data.find_photo_description(application.ref_db,dataset_name)
-        #TODO: dumpnut tam aj photo_desc, dako takto cca bude vyzerat
-        img_description_dict["desc"] = json.loads('{ "dataset:":"datasetMain","gender":"zena","age":"150" }')
-    #ress = {}
-    #ress['result'] = result
-    #ress['imgDescription'] = img_description_dict["desc"]
     return flask.make_response(json.dumps(result))
 
 

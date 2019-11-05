@@ -43,9 +43,15 @@ class Data:
         self.count = -1
         self.data_description = ""
         self.path_to_desc = ""
-        self.count_bening = -1
-        self.count_malig = -1
-        self.count_unspecified = -1
+        self.count_bening = {"T":None,
+                      "R":None,
+                      "V":None}
+        self.count_malig = {"T":None,
+                      "R":None,
+                      "V":None}
+        self.count_unspecified = {"T":None,
+                      "R":None,
+                      "V":None}
         self.link_dataset = ""
         self.img_size = ""
         self.count_all_pics = -1
@@ -128,9 +134,9 @@ class Data:
                 self.count = row[6]
                 self.data_description = row[7]
                 self.path_to_desc = row[5]
-                self.count_bening = row[8]
-                self.count_malig = row[9]
-                self.count_unspecified = row[10]
+                self.count_bening[row[4]] = row[8]
+                self.count_malig[row[4]] = row[9]
+                self.count_unspecified[row[4]] = row[10]
                 self.link_dataset = row[11]
                 self.img_size = row[12]
                 self.count_all_pics = row[13]
@@ -150,21 +156,29 @@ class Data:
             pass
         return returned_id_data
 
-    @staticmethod
-    def find_photo_description(ref_db, dataset_name):
-        res_path = ref_db.select_statement("select path_desc from proj_data where name='"+dataset_name+"'")
-        description = "daky namockovany popis"
-        return description
-        if res_path is not None:
-            with open(res_path) as file:
-                pass
-                #TODO: find in file, vratit vsetky zaznamy
+    def find_photo_description(self, string):
+        if self.path_to_desc is not None:
+            with open(self.path_to_desc) as file:
+                description = file.read()
+                for st in string:
+                    pass
+                    # find in files description
         return description
 
     def to_json(self):
         headers = {}
-        headers["DatasetUsed"] = "meno datasetu"
-        headers["DatasetDesc"] = "popis"
-        headers["CountPhoto"] = 1000
-        headers["PhotoSize"] = "100x100"
+        headers["DatasetUsed"] = self.name
+        headers["All photo count"] = str(self.count_all_pics)
+        headers["TRAIN - bening"] = str(self.count_bening["R"])
+        headers["TRAIN - malig"] = str(self.count_malig["R"])
+        headers["TRAIN - unspecified"] = str(self.count_unspecified["R"])
+        headers["TEST - bening"] = str(self.count_bening["T"])
+        headers["TEST - malig"] = str(self.count_malig["T"])
+        headers["TEST - unspecified"] = str(self.count_unspecified["T"])
+        headers["VALID - bening"] = str(self.count_bening["V"])
+        headers["VALID - malig"] = str(self.count_malig["V"])
+        headers["VALID - unspecified"] = str(self.count_unspecified["V"])
+        headers["Dataset source"] = self.link_dataset
+        headers["IMG size"] = self.img_size
+        headers["DatasetDesc"] = self.data_description
         return headers
