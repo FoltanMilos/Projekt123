@@ -37,10 +37,10 @@ class Metadata:
     def to_json(self):
         ret_val = {}
         ret_val["Gender"] = str(self.gender)
-        ret_val["Age"] = self.age
-        ret_val["Real diagnosis"] = self.real_diagnosis
-        ret_val["Desc clinical diagnostis"] = self.diagnosis_confirm_type
-        ret_val["Melanocytic"] = self.diagnosis_meta
+        ret_val["Age"] = str(self.age)
+        ret_val["Real diagnosis"] = str(self.real_diagnosis)
+        ret_val["Desc clinical diagnostis"] = str(self.diagnosis_confirm_type)
+        ret_val["Melanocytic"] = str(self.diagnosis_meta)
         return ret_val
 
 
