@@ -210,7 +210,7 @@ class Model_cnn(interface.ModelInterface):
             data_to_return = self.ref_data.load_test_set()
             result = self.model.predict_generator(data_to_return,verbose = 1)
             # process data results
-
+            #self.ref_res_proc.pr
             # zapisanie historie testovania
             test_history = {}
             header = {}
