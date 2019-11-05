@@ -110,6 +110,6 @@ class User:
 	def get_models(self):
 		jsonarray = []
 		for model in self.models:
-			jsonarray.append(model.model.model_to_json())
+			jsonarray.append(model.model_to_json())
 		return jsonarray
 
