@@ -15,8 +15,8 @@ class Result:
 
     def to_json(self):
         ret_json = {}
-        ret_json["Classification result"] = str(self.result)
-        ret_json["Clasification class"] = str(self.result_class)
+        ret_json["Classification result"] = str("{:2.2f}".format(self.result*100))
+        ret_json["Classification class"] = str(self.result_class)
         ret_json["prediction_info"] = "Vysledna hodnota ukazuje na percentualnu moznost vyskytu rakoviny. Je to " \
                                       "informacna hodnota. Nase odporucanie: Ak je hodnota velmi vysoka, navstivte svojho" \
                                       " lekara a poradte sa snim o moznom vybere znamienka"

@@ -51,7 +51,8 @@ class Application:
 
         #model = self.list_static_models[0]
         #hist = model.train("small_dataset")
-        #hist_test = model.test("data(10015)")
+        #hist_test, dt = model.test("small_dataset")
+        #print("ss")
 
        # hist = model.train("small_dataset")
         #print(hist)

@@ -189,22 +189,26 @@ class Model_cnn(interface.ModelInterface):
         print("Saved model to disk")
 
     # Model evaluation
-    def test(self, dataset_name):
-        print('Model evaulation(Test set used):')
-        # este nebol trenovany, treba vybrat dataset
+    def test(self, dataset_name, is_fast_test=False):
+        # nahratie datasetu
         if self.ref_data is None or ( dataset_name is not None and self.ref_data.name != dataset_name):
             self.ref_data = dt.Data(self, dataset_name)
             self.ref_data.load_state()
-        #K.clear_session()
-        #self.load()
-        result = self.model.evaluate_generator(self.ref_data.load_test_set())
-        print('Evaluation completed:')
-        i = 0
-        for score in result:
-            print('Name:{} Value:{}'.format(self.model.metrics_names[i], score))
-            i += 1
-        print('=========================')
-        return result[0], result[1]
+        # ak chcem pustit rychlu evaluation
+        if is_fast_test:
+            print('Model evaulation(Fast test):')
+            result = self.model.evaluate_generator(self.ref_data.load_test_set(),verbose=1)
+            print('Evaluation completed:')
+            i = 0
+            for score in result:
+                print('Name:{} Value:{}'.format(self.model.metrics_names[i], score))
+                i += 1
+            print('=========================')
+            return result[0], result[1]
+        else:
+            data_to_return = self.ref_data.load_test_set()
+            result = self.model.predict_generator(data_to_return,verbose = 1)
+            return result, data_to_return
 
     def predict_image(self, image=None):
         """Predikcia jedneho obrazku"""
