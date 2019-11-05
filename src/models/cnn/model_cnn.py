@@ -291,7 +291,7 @@ class Model_cnn(interface.ModelInterface):
 
         #hlavicka modelu
         headers["Name"] = self.name
-        headers["Accuracy"] = random.randint(1,100) / 100.0
+        headers["Accuracy"] = self.ref_res_proc.accuracy
         headers["ModelId"] = self.m_id
         headers["ModelType"] = "CNN"
 
@@ -303,7 +303,7 @@ class Model_cnn(interface.ModelInterface):
         ret_json["model_header"] = headers
         ret_json["data_header"] = dataset_json
 
-        with open("saved_model/cnn/5/json.json", 'r') as file:
+        with open(self.path_struct + "/json.json", 'r') as file:
             ret_json["layers"] = json.loads(file.read())
 
         return ret_json
