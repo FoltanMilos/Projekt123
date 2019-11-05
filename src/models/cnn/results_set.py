@@ -22,10 +22,11 @@ class Results_set:
 		self.ref_model = ref_model
 		self.is_changed = False
 		self.is_new = is_new
+		# NOVE
 		self.result_json = None
-		self.specificity= None
-		self.accuracy= None
-		self.senzitivity= None
+		self.specificity= -1
+		self.accuracy= -1
+		self.senzitivity= -1
 		self.train_result_path= None
 		self.test_result_path= None
 
@@ -57,12 +58,11 @@ class Results_set:
 		self.result_json["Optimizer"] = 0
 		self.result_json["LearningRate"] = 0
 
-
 	def process_result_matrix(self,predction_array,true_lab_array):
+		'''spracuje to ako maticu '''
 		# kontrola shapes
 		if(predction_array.shape[0]!= true_lab_array.shape[0] or predction_array.shape[1] != true_lab_array.shape[1]):
 			raise Exception("Result for matrix must be same shape. But shape is: prediction_array:{} true_lab_array{}".format(predction_array.shape,true_lab_array.shape))
-
 		index = 0
 		for predicted_value in predction_array:
 			self.result_matrix[predicted_value,true_lab_array[index]]=self.result_matrix[predicted_value,true_lab_array[index]]+1
@@ -154,13 +154,20 @@ class Results_set:
 
 	def save_state(self):
 		if self.is_changed and self.is_new == False :
+			if self.test_result_path is None:
+				res_path = "'NULL'"
+			else:
+				res_path = "'" + self.test_result_path + "'"
+			sezi = -1 if self.senzitivity is None else str(self.senzitivity)
+			speci = -1 if self.specificity is None else str(self.specificity)
+			acc = -1 if self.accuracy is None else str(self.accuracy)
 			# update len
 			self.ref_model.ref_app.ref_db.update_statement("update proj_result "
-				"SET R_MATRIX_A=" + str(self.result_matrix[1, 1]) + ","
-				" R_MATRIX_B=" + str(self.result_matrix[0, 1]) + ","
-				" R_MATRIX_C=" + str(self.result_matrix[1, 0]) + ","
-				" R_MATRIX_D=" + str(self.result_matrix[0, 0]) + ","
-				" R_SAMPLES_COUNT=" + str(self.samples_count) + " where r_id=" + str(self.r_id) + "")
+				"SET model_train_result_path='" + str(self.train_result_path) + "',"
+				" sensitivity=" + str(sezi) + ","
+				" specificity=" + str(speci) + ","
+				" accuracy=" + str(acc) + ","
+				" model_test_result_path=" + res_path + " where r_id=" + str(self.r_id) + "")
 			self.ref_model.ref_app.ref_db.commit()
 			return self.r_id
 		elif self.is_new:

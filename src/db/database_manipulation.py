@@ -49,10 +49,10 @@ class DB_manip:
     # Vrati len TRUE,FALSE, vzdy sa vykona, update, altery a pod
     def update_statement(self,update):
         if (self.conn is None):
-            print("Nepodarilo sa pripojit na DB!")
             return False
         else:
             cr = self.conn.cursor()
+            print(update)
             cc = cr.execute(update)
             return True
 

@@ -300,8 +300,8 @@ def re_train():
 @app.route('/test', methods=["POST"])
 def test():
     #global graph
-    #form = flask.request.get_json()
-    form = request.form
+    form = flask.request.get_json()
+    #form = request.form
     auth = request.headers.get('Authorization')
     model_id = int(form.get('modelId'))
     dataset_name = form.get('datasetName')

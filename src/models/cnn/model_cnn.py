@@ -73,8 +73,8 @@ class Model_cnn(interface.ModelInterface):
 
     # Ulozenie historie trenovania
     def save_train_history(self, train_history):
-        hist_path = 'saved_model/cnn/' + str(int(self.m_id)) + '/train_history.json'
-        with open(hist_path, 'w') as file_histo:
+        # najpr do result setu
+        with open(self.ref_res_proc.train_result_path, 'w') as file_histo:
             for i in range(len(train_history.history['accuracy'])):
                 train_history.history['accuracy'][i] = float(train_history.history['accuracy'][i])
                 train_history.history['val_accuracy'][i] = float(train_history.history['val_accuracy'][i])
@@ -83,7 +83,6 @@ class Model_cnn(interface.ModelInterface):
 
     # Trenovanie
     def train(self,dataset_name):
-        #self.load()
         if self.trained_on_dataset is None:
             # este nebol trenovany, treba vybrat dataset
             self.ref_data = dt.Data(self,dataset_name)
@@ -92,7 +91,7 @@ class Model_cnn(interface.ModelInterface):
         self.ref_data.load_validation_set()
 
         train_hist = self.model.fit_generator(
-            self.ref_data.train_set, steps_per_epoch=10, epochs=5,
+            self.ref_data.train_set, steps_per_epoch=10, epochs=3,
             validation_data=self.ref_data.valid_set,
             validation_steps=5,
             callbacks=[EarlyStopping(monitor='accuracy',
@@ -101,12 +100,14 @@ class Model_cnn(interface.ModelInterface):
         # nastavenie parametrov
         self.trained_on_dataset = self.ref_data.name
         self.is_changed = True
+        self.is_new = False
+        # res prov
+        self.ref_res_proc.accuracy =  float(train_hist.history['accuracy'][len(train_hist.history['accuracy'])-1])
+        self.ref_res_proc.is_changed = True
+        self.ref_res_proc.is_new = False
         self.save_state()
-        self.path_struct = 'saved_model/cnn/' + str(int(self.m_id)) + '/model'
-        self.path_weights = 'saved_model/cnn/' + str(int(self.m_id)) + '/model.h5'
         self.save()
         self.save_train_history(train_hist)
-        self.is_new = False
         return train_hist
 
     # zlozenie modelu
@@ -271,6 +272,9 @@ class Model_cnn(interface.ModelInterface):
             self.ref_app.ref_db.commit()
 
         if self.is_changed and self.is_new == False:
+            # najprv result_set
+            self.ref_res_proc.save_state()
+            # model
             dt = "'"+ str(self.trained_on_dataset) + "'"
             if self.trained_on_dataset is None:
                 dt = "NULL"
@@ -390,10 +394,10 @@ class Model_cnn(interface.ModelInterface):
                 return None
             else:
                 # model uz bol trenovany
-                hist_path = 'saved_model/cnn/' + str(int(self.m_id)) + '/train_history.json'
+                #hist_path = 'saved_model/cnn/' + str(int(self.m_id)) + '/train_history.json'
                 ret = None
                 try:
-                    with open(hist_path, 'r') as file_histo:
+                    with open(self.ref_res_proc.train_result_path, 'r') as file_histo:
                         ret = json.load(file_histo)
                     return ret
                 except:
