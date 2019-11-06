@@ -32,7 +32,7 @@ class Application:
         self.active_static_model = None
 
         # natiahnutie statickych modelov
-        self.load_all_static_models()
+        #self.load_all_static_models() //TODO
 
     def validate_user(self, credentials):
         res = self.ref_db.select_statement("select * from proj_user where u_name ='"+ credentials['username'] +"'")

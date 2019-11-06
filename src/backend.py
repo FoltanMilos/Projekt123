@@ -13,6 +13,7 @@ sys.path.append('interface')
 import src.application as neuralNetworkApplication
 import src.config as conf
 import src.enum.enum_model_builder as el
+import src.enum.mlp_enum_builder as mlpenum
 import base64
 import json
 from flask_cors import CORS
@@ -253,16 +254,24 @@ def logout():
 
 @app.route('/builder', methods=['GET', 'POST'])
 def builder():
-    if (request.method == 'GET'):
-        return builderGetData()
+    if request.method == 'GET':
+        if request.args.get('model') == 'cnn':
+            return builderGetCNN()
+        elif request.args.get('model') == 'mlp' :
+            return builderGetMLP()
+        else:
+            return flask.make_response('Invalid model type', 404)
     elif (request.method == 'POST'):
         return buildModel(flask.request.get_json())
     else:
         code = 404
         return flask.make_response('not found', 404)
 
+def builderGetMLP():
+    resJson = mlpenum.to_json()
+    return flask.make_response(json.dumps((resJson)), 200)
 
-def builderGetData():
+def builderGetCNN():
     resJson = el.to_json()
     return flask.make_response(json.dumps((resJson)), 200)
 
