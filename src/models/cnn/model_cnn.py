@@ -235,10 +235,11 @@ class Model_cnn(interface.ModelInterface):
         if (image is None):
             raise Exception("Error by predict image. Image is None!")
         image = self.ref_data.preproces_image(image)
+        ppp = self.model.predict_classes(image)
         predicted = self.model.predict(image)
         # vytvorenie triedy vysledku clasifikacie
         metada_dummy = resClass.Metadata("Male","26","Bening","serial imaging showing no change","True")
-        result_class = resClass.Result(predicted[0][0],"Bening",metada_dummy,None)
+        result_class = resClass.Result(predicted[0][0],ppp[0][0],metada_dummy,None)
         return result_class.to_json()
 
     # TODO: na predikciu dakeho vaciseho sbor

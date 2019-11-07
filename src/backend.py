@@ -87,11 +87,10 @@ def predict():
                 -PopisObrazka --> len ak je obrazok z nasho setu
     '''
     form = flask.request.get_json()
-    model_id = form.get('model')
+    model_id = int(form.get('model'))
     img = form.get('photo')
     auth = request.headers.get('Authorization')
-    img_description = form.get('photoDescription') #TODO: dorobit do formu
-    application.log.debug("EndPoint: Predict, Auth:{}, ModelId:{}, PhotoDesc:{}".format(auth, model_id,img_description))
+    application.log.debug("EndPoint: Predict, Auth:{}, ModelId:{}".format(auth, model_id))
     jpgtxt = base64.standard_b64decode(img.split(',')[1])  # treba odrezat cestu, lebo je v otm prilozena
     dataset_name = base64.standard_b64decode(img.split(',')[0]) # cesta pre dohladanie fotky
     #TODO: dorobit tu cestu do fotky ked sa vyberie z nasich datasetov, VYSTRIHNUT DO TOHO DATASET NAME
@@ -102,13 +101,11 @@ def predict():
     elif auth is not None:
         # uzivatel je prihlaseny, pouziva svoje modely
         usr = application.find_user_by_identification(auth)
-        result = usr.switch_active_model().predict_image(img)
+        result = usr.switch_active_model(model_id).predict_image(img)
     else:
         raise Exception("Nepovolena hodnota v atribute auth! [{}]".format(auth))
     application.log.debug("Prediction result:")
     application.log.debug(result)
-    img_description_dict = {}
-    img_description_dict["desc"] = None
     return flask.make_response(json.dumps(result))
 
 

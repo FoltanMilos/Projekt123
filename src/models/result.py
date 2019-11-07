@@ -8,7 +8,12 @@ class Result:
     def __init__(self,result,result_class, meta,predict_info):
         #self.model_input = None ## netreba, na FE si uchovame fotku
         self.result = result              # cislo, napr 0.97
-        self.result_class = result_class        # [bening, malignant]
+        if result_class == 1:
+            self.result_class = "Bening"
+        elif result_class == 0:
+            self.result_class = "Malignant"
+        else:
+            self.result_class = "Wrong value"
         self.metadata = meta            # ak fotka je z datasetu, inac ked sa odfoti nemname desc
         self.prediction_info = predict_info     # nejake informacie o predikovanej hodnote, zatial to berme ako dummy
                                         # dake odporucanie
