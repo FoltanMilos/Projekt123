@@ -5,8 +5,7 @@ import src.db.database_manipulation as dm
 import string
 import random
 import src.models.cnn.model_cnn as cnn_md
-import src.models.mlp.model_mlp as mlp_md
-import src.models.genetic_alg.model_gen_alg as gen_md
+import src.logger as logger
 import src.enum.enum_model as enum_model
 
 
@@ -19,13 +18,18 @@ class Application:
 
     global ref_db               # referencia na databazu
 
+    global log                  # logger programu
+
     def __init__(self):
+        self.log = logger.logger()
+        self.log = self.log.log
+        self.log.info("Application starting!")
         # kontrola dependences
-        print("Interpreter version: " + sys.version)
-        print("Keras version: " + keras.__version__)
-        print("Aplication started: OK (main)")
+        self.log.debug("Interpreter version: " + sys.version)
+        self.log.info("Keras version: " + keras.__version__)
+        self.log.info("Aplication started: OK (main)")
         # pripojenie na DB
-        self.ref_db = dm.DB_manip()
+        self.ref_db = dm.DB_manip(self)
         # init aplikacie
         self.list_active_user = []
         self.list_static_models = []

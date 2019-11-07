@@ -14,6 +14,7 @@ from io import BytesIO
 from PIL import Image
 import src.enum.mlp_enum_builder as el_mlp
 import src.enum.enum_model as enum_model
+import logging as log
 
 sys.path.append('db')
 sys.path.append('models/cnn')
@@ -26,6 +27,7 @@ app = Flask(__name__)
 CORS(app, resources={"*": {"origins": "*"}})
 # holds instance of application with neural network
 application = neuralNetworkApplication.Application()
+app.logger = application.log
 # application.active_model.validate_model_on_test_data(application.data.test_data,application.data.test_labels)
 counters = {}
 
@@ -89,7 +91,7 @@ def predict():
     img = form.get('photo')
     auth = request.headers.get('Authorization')
     img_description = form.get('photoDescription') #TODO: dorobit do formu
-    print("EndPoint: Predict, Auth:{}, ModelId:{}, PhotoDesc:{}".format(auth, model_id,img_description))
+    application.log.debug("EndPoint: Predict, Auth:{}, ModelId:{}, PhotoDesc:{}".format(auth, model_id,img_description))
     jpgtxt = base64.standard_b64decode(img.split(',')[1])  # treba odrezat cestu, lebo je v otm prilozena
     dataset_name = base64.standard_b64decode(img.split(',')[0]) # cesta pre dohladanie fotky
     #TODO: dorobit tu cestu do fotky ked sa vyberie z nasich datasetov, VYSTRIHNUT DO TOHO DATASET NAME
@@ -103,7 +105,8 @@ def predict():
         result = usr.switch_active_model().predict_image(img)
     else:
         raise Exception("Nepovolena hodnota v atribute auth! [{}]".format(auth))
-    print(result)
+    application.log.debug("Prediction result:")
+    application.log.debug(result)
     img_description_dict = {}
     img_description_dict["desc"] = None
     return flask.make_response(json.dumps(result))
@@ -118,7 +121,7 @@ def training_session():
     form = flask.request.get_json()
     auth = request.headers.get('Authorization')
     model_id = form.get('modelId')
-    print("EndPoint: TrainingSession, Auth:{}, ModelId:{}".format(auth, model_id))
+    application.log.debug("EndPoint: TrainingSession, Auth:{}, ModelId:{}".format(auth, model_id))
     file_train_session = {}
     if auth is None:
         # uzivatel nebol prihlaseny
@@ -153,7 +156,7 @@ def testing_session():
     form = flask.request.get_json()
     auth = request.headers.get('Authorization')
     model_id = int(form.get('model'))
-    print("EndPoint: TestingSession, Auth:{}, ModelId:{}".format(auth, model_id))
+    application.log.debug("EndPoint: TestingSession, Auth:{}, ModelId:{}".format(auth, model_id))
     head_test_session_info = None
     if auth is None:
         # uzivatel nebol prihlaseny
@@ -216,9 +219,8 @@ def login():
 
 @app.route('/models', methods=["GET"])
 def get_models():
-    print("getModel")
     auth = request.headers.get('Authorization')
-    print("EndPoint: GetModels, Auth:{}".format(auth))
+    application.log.debug("EndPoint: GetModels, Auth:{}".format(auth))
     res = None
     if auth is None:
         # nie je lognuty, vratim staticke modely
@@ -284,7 +286,7 @@ def live_training_session():
     form = flask.request.get_json()
     auth = request.headers.get('Authorization')
     model_id = form.get('model')
-    print("EndPoint: LiveTrainingSession, Auth:{}, ModelId:{}".format(auth, model_id))
+    application.log.debug("EndPoint: LiveTrainingSession, Auth:{}, ModelId:{}".format(auth, model_id))
     #TODO: live prediciton
     return flask.Response('este nikto nerobil', 200)
 
@@ -294,7 +296,7 @@ def re_train():
     form = flask.request.get_json()
     auth = request.headers.get('Authorization')
     model_id = form.get('model')
-    print("EndPoint: ReTrain, Auth:{}, ModelId:{}".format(auth, model_id))
+    application.log.debug("EndPoint: ReTrain, Auth:{}, ModelId:{}".format(auth, model_id))
     return flask.Response('este nikto nerobil', 200)
 
 @app.route('/test', methods=["POST"])
@@ -303,7 +305,7 @@ def test():
     auth = request.headers.get('Authorization')
     model_id = int(form.get('modelId'))
     dataset_name = form.get('datasetName')
-    print("EndPoint: Test, Auth:{}, ModelId:{}".format(auth, model_id))
+    application.log.debug("EndPoint: Test, Auth:{}, ModelId:{}".format(auth, model_id))
     res = None
     if auth is not None:
         # je niekto prihlaseny
@@ -325,7 +327,7 @@ def show_info_models():
     form = flask.request.get_json()
     auth = request.headers.get('Authorization')
     model_id = form.get('model')
-    print("EndPoint: ShowMyModels, Auth:{}, modelId: {}".format(auth,model_id))
+    application.log.debug("EndPoint: ShowMyModels, Auth:{}, modelId: {}".format(auth,model_id))
     res_model_structure = None
     if auth is None:
         # nie je lognuty, vratim staticke modely, tie su natrenovane vzdy
@@ -353,7 +355,7 @@ def train():
     auth = request.headers.get('Authorization')
     model_id = int(form.get('modelId'))
     dataset_name = form.get('datasetName')
-    print("EndPoint: TrainModel, Auth:{}, modelId: {}".format(auth, model_id))
+    application.log.debug("EndPoint: TrainModel, Auth:{}, modelId: {}".format(auth, model_id))
     if auth is not None:
         # uzivatel je prihlaseny, mozeme dat trenovat
         usr = application.find_user_by_identification(auth)
@@ -369,7 +371,7 @@ def createUser():
     form = flask.request.get_json()
     username = form.get('username')
     password = form.get('password')
-    print("EndPoint: CreateUser, username:{}, password: {}".format(username, password))
+    application.log.debug("EndPoint: CreateUser, username:{}, password: {}".format(username, password))
     resut = application.create_user(username,password)
     if resut:
         # ok
@@ -382,7 +384,7 @@ def createUser():
 def checkUserName():
     username = request.args.get('userName')
     check_result = application.check_user_name(username)
-    print("EndPoint: ChekUserName, username:{}".format(username))
+    application.log.debug("EndPoint: ChekUserName, username:{}".format(username))
     if check_result:
         # nie je take meno, moze byt vytvoreny
         return flask.Response('OK', 200)
@@ -392,6 +394,6 @@ def checkUserName():
 
 ## SPUSTENIE SERVERA
 if __name__ == "__main__":
-    print(("* Loading Keras model and Flask starting server..."
+    application.log.debug(("* Loading Keras model and Flask starting server..."
            "please wait until server has fully started"))
     app.run(host=conf.server_host, port=conf.server_port)

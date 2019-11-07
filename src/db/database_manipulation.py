@@ -3,12 +3,13 @@ import cx_Oracle as cx
 class DB_manip:
 
     # vytvorenie connectu do DB
-    def __init__(self):
+    def __init__(self,ref_app):
         self.ip_adress = '158.193.151.201' #'obelix.fri.uniza.sk'
         self.username = 'foltan'
         self.password = 'h123456'
         self.port = '1521'
         self.sid = 'orcl.fri.uniza.sk'
+        self.ref_app = ref_app
 
         dsn_tns = cx.makedsn(self.ip_adress, self.port,
                                      sid = 'orcl')
@@ -20,18 +21,18 @@ class DB_manip:
         #self.conn = cx.connect(r'foltan/h123456@obelix.fri.uniza.sk:1521/orcl.fri.uniza.sk', mode=cx.SYSDBA)
 
         self.conn.autocommit = False
-        print('################################')
-        print("Pripojenie na db uspesne!")
+        self.ref_app.log.debug('-----------------------------------')
+        self.ref_app.log.info("Pripojenie na db uspesne!")
         versioning = self.conn.version.split('.')
-        print("Db: ORACLE")
-        print("Version: " + str(versioning[0]))
-        print('################################')
+        self.ref_app.log.info("Db: ORACLE")
+        self.ref_app.log.info("Version: " + str(versioning[0]))
+        self.ref_app.log.debug('-----------------------------------')
 
     # VRACIA result set, ked nieco selectujes pouzi toto
     # davaj si nameisto * nazvy collumnov, budes ich mat uspor. v sete
     def select_statement(self,select):
         if(self.conn is None):
-            print("Nepodarilo sa pripojit na DB!")
+            self.ref_app.log.warn("Nepodarilo sa pripojit na DB!")
             return None
         else:
             cr = self.conn.cursor()
@@ -52,13 +53,12 @@ class DB_manip:
             return False
         else:
             cr = self.conn.cursor()
-            print(update)
             cc = cr.execute(update)
             return True
 
     def delete_statement(self,delete):
         if (self.conn is None):
-            print("Nepodarilo sa pripojit na DB!")
+            self.ref_app.log.warn("Nepodarilo sa pripojit na DB!")
             return False
         else:
             cr = self.conn.cursor()
@@ -67,7 +67,7 @@ class DB_manip:
 
     def insert_statement(self,insert,rows):
         if (self.conn is None):
-            print("Nepodarilo sa pripojit na DB!")
+            self.ref_app.log.warn("Nepodarilo sa pripojit na DB!")
             return False
         else:
             cr = self.conn.cursor()
@@ -78,13 +78,12 @@ class DB_manip:
 
     def insert_returning_identity(self,returning_insert,id_name):
         if (self.conn is None):
-            print("Nepodarilo sa pripojit na DB!")
+            self.ref_app.log.warn("Nepodarilo sa pripojit na DB!")
             return False
         else:
             cr = self.conn.cursor()
             newest_id_wrapper = cr.var(cx.NUMBER)
             sql_params = {"newest_id_sql_param": newest_id_wrapper}
-
             cr.execute(returning_insert + " returning "+id_name+" into :id",id=newest_id_wrapper)
             # cr.execute("insert into milos_test ( name ) values ('my hypervisor') returning id into :id",id=newest_id_wrapper)
         return newest_id_wrapper.getvalue()[0]

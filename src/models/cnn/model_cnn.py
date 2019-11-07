@@ -81,7 +81,7 @@ class Model_cnn(interface.ModelInterface):
                 train_history.history['accuracy'][i] = float(train_history.history['accuracy'][i])
                 train_history.history['val_accuracy'][i] = float(train_history.history['val_accuracy'][i])
             json.dump(train_history.history, file_histo)
-        print("Training history has been saved.")
+        self.ref_app.log.debug("Training history has been saved.")
 
     # Trenovanie
     def train(self,dataset_name):
@@ -165,34 +165,13 @@ class Model_cnn(interface.ModelInterface):
                            metrics=['accuracy'])
         return self.model
 
-    # Nahranie uz vytvoreneho modelu
     def load(self):
-        #K.clear_session()
+        self.model = load_model(self.path_struct)
+        self.ref_app.log.debug("Loaded model from disk")
 
-        #tf.global_variables_initializer()
-        #try:
-        #with open(self.path_struct, 'r') as json_file:
-         #   loaded_model_json = json_file.read()
-          #  self.model = model_from_json(loaded_model_json)
-        # nastavenie ulozenych vah
-        #self.model.load_weights(self.path_weights)
-        self.model = load_model(self.path_struct) #saved_model/cnn/5/model
-        #self.model._make_predict_function()
-        #graph = tf.compat.v1.get_default_graph()
-        print("Loaded model from disk")
-       # except:
-        #    print("Model este nema ulozene vahy a strukturu")
-
-    # ulozenie modelu
     def save(self):
-        #json_model = self.model.to_json()
-        #with open(self.path_struct, "w+") as json_file:
-        #    json_file.write(json_model)
-        # ulozenie vah
-        #self.model.save_weights(self.path_weights)
-        # self.test()
         self.model.save(self.path_struct,save_format='h5')
-        print("Saved model to disk")
+        self.ref_app.log.debug("Saved model to disk")
 
     # Model evaluation
     def test(self, dataset_name, is_fast_test=False):
@@ -202,14 +181,14 @@ class Model_cnn(interface.ModelInterface):
             self.ref_data.load_state()
         # ak chcem pustit rychlu evaluation
         if is_fast_test:
-            print('Model evaulation(Fast test):')
+            self.ref_app.log.debug('Model evaulation(Fast test):')
             result = self.model.evaluate_generator(self.ref_data.load_test_set(),verbose=1)
-            print('Evaluation completed:')
+            self.ref_app.log.debug('Evaluation completed:')
             i = 0
             for score in result:
-                print('Name:{} Value:{}'.format(self.model.metrics_names[i], score))
+                self.ref_app.log.debug('Name:{} Value:{}'.format(self.model.metrics_names[i], score))
                 i += 1
-            print('=========================')
+            self.ref_app.log.debug('=========================')
             return result[0], result[1]
         else:
             # co sa ulozi do suboru na precitanie
@@ -437,7 +416,7 @@ class Model_cnn(interface.ModelInterface):
                         ret = json.load(file_histo)
                     return ret
                 except:
-                    print("Model este nebol trenovany")
+                    self.ref_app.log.debug("Model este nebol trenovany")
                 return ret
 
     def is_locked_by_training(self):

@@ -69,7 +69,7 @@ class Results_set:
 			self.result_matrix[predicted_value,int(true_lab_array[index])]+= 1
 			self.samples_count = self.samples_count+1
 			index = index + 1
-		print(self.result_matrix)
+		self.ref_model.ref_app.log.debug(self.result_matrix)
 
 	#def process_results(self,prediction_array,true_lab_array,true_lab_names):
 	#	""" Spracovanie vysledkov generovanych cez predict_generator
