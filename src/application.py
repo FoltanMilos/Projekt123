@@ -19,7 +19,7 @@ class Application:
 
     global ref_db               # referencia na databazu
 
-    def __init__(self,train):
+    def __init__(self):
         # kontrola dependences
         print("Interpreter version: " + sys.version)
         print("Keras version: " + keras.__version__)
@@ -33,29 +33,6 @@ class Application:
 
         # natiahnutie statickych modelov
         self.load_all_static_models()
-
-        ## testovanie no FE
-        # VYHODIT
-        import src.models.cnn.model_cnn as mc
-        #credentials = {}
-        #credentials['username'] = 'admin'
-        #credentials['pass'] = 'admin'
-        #self.validate_user(credentials)
-        #self.list_active_user[0].indentifier = 'MgtKbChIBsFpumdwizuSeDnxXjBpDowo'
-
-        #model = mc.Model_cnn("EXAMPLE",self.list_active_user[0],self,None)
-        #model.is_new = True
-        #dc = {}
-        #dc["modelName"] = "EXAMPLE"
-        #model.create_model_from_json(dc)
-
-        model = self.list_static_models[0]
-        #hist = model.train("small_dataset")
-        hist_test, dt = model.test("small_dataset")
-        #print("ss")
-
-       # hist = model.train("small_dataset")
-        #print(hist)
 
     def validate_user(self, credentials):
         res = self.ref_db.select_statement("select * from proj_user where u_name ='"+ credentials['username'] +"'")

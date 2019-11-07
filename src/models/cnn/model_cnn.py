@@ -170,7 +170,7 @@ class Model_cnn(interface.ModelInterface):
           #  self.model = model_from_json(loaded_model_json)
         # nastavenie ulozenych vah
         #self.model.load_weights(self.path_weights)
-        self.model = load_model(self.path_struct)
+        self.model = load_model(self.path_struct) #saved_model/cnn/5/model
         #self.model._make_predict_function()
         #graph = tf.compat.v1.get_default_graph()
         print("Loaded model from disk")

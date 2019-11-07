@@ -24,12 +24,14 @@ import os
 import binascii
 from io import BytesIO
 from PIL import Image
+import src.enum.mlp_enum_builder as el_mlp
+import src.enum.enum_model as enum_model
 
 # server application instance
 app = Flask(__name__)
 CORS(app, resources={"*": {"origins": "*"}})
 # holds instance of application with neural network
-application = neuralNetworkApplication.Application(conf.load_model)
+application = neuralNetworkApplication.Application()
 # application.active_model.validate_model_on_test_data(application.data.test_data,application.data.test_labels)
 counters = {}
 
@@ -246,8 +248,18 @@ def logout():
 
 @app.route('/builder', methods=['GET', 'POST'])
 def builder():
+    r_json = flask.request.get_json()
+    r_json = r_json.get("modelType")
+    model_type = enum_model.Nn_type.CNN.value # default
+    if r_json is not None:
+        if r_json == 'CNN':
+            model_type =  enum_model.Nn_type.CNN.value
+        elif r_json == 'MLP':
+            model_type =  enum_model.Nn_type.MLP.value
+        elif r_json == 'GEN':
+            model_type =  enum_model.Nn_type.GEN.value
     if (request.method == 'GET'):
-        return builderGetData()
+        return builderGetData(model_type)
     elif (request.method == 'POST'):
         return buildModel(flask.request.get_json())
     else:
@@ -255,8 +267,12 @@ def builder():
         return flask.make_response('not found', 404)
 
 
-def builderGetData():
-    resJson = el.to_json()
+def builderGetData(model_type):
+    resJson = None
+    if model_type == enum_model.Nn_type.CNN.value:
+        resJson = el.to_json()
+    elif model_type == enum_model.Nn_type.MLP.value:
+        resJson = el_mlp.to_json()
     return flask.make_response(json.dumps((resJson)), 200)
 
 def buildModel(jsonData):
