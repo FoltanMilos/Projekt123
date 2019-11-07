@@ -1,18 +1,7 @@
+#!/usr/bin/env python3
 from flask import Flask, request
 import flask
 import sys
-
-from scipy.sparse.data import _data_matrix
-
-import src.data as dt
-
-sys.path.append('db')
-sys.path.append('models/cnn')
-sys.path.append('models/mlp')
-sys.path.append('models/genetic_alg')
-sys.path.append('enum')
-sys.path.append('interface')
-
 import src.application as neuralNetworkApplication
 import src.config as conf
 import src.enum.enum_model_builder as el
@@ -26,7 +15,13 @@ from PIL import Image
 import src.enum.mlp_enum_builder as el_mlp
 import src.enum.enum_model as enum_model
 
-# server application instance
+sys.path.append('db')
+sys.path.append('models/cnn')
+sys.path.append('models/mlp')
+sys.path.append('models/genetic_alg')
+sys.path.append('enum')
+sys.path.append('interface')
+
 app = Flask(__name__)
 CORS(app, resources={"*": {"origins": "*"}})
 # holds instance of application with neural network
@@ -157,7 +152,7 @@ def testing_session():
     '''
     form = flask.request.get_json()
     auth = request.headers.get('Authorization')
-    model_id = form.get('model')
+    model_id = int(form.get('model'))
     print("EndPoint: TestingSession, Auth:{}, ModelId:{}".format(auth, model_id))
     head_test_session_info = None
     if auth is None:
@@ -168,13 +163,15 @@ def testing_session():
         # uzivatel je prihlaseny
         usr = application.find_user_by_identification(auth)
         user_model = usr.switch_active_model(model_id)
-        if user_model.is_locked_by_training :
+        if user_model.is_locked_by_training() :
             return flask.make_response("Model is locked by trainning!",200)
-        elif user_model.is_trained_on_dataset==False:
+        elif user_model.is_trained_on_dataset()==False:
             return flask.make_response("Model has not been trained yet!", 200)
         else:
             # model bol uz trenovany, moze sa testovat
-            head_test_session_info = user_model.load_train_session_file()
+            head_test_session_info = user_model.load_test_session_file()
+            if head_test_session_info is None:
+                return flask.make_response("Model has not been tested yet!", 200)
     return flask.make_response(json.dumps(head_test_session_info))
 
 @app.route('/dataset/new', methods=["POST"])
