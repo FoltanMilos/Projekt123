@@ -351,18 +351,17 @@ def show_info_models():
 def train():
     form = flask.request.get_json()
     auth = request.headers.get('Authorization')
-    model_id = form.get('modelId')
+    model_id = int(form.get('modelId'))
     dataset_name = form.get('datasetName')
     print("EndPoint: TrainModel, Auth:{}, modelId: {}".format(auth, model_id))
     if auth is not None:
         # uzivatel je prihlaseny, mozeme dat trenovat
         usr = application.find_user_by_identification(auth)
         model = usr.switch_active_model(model_id)
-        model.train()
+        model.train(dataset_name)
     else:
         md = application.swap_active_static_model(model_id)
-        md.train("small_dataset")
-        # md.train(dataset_name)
+        md.train(dataset_name)
     return flask.Response('OK',200)
 
 @app.route('/create-user', methods=["POST"])

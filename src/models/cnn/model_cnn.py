@@ -14,6 +14,7 @@ import os
 import json
 import src.enum.enum_model_builder as mb
 import src.data as dt
+import src.models.cnn.callbacks as callbck
 import random
 import tensorflow as tf
 from tensorflow.keras import  backend as K
@@ -46,6 +47,7 @@ class Model_cnn(interface.ModelInterface):
         self.static = None
         self.m_id = -1
         self.model = None
+        self.callb = callbck.LiveLearningCallback(0)
 
         if model_name == "":
             # prazdna instania, do ktorej sa naloaduju data
@@ -89,6 +91,7 @@ class Model_cnn(interface.ModelInterface):
             self.ref_data.load_state()
         self.ref_data.load_train_set()
         self.ref_data.load_validation_set()
+        self.callb.max_epoch = 3
 
         train_hist = self.model.fit_generator(
             self.ref_data.train_set, steps_per_epoch=10, epochs=3,
@@ -96,7 +99,10 @@ class Model_cnn(interface.ModelInterface):
             validation_steps=5,
             callbacks=[EarlyStopping(monitor='accuracy',
                                      patience=200,
-                                     verbose=1)])
+                                     verbose=1),
+                      # callbck.LiveLearningCallback()
+                       self.callb
+                       ])
         # nastavenie parametrov
         self.trained_on_dataset = self.ref_data.name
         self.is_changed = True
