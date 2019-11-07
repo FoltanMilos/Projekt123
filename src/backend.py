@@ -14,7 +14,6 @@ sys.path.append('enum')
 sys.path.append('interface')
 
 import src.application as neuralNetworkApplication
-import tensorflow as tf
 import src.config as conf
 import src.enum.enum_model_builder as el
 import base64
@@ -266,7 +265,6 @@ def builder():
         code = 404
         return flask.make_response('not found', 404)
 
-
 def builderGetData(model_type):
     resJson = None
     if model_type == enum_model.Nn_type.CNN.value:
@@ -304,9 +302,7 @@ def re_train():
 
 @app.route('/test', methods=["POST"])
 def test():
-    #global graph
     form = flask.request.get_json()
-    #form = request.form
     auth = request.headers.get('Authorization')
     model_id = int(form.get('modelId'))
     dataset_name = form.get('datasetName')
