@@ -19,6 +19,8 @@ import random
 import tensorflow as tf
 from tensorflow.keras import  backend as K
 from tensorflow.keras.models import load_model
+import threading as th
+import time
 
 
 class Model_cnn(interface.ModelInterface):
@@ -91,10 +93,10 @@ class Model_cnn(interface.ModelInterface):
             self.ref_data.load_state()
         self.ref_data.load_train_set()
         self.ref_data.load_validation_set()
-        self.callb.max_epoch = 3
-
+        self.callb.max_epoch = 10
+        self.lock_training()
         train_hist = self.model.fit_generator(
-            self.ref_data.train_set, steps_per_epoch=10, epochs=3,
+            self.ref_data.train_set, steps_per_epoch=10, epochs=self.callb.max_epoch,
             validation_data=self.ref_data.valid_set,
             validation_steps=5,
             callbacks=[EarlyStopping(monitor='accuracy',
@@ -114,6 +116,7 @@ class Model_cnn(interface.ModelInterface):
         self.save_state()
         self.save()
         self.save_train_history(train_hist)
+        self.unlock_training()
         return train_hist
 
     # zlozenie modelu
@@ -435,3 +438,13 @@ class Model_cnn(interface.ModelInterface):
             with open(self.ref_res_proc.train_result_path, 'r') as file_histo:
                 ret = json.load(file_histo)
         return ret
+
+    def lock_training(self):
+        self.locked_by_training = True
+        self.ref_app.ref_db.update_statement("update proj_model set locked_by_train='T' where m_id="+str(self.m_id))
+        self.ref_app.ref_db.commit()
+
+    def unlock_training(self):
+        self.locked_by_training = False
+        self.ref_app.ref_db.update_statement("update proj_model set locked_by_train='F' where m_id="+str(self.m_id))
+        self.ref_app.ref_db.commit()

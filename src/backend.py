@@ -14,7 +14,7 @@ from io import BytesIO
 from PIL import Image
 import src.enum.mlp_enum_builder as el_mlp
 import src.enum.enum_model as enum_model
-import logging as log
+import threading as th
 
 sys.path.append('db')
 sys.path.append('models/cnn')
@@ -360,10 +360,16 @@ def train():
         # uzivatel je prihlaseny, mozeme dat trenovat
         usr = application.find_user_by_identification(auth)
         model = usr.switch_active_model(model_id)
-        model.train(dataset_name)
+        if model.is_locked_by_training():
+            return flask.Response('Model is locked by training', 403)
+        # oddelenie vlakna
+        train_thread = th.Thread(target=model.train, args=(dataset_name,))
+        train_thread.start()
+        return flask.Response('OK', 200)
     else:
         md = application.swap_active_static_model(model_id)
-        md.train(dataset_name)
+
+        #md.train(dataset_name)
     return flask.Response('OK',200)
 
 @app.route('/create-user', methods=["POST"])
