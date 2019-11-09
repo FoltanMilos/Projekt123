@@ -22,7 +22,7 @@ class DB_manip:
 
         self.conn.autocommit = False
         self.ref_app.log.debug('-----------------------------------')
-        self.ref_app.log.info("Pripojenie na db uspesne!")
+        self.ref_app.log.info("Connection to DB succesfull!")
         versioning = self.conn.version.split('.')
         self.ref_app.log.info("Db: ORACLE")
         self.ref_app.log.info("Version: " + str(versioning[0]))

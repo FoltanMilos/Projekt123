@@ -201,21 +201,24 @@ class Model_cnn(interface.ModelInterface):
             self.ref_res_proc.process_result_matrix(result,data_to_return[0][1],threshold=0.75)
             # zapisanie historie testovania
             test_history = {}
-            header = {}
+            header = self.ref_res_proc.to_json()
             results_list = []
             # header
-            header["accuracy"] = self.ref_res_proc.accuracy
-            header["specificity"] = self.ref_res_proc.specificity
-            header["senzitivity"] = self.ref_res_proc.senzitivity
-            header["positive predictions"] = self.ref_res_proc.calc_positive_pred()
-            header["negative predictions"] = self.ref_res_proc.cacl_negative_pred()
+            #training["Epochs"] = 0
+            #training["Optimizer"] = 0
+            #training["LearningRate"] = 0
+            #header["accuracy"] = self.ref_res_proc.accuracy
+            ##header["specificity"] = self.ref_res_proc.specificity
+            ##header["senzitivity"] = self.ref_res_proc.senzitivity
+            #header["positive predictions"] = self.ref_res_proc.calc_positive_pred()
+            #header["negative predictions"] = self.ref_res_proc.cacl_negative_pred()
             i = 0
             for res in result:
                 universal_dict = {}
                 metada_dummy = resClass.Metadata("Male", "26", "Bening", "serial imaging showing no change", "True")
                 tmp_res = resClass.Result(res[0], "Bening", metada_dummy, None)
                 universal_dict["Result"] = tmp_res.to_json()
-                universal_dict["PhotoPath"] = data_to_return.filepaths[i]
+                universal_dict["PhotoPath"] = str(data_to_return.filepaths[i])
                 results_list.append(universal_dict)
                 i += 1
             test_history["tested_results"] = results_list
@@ -228,7 +231,7 @@ class Model_cnn(interface.ModelInterface):
             self.ref_res_proc.is_changed = True
             self.ref_res_proc.is_new = False
             self.ref_res_proc.save_state()
-            return result, data_to_return
+            return test_history
 
     def predict_image(self, image=None):
         """Predikcia jedneho obrazku"""

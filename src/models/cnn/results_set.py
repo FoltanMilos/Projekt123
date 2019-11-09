@@ -30,6 +30,8 @@ class Results_set:
 		self.train_result_path= None
 		self.test_result_path= None
 		self.test_accuracy = None
+		self.false_positives = None
+		self.true_negatives = None
 
 		# clasifikacny model bude mat maticu 2x2
 		self.result_matrix = np.zeros(shape=(2,2))
@@ -45,19 +47,8 @@ class Results_set:
 		# Negative(1)		b	                 d               #
 		# [predicted]                                            #
 		#--------------------------------------------------------#
-
 		# pocet vzoriek
 		self.samples_count = 0
-		self.result_json = {}
-		self.result_json["Accuracy"] = 0
-		self.result_json["Specificity"] = 0
-		self.result_json["Senzitivity"] = 0
-		self.result_json["FalsePositives"] = 0
-		self.result_json["TrueNegatives"] = 0
-		self.result_json["TrainingTime"] = 0
-		self.result_json["Epochs"] = 0
-		self.result_json["Optimizer"] = 0
-		self.result_json["LearningRate"] = 0
 
 	def process_result_matrix(self,predction_array,true_lab_array,threshold):
 		if(predction_array.shape[0]!= true_lab_array.shape[0]):
@@ -70,6 +61,11 @@ class Results_set:
 			self.samples_count = self.samples_count+1
 			index = index + 1
 		self.ref_model.ref_app.log.debug(self.result_matrix)
+		self.calc_accuracy()
+		self.calc_sensitivity()
+		self.calc_specificity()
+		self.calc_positive_pred()
+		self.cacl_negative_pred()
 
 	#def process_results(self,prediction_array,true_lab_array,true_lab_names):
 	#	""" Spracovanie vysledkov generovanych cez predict_generator
@@ -123,13 +119,15 @@ class Results_set:
 		""" Ked model predpovie bening, tak aka je pravdepodobnost ze aj tak bude"""
 		if (self.samples_count <= 0):
 			raise Exception("Samples count should be > 0, but it is {}".format(self.samples_count))
-		return self.result_matrix[1,1]/(self.result_matrix[1,1]+self.result_matrix[1,0])
+		self.false_positives = self.result_matrix[1,1]/(self.result_matrix[1,1]+self.result_matrix[1,0])
+		return self.false_positives
 
 	def cacl_negative_pred(self):
 		""" Model predpovie malig a aka je P ze aj bude malig"""
 		if (self.samples_count <= 0):
 			raise Exception("Samples count should be > 0, but it is {}".format(self.samples_count))
-		return self.result_matrix[0,0]/(self.result_matrix[0,0]+self.result_matrix[0,1])
+		self.true_negatives= self.result_matrix[0, 0] / (self.result_matrix[0, 0] + self.result_matrix[0, 1])
+		return self.true_negatives
 
 
 	# loading
@@ -182,4 +180,19 @@ class Results_set:
 			return self.r_id
 
 	def to_json(self):
-		return self.result_json
+		result_json = {}
+		training = {}
+		testing = {}
+		training["Accuracy"] = str(self.accuracy)
+		training["TrainingTime"] = str(0)
+
+		testing["Accuracy"] = str(self.test_accuracy)
+		testing["Specificity"] = str(self.specificity)
+		testing["Senzitivity"] = str(self.senzitivity)
+		testing["FalsePositives"] = str(self.false_positives)
+		testing["TrueNegatives"] = str(self.true_negatives)
+
+		# result dict
+		result_json["testing"] = testing
+		result_json["training"] = training
+		return result_json

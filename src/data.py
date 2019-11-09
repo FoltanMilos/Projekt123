@@ -167,7 +167,7 @@ class Data:
 
     def to_json(self):
         headers = {}
-        headers["DatasetUsed"] = self.name
+        headers["DatasetUsed"] = str(self.name)
         headers["All photo count"] = str(self.count_all_pics)
         headers["TRAIN - bening"] = str(self.count_bening["R"])
         headers["TRAIN - malig"] = str(self.count_malig["R"])
@@ -179,6 +179,6 @@ class Data:
         headers["VALID - malig"] = str(self.count_malig["V"])
         headers["VALID - unspecified"] = str(self.count_unspecified["V"])
         headers["Dataset source"] = self.link_dataset
-        headers["IMG size"] = self.img_size
-        headers["DatasetDesc"] = self.data_description
+        headers["IMG size"] = str(self.img_size)
+        headers["DatasetDesc"] = str(self.data_description)
         return headers
