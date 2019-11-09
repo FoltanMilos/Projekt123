@@ -78,7 +78,12 @@ class Model_cnn(interface.ModelInterface):
     # Ulozenie historie trenovania
     def save_train_history(self, train_history):
         # najpr do result setu
-        with open(self.ref_res_proc.train_result_path, 'w') as file_histo:
+        pth = None
+        if self.ref_res_proc.train_result_path is None:
+            pth = "saved_model/cnn/" + str(int(self.m_id)) + "/train_history.json"
+        else:
+            pth = self.ref_res_proc.train_result_path
+        with open(pth, 'w') as file_histo:
             for i in range(len(train_history.history['accuracy'])):
                 train_history.history['accuracy'][i] = float(train_history.history['accuracy'][i])
                 train_history.history['val_accuracy'][i] = float(train_history.history['val_accuracy'][i])
@@ -203,15 +208,6 @@ class Model_cnn(interface.ModelInterface):
             test_history = {}
             header = self.ref_res_proc.to_json()
             results_list = []
-            # header
-            #training["Epochs"] = 0
-            #training["Optimizer"] = 0
-            #training["LearningRate"] = 0
-            #header["accuracy"] = self.ref_res_proc.accuracy
-            ##header["specificity"] = self.ref_res_proc.specificity
-            ##header["senzitivity"] = self.ref_res_proc.senzitivity
-            #header["positive predictions"] = self.ref_res_proc.calc_positive_pred()
-            #header["negative predictions"] = self.ref_res_proc.cacl_negative_pred()
             i = 0
             for res in result:
                 universal_dict = {}
@@ -263,6 +259,7 @@ class Model_cnn(interface.ModelInterface):
     def load_state(self, state):
         self.m_id = int(state[0])
         self.path_struct = state[5]
+        self.json_structure = None
         #self.path_weights = state[5]
         self.is_new = False
         self.is_changed = False
@@ -290,11 +287,11 @@ class Model_cnn(interface.ModelInterface):
             # najprv result_set
             self.ref_res_proc.save_state()
             # insert
-            self.m_id = self.ref_app.ref_db.insert_returning_identity(
+            self.m_id = int(self.ref_app.ref_db.insert_returning_identity(
                 "insert into proj_model(u_id,r_id,m_type,m_structure_path,model_name) values"
                 "(" + str(self.ref_user.u_id) + ", " + str(
                     self.ref_res_proc.r_id) + ",'CNN','" + "','" + str(self.name) + "')"
-                , "m_id")
+                , "m_id"))
             # ak je novy model, treba  u vytvorit este aj folder
             os.mkdir(os.getcwd() + '/saved_model/cnn/' + str(int(self.m_id)))
             self.ref_app.ref_db.commit()
@@ -330,17 +327,23 @@ class Model_cnn(interface.ModelInterface):
         ret_json["data_header"] = dataset_json
 
         # model a jeho vrstvy
-        with open("saved_model/cnn/" +str(self.m_id) +"/json.json", 'r') as file:
-            ret_json["layers"] = json.loads(file.read())
+        #with open("saved_model/cnn/" +str(self.m_id) +"/json.json", 'r') as file:
+        #    ret_json["layers"] = json.loads(file.read())
+        ret_json["layers"] = self.load_file_structure()
 
         return ret_json
+
+    def load_file_structure(self):
+        with open("saved_model/cnn/" + str(self.m_id) + "/json.json", 'r') as file:
+            ret = json.loads(file.read())
+        return ret
 
     def create_model_from_json(self, p_json):
         self.json_structure = p_json
         self.name = p_json["modelName"]
         self.model = Sequential()
-        with open('other_files/jsonCreate', 'r') as jsons:
-            p_json = json.load(jsons)
+        #with open('other_files/jsonCreate', 'r') as jsons:
+         #   p_json = json.load(jsons)
         for lay in p_json["layers"]:
             if lay["class"] == mb.EnumLayer.INPUT.name.upper():
                 self.model.add(Conv2D(int(lay["NEURON_COUNT"]),
@@ -373,13 +376,9 @@ class Model_cnn(interface.ModelInterface):
                                       padding=str(lay["PADDING"]).lower()
                                       )
                                )
-        self.model.compile(loss="binary_crossentropy",
-                               optimizer="adam",
-                               metrics=['accuracy'])
-        # este treba optimizer
-        #self.model.compile(loss=str(p_json["loss"]),
-        #				   optimizer=str(p_json["optimizer"]),
-        #				   metrics=[str(p_json["metrics"])])
+        self.model.compile(loss=str(p_json["loss"]),
+        				   optimizer=str(p_json["optimizer"]),
+        				   metrics=[str(p_json["metrics"])])
 
         # ulozit to do DB
         self.save_state() # toto je kvoli vrateniu ID
@@ -394,11 +393,13 @@ class Model_cnn(interface.ModelInterface):
         with open("saved_model/cnn/"+ str(int(self.m_id)) +"/json.json", "w+") as json_file:
             json.dump(self.json_structure,json_file)
 
-    def change_ref_data(self, dataset_id):
-        self.ref_data = dt.Data(self)
-        self.ref_data.d_id = dataset_id
-        self.ref_data.load_state()
-        self.is_changed = True
+        return self.m_id
+
+    #def change_ref_data(self, dataset_id):
+    ##    self.ref_data = dt.Data(self)
+     #   self.ref_data.d_id = dataset_id
+     #   self.ref_data.load_state()
+     #   self.is_changed = True
 
     def load_train_session_file(self):
         '''
@@ -407,6 +408,16 @@ class Model_cnn(interface.ModelInterface):
                   Subor   - model uz bol trenovany
                   None    - model este nebol trenovany nikdy
         '''
+        #ret_dic = {}
+        #ret_dic["train_history"] =None
+        #if self.json_structure is None:
+            #ret_dic["model_info"] = self.load_file_structure()
+        #else:
+        #    ret_dic["model_info"] = self.model_to_json()
+        #if self.ref_data.name is None:
+        #    ret_dic["dataset_info"] = None
+        #else:
+        #    ret_dic["dataset_info"] = ref_data.to_json()
         if self.locked_by_training:
             # neda sa vratit jeho train session, ked sa trenuje
             return True
@@ -416,11 +427,11 @@ class Model_cnn(interface.ModelInterface):
                 return None
             else:
                 # model uz bol trenovany
-                #hist_path = 'saved_model/cnn/' + str(int(self.m_id)) + '/train_history.json'
-                ret = None
+
                 try:
                     with open(self.ref_res_proc.train_result_path, 'r') as file_histo:
                         ret = json.load(file_histo)
+         #               ret_dic["train_history"] = json.load(file_histo)
                     return ret
                 except:
                     self.ref_app.log.debug("Model este nebol trenovany")
@@ -439,7 +450,7 @@ class Model_cnn(interface.ModelInterface):
     def load_test_session_file(self):
         ret = None
         if self.ref_res_proc.test_result_path is not None:
-            with open(self.ref_res_proc.train_result_path, 'r') as file_histo:
+            with open(self.ref_res_proc.test_result_path, 'r') as file_histo:
                 ret = json.load(file_histo)
         return ret
 

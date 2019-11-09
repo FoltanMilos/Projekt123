@@ -130,9 +130,13 @@ def training_session():
         # uzivatel je prihlaseny
         usr = application.find_user_by_identification(auth)
         user_model= usr.switch_active_model(model_id)
+        #file_train_session = user_model.load_train_session_file()
+        if user_model.ref_data.name is None:
+            file_train_session["dataset_info"] = user_model.ref_data.to_json()
+        else:
+            file_train_session["dataset_info"] = None
         file_train_session["train_history"] = user_model.load_train_session_file()
         file_train_session["model_info"] = user_model.model_to_json()
-        file_train_session["dataset_info"] = user_model.ref_data.to_json()
     else:
         raise Exception("Nepovolena hodnota v atribute auth! [{}]".format(auth))
 
@@ -152,7 +156,7 @@ def testing_session():
     '''
     form = flask.request.get_json()
     auth = request.headers.get('Authorization')
-    model_id = int(form.get('model'))
+    model_id = int(form.get('modelId'))
     application.log.debug("EndPoint: TestingSession, Auth:{}, ModelId:{}".format(auth, model_id))
     head_test_session_info = None
     if auth is None:
@@ -167,12 +171,14 @@ def testing_session():
             return flask.make_response("Model is locked by trainning!",200)
         elif user_model.is_trained_on_dataset()==False:
             return flask.make_response("Model has not been trained yet!", 200)
+        elif user_model.ref_res_proc.test_result_path is None:
+            return flask.make_response("Model has not been trained yet!", 200)
         else:
             # model bol uz trenovany, moze sa testovat
             head_test_session_info = user_model.load_test_session_file()
             if head_test_session_info is None:
                 return flask.make_response("Model has not been tested yet!", 200)
-    return flask.make_response(json.dumps(head_test_session_info))
+    return flask.make_response(json.dumps({"testing_session": head_test_session_info}))
 
 @app.route('/dataset/new', methods=["POST"])
 def createDataset():
@@ -244,8 +250,10 @@ def logout():
 @app.route('/builder', methods=['GET', 'POST'])
 def builder():
     r_json = flask.request.get_json()
-    r_json = r_json.get("modelType")
-    model_type = enum_model.Nn_type.CNN.value # default
+    if r_json is None:
+        model_type = enum_model.Nn_type.CNN.value  # default
+    else:
+        r_json = r_json.get("modelType")
     if r_json is not None:
         if r_json == 'CNN':
             model_type =  enum_model.Nn_type.CNN.value
@@ -274,8 +282,8 @@ def buildModel(jsonData):
     if auth is not None:
         usr = application.find_user_by_identification(auth)
         if usr is not None:
-            usr.create_model_from_builder(jsonData)
-            return flask.Response('Ok', 200)
+            returned_model_id = usr.create_model_from_builder(jsonData)
+            return flask.Response({"new_model_id": str(returned_model_id)}, 200)
     return flask.Response('Neautentifikovany user',403)
 
 @app.route('/live_training_session', methods=["GET"])
@@ -310,7 +318,7 @@ def test():
         if usr is not None:
             user_model = usr.switch_active_model(model_id)
             if dataset_name is None:
-                res = user_model.test(None)
+                res = user_model.test("small_dataset")
             else:
                 res = user_model.test(dataset_name)
     return flask.Response(json.dumps({'results': res}, ensure_ascii=False, indent=2), 200)
@@ -352,6 +360,8 @@ def train():
     auth = request.headers.get('Authorization')
     model_id = int(form.get('modelId'))
     dataset_name = form.get('datasetName')
+    if dataset_name is None:
+        dataset_name = "small_dataset"
     application.log.debug("EndPoint: TrainModel, Auth:{}, modelId: {}".format(auth, model_id))
     if auth is not None:
         # uzivatel je prihlaseny, mozeme dat trenovat
@@ -365,9 +375,8 @@ def train():
         return flask.Response('OK', 200)
     else:
         md = application.swap_active_static_model(model_id)
-
         #md.train(dataset_name)
-    return flask.Response('OK',200)
+        return flask.Response('Forbiden for not logged user',403)
 
 @app.route('/create-user', methods=["POST"])
 def createUser():

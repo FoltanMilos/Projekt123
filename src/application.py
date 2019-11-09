@@ -38,11 +38,11 @@ class Application:
         # natiahnutie statickych modelov
         self.load_all_static_models()
 
-        credentials = {}
-        credentials['username'] = 'admin'
-        credentials['pass'] = 'admin'
-        self.validate_user(credentials)
-        self.list_active_user[0].indentifier = 'MgtKbChIBsFpumdwizuSeDnxXjBpDowo'
+        #credentials = {}
+        #credentials['username'] = 'admin'
+        #credentials['pass'] = 'admin'
+        #self.validate_user(credentials)
+        #self.list_active_user[0].indentifier = 'MgtKbChIBsFpumdwizuSeDnxXjBpDowo'
 
     def validate_user(self, credentials):
         res = self.ref_db.select_statement("select * from proj_user where u_name ='"+ credentials['username'] +"'")

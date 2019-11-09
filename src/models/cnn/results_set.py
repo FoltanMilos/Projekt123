@@ -117,16 +117,18 @@ class Results_set:
 
 	def calc_positive_pred(self):
 		""" Ked model predpovie bening, tak aka je pravdepodobnost ze aj tak bude"""
-		if (self.samples_count <= 0):
-			raise Exception("Samples count should be > 0, but it is {}".format(self.samples_count))
-		self.false_positives = self.result_matrix[1,1]/(self.result_matrix[1,1]+self.result_matrix[1,0])
+		if self.samples_count <= 0 or self.result_matrix[1, 1] + self.result_matrix[1, 0] == 0:
+			self.false_positives = 0
+		else:
+			self.false_positives = self.result_matrix[1,1]/(self.result_matrix[1,1]+self.result_matrix[1,0])
 		return self.false_positives
 
 	def cacl_negative_pred(self):
 		""" Model predpovie malig a aka je P ze aj bude malig"""
-		if (self.samples_count <= 0):
-			raise Exception("Samples count should be > 0, but it is {}".format(self.samples_count))
-		self.true_negatives= self.result_matrix[0, 0] / (self.result_matrix[0, 0] + self.result_matrix[0, 1])
+		if self.samples_count <= 0 or self.result_matrix[0, 0] + self.result_matrix[0, 1] == 0:
+			self.true_negatives = 0
+		else:
+			self.true_negatives= self.result_matrix[0, 0] / (self.result_matrix[0, 0] + self.result_matrix[0, 1])
 		return self.true_negatives
 
 
@@ -140,16 +142,21 @@ class Results_set:
 			self.senzitivity = ret_set[2]
 			self.specificity = ret_set[3]
 			self.accuracy = ret_set[4]
-			self.test_result_path = ret_set[5]
+			if ret_set[5] == 'NULL':
+				self.test_result_path = None
+			else:
+				self.test_result_path = ret_set[5]
 			if  ret_set[9] is not None:
 				spl = ret_set[9].split(",")
 				self.result_matrix[0,0] = int(spl[0])
 				self.result_matrix[0, 1] = int(spl[1])
 				self.result_matrix[1, 0] = int(spl[2])
 				self.result_matrix[1, 1] = int(spl[3])
+		self.samples_count = self.result_matrix[0,0] + self.result_matrix[0,1] +self.result_matrix[1,0] +self.result_matrix[1,1]
 		self.is_new = False
 		self.is_changed = False
-
+		self.cacl_negative_pred()
+		self.calc_positive_pred()
 
 	def save_state(self):
 		if self.is_changed and self.is_new == False :
