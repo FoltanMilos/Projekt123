@@ -105,10 +105,14 @@ venv.bak/
 .mypy_cache/
 
 #dependencies
-dataset/main_dataset/
+dataset/
+images_other/
 dataset/main_dataset/images/**
 dataset/main_dataset/description/**
 dataset/main_dataset/description(10015)
 dataset/main_dataset/processed
 logs/
 /dataset/small_dataset/
+saved_model/cnn/221/
+saved_model/cnn/247/
+other_files/jsonCreate
