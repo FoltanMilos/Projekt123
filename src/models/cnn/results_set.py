@@ -24,9 +24,9 @@ class Results_set:
 		self.is_new = is_new
 		# NOVE
 		self.result_json = None
-		self.specificity= -1
-		self.accuracy= -1
-		self.senzitivity= -1
+		self.specificity= 0
+		self.accuracy= 0
+		self.senzitivity= 0
 		self.train_result_path= None
 		self.test_result_path= None
 		self.test_accuracy = None
@@ -164,9 +164,9 @@ class Results_set:
 				res_path = "'NULL'"
 			else:
 				res_path = "'" + self.test_result_path + "'"
-			sezi = -1 if self.senzitivity is None else str(self.senzitivity)
-			speci = -1 if self.specificity is None else str(self.specificity)
-			acc = -1 if self.accuracy is None else str(self.accuracy)
+			sezi = 0 if self.senzitivity is None else str(self.senzitivity)
+			speci = 0 if self.specificity is None else str(self.specificity)
+			acc = 0 if self.accuracy is None else str(self.accuracy)
 			matrx = "'" + str(int(self.result_matrix[0,0])) +","+str(int(self.result_matrix[0,1])) +","+str(int(self.result_matrix[1,0])) +","+str(int(self.result_matrix[1,1])) +  "'"
 			# update len
 			self.ref_model.ref_app.ref_db.update_statement("update proj_result "

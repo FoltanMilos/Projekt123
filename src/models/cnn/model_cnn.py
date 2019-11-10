@@ -118,6 +118,7 @@ class Model_cnn(interface.ModelInterface):
         self.ref_res_proc.accuracy =  float(train_hist.history['accuracy'][len(train_hist.history['accuracy'])-1])
         self.ref_res_proc.is_changed = True
         self.ref_res_proc.is_new = False
+        self.ref_res_proc.train_result_path = "saved_model/cnn/" + str(int(self.m_id)) + "/train_history.json"
         self.save_state()
         self.save()
         self.save_train_history(train_hist)
@@ -342,6 +343,7 @@ class Model_cnn(interface.ModelInterface):
         self.json_structure = p_json
         self.name = p_json["modelName"]
         self.model = Sequential()
+        # testovanie
         #with open('other_files/jsonCreate', 'r') as jsons:
          #   p_json = json.load(jsons)
         for lay in p_json["layers"]:
@@ -351,8 +353,6 @@ class Model_cnn(interface.ModelInterface):
                                       activation=str(lay["ACTIVATION"]).lower(),
                                       padding=str(lay["PADDING"]).lower(),
                                       bias_initializer=self.bias_initializer,
-                                      #input_shape=(64,64,3),
-                                      #kernel_initializer=self.initializer
                                       input_shape=(int(str(lay["INPUT_SHAPE"]).split('x')[0].split(',')[0]),
                                                    int(str(lay["INPUT_SHAPE"]).split('x')[0].split(',')[1]),
                                                    3)
@@ -379,27 +379,21 @@ class Model_cnn(interface.ModelInterface):
         self.model.compile(loss=str(p_json["loss"]),
         				   optimizer=str(p_json["optimizer"]),
         				   metrics=[str(p_json["metrics"])])
-
         # ulozit to do DB
         self.save_state() # toto je kvoli vrateniu ID
         self.path_struct = 'saved_model/cnn/' + str(int(self.m_id)) + '/model'
         self.is_new = False
         self.is_changed = True
         self.save_state() # treba ulozit cesty k suborom
+        self.trained_on_dataset = None
+        self.ref_res_proc.test_result_path = None
+        self.locked_by_training = False
         #ulozenie struktury modelu
         self.save()
-
         # ulozenie json create model
         with open("saved_model/cnn/"+ str(int(self.m_id)) +"/json.json", "w+") as json_file:
             json.dump(self.json_structure,json_file)
-
         return self.m_id
-
-    #def change_ref_data(self, dataset_id):
-    ##    self.ref_data = dt.Data(self)
-     #   self.ref_data.d_id = dataset_id
-     #   self.ref_data.load_state()
-     #   self.is_changed = True
 
     def load_train_session_file(self):
         '''

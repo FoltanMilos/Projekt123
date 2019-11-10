@@ -94,6 +94,7 @@ class EnumOptimizer(Enum):
     SGD = ("SGD","SGD")
     RMSprop = ("RMSprop","RMSprop")
     Adadelta = ("Adadelta", "Adadelta")
+    Adagrad = ("Adagrad","Adagrad")
     Adam = ("Adam","Adam")
 
     @staticmethod
@@ -109,6 +110,7 @@ class EnumMetrics(Enum):
     binary_accuracy = ("binary_accuracy","Binary accuracy")
     categorical_accuracy = ("categorical_accuracy","Categorical accuracy")
     sparse_categorical_accuracy = ("sparse_categorical_accuracy", "Sparse categorical accuracy")
+    cosine_proximity = ("cosine_proximity","Cosine proximity")
 
     @staticmethod
     def getValues():

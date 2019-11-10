@@ -131,7 +131,7 @@ def training_session():
         usr = application.find_user_by_identification(auth)
         user_model= usr.switch_active_model(model_id)
         #file_train_session = user_model.load_train_session_file()
-        if user_model.ref_data.name is None:
+        if user_model.is_trained_on_dataset() == True:
             file_train_session["dataset_info"] = user_model.ref_data.to_json()
         else:
             file_train_session["dataset_info"] = None

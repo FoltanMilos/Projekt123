@@ -42,7 +42,7 @@ class Application:
         #credentials['username'] = 'admin'
         #credentials['pass'] = 'admin'
         #self.validate_user(credentials)
-        #self.list_active_user[0].indentifier = 'MgtKbChIBsFpumdwizuSeDnxXjBpDowo'
+        #self.list_active_user[0].indentifier = 'NkoXlbrhzKnQaPCDJoyUEoqWYsIrIMGX'
 
     def validate_user(self, credentials):
         res = self.ref_db.select_statement("select * from proj_user where u_name ='"+ credentials['username'] +"'")
