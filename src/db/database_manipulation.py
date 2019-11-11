@@ -20,12 +20,12 @@ class DB_manip:
         #   2 : Restart ORACLETNS service in windows services
         #self.conn = cx.connect(r'foltan/h123456@obelix.fri.uniza.sk:1521/orcl.fri.uniza.sk', mode=cx.SYSDBA)
         self.conn.autocommit = False
-        self.ref_app.log.debug('-----------------------------------')
+        self.ref_app.log.info('-----------------------------------')
         self.ref_app.log.info("Connection to DB succesfull!")
         versioning = self.conn.version.split('.')
         self.ref_app.log.info("Db: ORACLE")
         self.ref_app.log.info("Version: " + str(versioning[0]))
-        self.ref_app.log.debug('-----------------------------------')
+        self.ref_app.log.info('-----------------------------------')
 
     # VRACIA result set, ked nieco selectujes pouzi toto
     # davaj si nameisto * nazvy collumnov, budes ich mat uspor. v sete

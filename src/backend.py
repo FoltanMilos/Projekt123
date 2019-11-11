@@ -76,7 +76,7 @@ def predict():
     model_id = int(form.get('model'))
     img = form.get('photo')
     auth = request.headers.get('Authorization')
-    application.log.debug("EndPoint: Predict, Auth:{}, ModelId:{}".format(auth, model_id))
+    application.log.info("EndPoint: Predict, Auth:{}, ModelId:{}".format(auth, model_id))
     jpgtxt = base64.standard_b64decode(img.split(',')[1])  # treba odrezat cestu, lebo je v otm prilozena
     dataset_name = base64.standard_b64decode(img.split(',')[0]) # cesta pre dohladanie fotky
     #TODO: dorobit tu cestu do fotky ked sa vyberie z nasich datasetov, VYSTRIHNUT DO TOHO DATASET NAME
@@ -90,8 +90,8 @@ def predict():
         result = usr.switch_active_model(model_id).predict_image(img)
     else:
         raise Exception("Nepovolena hodnota v atribute auth! [{}]".format(auth))
-    application.log.debug("Prediction result:")
-    application.log.debug(result)
+    application.log.info("Prediction result:")
+    application.log.info(result)
     return flask.make_response(json.dumps(result))
 
 
@@ -104,7 +104,7 @@ def training_session():
     form = flask.request.get_json()
     auth = request.headers.get('Authorization')
     model_id = form.get('modelId')
-    application.log.debug("EndPoint: TrainingSession, Auth:{}, ModelId:{}".format(auth, model_id))
+    application.log.info("EndPoint: TrainingSession, Auth:{}, ModelId:{}".format(auth, model_id))
     file_train_session = {}
     if auth is None:
         # uzivatel nebol prihlaseny
@@ -143,7 +143,7 @@ def testing_session():
     form = flask.request.get_json()
     auth = request.headers.get('Authorization')
     model_id = int(form.get('modelId'))
-    application.log.debug("EndPoint: TestingSession, Auth:{}, ModelId:{}".format(auth, model_id))
+    application.log.info("EndPoint: TestingSession, Auth:{}, ModelId:{}".format(auth, model_id))
     head_test_session_info = None
     if auth is None:
         # uzivatel nebol prihlaseny
@@ -209,7 +209,7 @@ def login():
 @app.route('/models', methods=["GET"])
 def get_models():
     auth = request.headers.get('Authorization')
-    application.log.debug("EndPoint: GetModels, Auth:{}".format(auth))
+    application.log.info("EndPoint: GetModels, Auth:{}".format(auth))
     res = None
     if auth is None:
         # nie je lognuty, vratim staticke modely
@@ -277,7 +277,7 @@ def live_training_session():
     form = flask.request.get_json()
     auth = request.headers.get('Authorization')
     model_id = form.get('model')
-    application.log.debug("EndPoint: LiveTrainingSession, Auth:{}, ModelId:{}".format(auth, model_id))
+    application.log.info("EndPoint: LiveTrainingSession, Auth:{}, ModelId:{}".format(auth, model_id))
     #TODO: live prediciton
     return flask.Response('este nikto nerobil', 200)
 
@@ -287,7 +287,7 @@ def re_train():
     form = flask.request.get_json()
     auth = request.headers.get('Authorization')
     model_id = form.get('model')
-    application.log.debug("EndPoint: ReTrain, Auth:{}, ModelId:{}".format(auth, model_id))
+    application.log.info("EndPoint: ReTrain, Auth:{}, ModelId:{}".format(auth, model_id))
     return flask.Response('este nikto nerobil', 200)
 
 @app.route('/test', methods=["POST"])
@@ -296,7 +296,7 @@ def test():
     auth = request.headers.get('Authorization')
     model_id = int(form.get('modelId'))
     dataset_name = form.get('datasetName')
-    application.log.debug("EndPoint: Test, Auth:{}, ModelId:{}".format(auth, model_id))
+    application.log.info("EndPoint: Test, Auth:{}, ModelId:{}".format(auth, model_id))
     res = None
     if auth is not None:
         # je niekto prihlaseny
@@ -318,7 +318,7 @@ def show_info_models():
     form = flask.request.get_json()
     auth = request.headers.get('Authorization')
     model_id = form.get('model')
-    application.log.debug("EndPoint: ShowMyModels, Auth:{}, modelId: {}".format(auth,model_id))
+    application.log.info("EndPoint: ShowMyModels, Auth:{}, modelId: {}".format(auth,model_id))
     res_model_structure = None
     if auth is None:
         # nie je lognuty, vratim staticke modely, tie su natrenovane vzdy
@@ -348,7 +348,7 @@ def train():
     dataset_name = form.get('datasetName')
     if dataset_name is None:
         dataset_name = "small_dataset"
-    application.log.debug("EndPoint: TrainModel, Auth:{}, modelId: {}".format(auth, model_id))
+    application.log.info("EndPoint: TrainModel, Auth:{}, modelId: {}".format(auth, model_id))
     if auth is not None:
         # uzivatel je prihlaseny, mozeme dat trenovat
         usr = application.find_user_by_identification(auth)
@@ -369,7 +369,7 @@ def createUser():
     form = flask.request.get_json()
     username = form.get('username')
     password = form.get('password')
-    application.log.debug("EndPoint: CreateUser, username:{}, password: {}".format(username, password))
+    application.log.info("EndPoint: CreateUser, username:{}, password: {}".format(username, password))
     resut = application.create_user(username,password)
     if resut:
         # ok
@@ -382,7 +382,7 @@ def createUser():
 def checkUserName():
     username = request.args.get('userName')
     check_result = application.check_user_name(username)
-    application.log.debug("EndPoint: ChekUserName, username:{}".format(username))
+    application.log.info("EndPoint: ChekUserName, username:{}".format(username))
     if check_result:
         # nie je take meno, moze byt vytvoreny
         return flask.Response('OK', 200)
@@ -392,6 +392,6 @@ def checkUserName():
 
 ## SPUSTENIE SERVERA
 if __name__ == "__main__":
-    application.log.debug(("* Loading Keras model and Flask starting server..."
+    application.log.info(("* Loading Keras model and Flask starting server..."
            "please wait until server has fully started"))
     app.run(host=conf.server_host, port=conf.server_port)

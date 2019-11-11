@@ -58,7 +58,7 @@ class Results_set:
 			self.result_matrix[predicted_value,int(true_lab_array[index])]+= 1
 			self.samples_count = self.samples_count+1
 			index = index + 1
-		self.ref_model.ref_app.log.debug(self.result_matrix)
+		self.ref_model.ref_app.log.info(self.result_matrix)
 		self.calc_accuracy()
 		self.calc_sensitivity()
 		self.calc_specificity()

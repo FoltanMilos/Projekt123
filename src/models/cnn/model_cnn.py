@@ -82,7 +82,7 @@ class Model_cnn(interface.ModelInterface):
                 train_history.history['accuracy'][i] = float(train_history.history['accuracy'][i])
                 train_history.history['val_accuracy'][i] = float(train_history.history['val_accuracy'][i])
             json.dump(train_history.history, file_histo)
-        self.ref_app.log.debug("Training history has been saved.")
+        self.ref_app.log.info("Training history has been saved.")
 
     # Trenovanie
     def train(self,dataset_name):
@@ -170,11 +170,11 @@ class Model_cnn(interface.ModelInterface):
 
     def load(self):
         self.model = load_model(self.path_struct)
-        self.ref_app.log.debug("Loaded model from disk")
+        self.ref_app.log.info("Loaded model from disk")
 
     def save(self):
         self.model.save(self.path_struct,save_format='h5')
-        self.ref_app.log.debug("Saved model to disk")
+        self.ref_app.log.info("Saved model to disk")
 
     # Model evaluation
     def test(self, dataset_name, is_fast_test=False):
@@ -184,14 +184,14 @@ class Model_cnn(interface.ModelInterface):
             self.ref_data.load_state()
         # ak chcem pustit rychlu evaluation
         if is_fast_test:
-            self.ref_app.log.debug('Model evaulation(Fast test):')
+            self.ref_app.log.info('Model evaulation(Fast test):')
             result = self.model.evaluate_generator(self.ref_data.load_test_set(),verbose=1)
-            self.ref_app.log.debug('Evaluation completed:')
+            self.ref_app.log.info('Evaluation completed:')
             i = 0
             for score in result:
-                self.ref_app.log.debug('Name:{} Value:{}'.format(self.model.metrics_names[i], score))
+                self.ref_app.log.info('Name:{} Value:{}'.format(self.model.metrics_names[i], score))
                 i += 1
-            self.ref_app.log.debug('=========================')
+            self.ref_app.log.info('=========================')
             return result[0], result[1]
         else:
             # co sa ulozi do suboru na precitanie
@@ -422,7 +422,7 @@ class Model_cnn(interface.ModelInterface):
          #               ret_dic["train_history"] = json.load(file_histo)
                     return ret
                 except:
-                    self.ref_app.log.debug("Model este nebol trenovany")
+                    self.ref_app.log.info("Model este nebol trenovany")
                 return ret
 
     def is_locked_by_training(self):

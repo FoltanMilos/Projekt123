@@ -25,7 +25,7 @@ class Application:
         self.log = self.log.log
         self.log.info("Application starting!")
         # kontrola dependences
-        self.log.debug("Interpreter version: " + sys.version)
+        self.log.info("Interpreter version: " + sys.version)
         self.log.info("Keras version: " + keras.__version__)
         self.log.info("Aplication started: OK (main)")
         # pripojenie na DB
