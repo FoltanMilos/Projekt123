@@ -1,6 +1,6 @@
-import src.models.cnn.model_cnn as cnn
-import src.models.mlp.model_mlp as mlp
-import src.enum.enum_model as n_type
+import models.cnn.model_cnn as cnn
+import models.mlp.model_mlp as mlp
+import enumerations.enum_model as n_type
 
 
 class User:
@@ -73,9 +73,6 @@ class User:
 	def switch_active_model(self,new_act_model_id):
 		for md in self.models:
 			if(md.m_id == new_act_model_id):
-				# prehodenie v DB
-				#self.ref_db.update_statement("update proj_model set m_active=null where m_id="+self.active_model.m_id)
-				#self.ref_db.update_statement("update proj_model set m_active='A' where m_id="+md._m_id)
 				self.active_model = md
 		return self.active_model
 
@@ -102,10 +99,8 @@ class User:
 			pass
 		else:
 			raise Exception("neexistuje model")
-
 		self.switch_active_model(new_model)
 		self.models.append(new_model)
-
 
 	def get_models(self):
 		jsonarray = []

@@ -1,13 +1,13 @@
 import sys
+sys.path.append('src')
 import keras
-import src.user as user
-import src.db.database_manipulation as dm
+import user as user
+import db.database_manipulation as dm
 import string
 import random
-import src.models.cnn.model_cnn as cnn_md
-import src.logger as logger
-import src.enum.enum_model as enum_model
-
+import models.cnn.model_cnn as cnn_md
+import logger as logger
+import enumerations.enum_model as enum_model
 
 class Application:
     global list_static_models  # instancia listu s modelov, s ktorymi sa pracuje

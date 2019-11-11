@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
 
-### --------------- I N T E R F A C E   M O D E L S --------------###
-##              pevne definovanie rozhrania pre webove service      #
-### --------------------------------------------------------------###
+
 class ModelInterface(ABC):
     global training_file
     global locked_by_training
@@ -10,11 +8,11 @@ class ModelInterface(ABC):
     global static
     
     @abstractmethod
-    def train(self):
+    def train(self, datasetName):
         raise NotImplementedError
 
     @abstractmethod
-    def test(self):
+    def test(self,datasetName):
         raise NotImplementedError
 
     @abstractmethod
@@ -22,15 +20,7 @@ class ModelInterface(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def create(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    def load(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    def save(self):
+    def create_model_from_json(self):
         raise NotImplementedError
 
     @abstractmethod
@@ -47,6 +37,10 @@ class ModelInterface(ABC):
 
     @abstractmethod
     def load_train_session_file(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    def load_test_session_file(self):
         raise NotImplementedError
 
     @abstractmethod

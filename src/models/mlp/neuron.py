@@ -1,7 +1,6 @@
 import random
 import numpy as np
 
-
 class Neuron:
     def __init__(self, prev_layer_size):
         self.potential = 0.0

@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
+import sys
+sys.path.append('src')
+
 from flask import Flask, request
 import flask
-import sys
-import src.application as neuralNetworkApplication
-import src.config as conf
-import src.enum.enum_model_builder as el
+import application as neuralNetworkApplication
+import config as conf
+import enumerations.enum_model_builder as el
 import base64
 import json
 from flask_cors import CORS
@@ -12,41 +14,25 @@ import os
 import binascii
 from io import BytesIO
 from PIL import Image
-import src.enum.mlp_enum_builder as el_mlp
-import src.enum.enum_model as enum_model
+import enumerations.mlp_enum_builder as el_mlp
+import enumerations.enum_model as enum_model
 import threading as th
-
-sys.path.append('db')
-sys.path.append('models/cnn')
-sys.path.append('models/mlp')
-sys.path.append('models/genetic_alg')
-sys.path.append('enum')
-sys.path.append('interface')
 
 app = Flask(__name__)
 CORS(app, resources={"*": {"origins": "*"}})
 # holds instance of application with neural network
 application = neuralNetworkApplication.Application()
 app.logger = application.log
-# application.active_model.validate_model_on_test_data(application.data.test_data,application.data.test_labels)
 counters = {}
-
-
 ### ----------------------------------###
 #                                       #
 #           S E R V I C E S             #
 #                                       #
 ### ----------------------------------###
-
-## VZOROVY POPIS SERVICE
-# - input params
-# - output data vo forme json
 @app.route("/loadImages", methods=["POST"])
 def loadImages():
     req = request.get_json()
-
     result = []
-    # TODO: nech sa overi user, a nacitaju sa tie datasety co sa maju
     with open('dataset/main_dataset/description/metadata_all_with_X.csv', 'r') as metadata:
         data = []
         for line in metadata:

@@ -1,4 +1,4 @@
-from src.models.mlp.layer import Layer
+from models.mlp.layer import Layer
 from numpy import dot
 import json
 

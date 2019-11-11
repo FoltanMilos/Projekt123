@@ -24,7 +24,6 @@ class EnumActivation(Enum):
 
     @staticmethod
     def getValues():
-            # vratenie atributov na nastavenie
             result = []
             for data in EnumActivation:
                 result.append({"id": data.name, "name": data.value})

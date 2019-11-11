@@ -1,7 +1,7 @@
 import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
 from keras.preprocessing import image as img_proc
-import src.config as conf
+import config as conf
 
 class Data:
     global train_set

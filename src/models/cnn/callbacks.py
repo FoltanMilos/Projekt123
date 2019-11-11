@@ -12,4 +12,3 @@ class LiveLearningCallback(ker_clbck.Callback):
 			print("\n\n0 %")
 		else:
 			print("\n\n{} %".format(float(self.curent_epoch/self.max_epoch)))
-

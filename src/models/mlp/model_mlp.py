@@ -1,7 +1,6 @@
-import src.interface.model_interface as interface
-from src.models.mlp.cv_wrapper import CrossValidation
-from src.models.mlp.mlp import Mlp
-
+import interface.model_interface as interface
+from models.mlp.cv_wrapper import CrossValidation
+from models.mlp.mlp import Mlp
 
 class Model_mlp(interface.ModelInterface):
     def load_state(self, state):

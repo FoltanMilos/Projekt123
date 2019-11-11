@@ -1,5 +1,5 @@
 import os
-from src import config as conf
+import config as conf
 import glob
 
 path = 'dataset/main_dataset'

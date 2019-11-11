@@ -1,27 +1,21 @@
-import pickle
-import src.models.result as resClass
+import sys
+sys.path.append('src')
+import models.result as resClass
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Flatten, Activation
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, BatchNormalization
 import numpy as np
-from keras.models import model_from_json
-import src.config as conf
-import src.interface.model_interface as interface
+import config as conf
+import interface.model_interface as interface
 import tensorflow.keras.initializers
-import src.models.cnn.results_set as ResultSet
+import models.cnn.results_set as ResultSet
 import os
 import json
-import src.enum.enum_model_builder as mb
-import src.data as dt
-import src.models.cnn.callbacks as callbck
-import random
-import tensorflow as tf
-from tensorflow.keras import  backend as K
+import enumerations.enum_model_builder as mb
+import data as dt
+import models.cnn.callbacks as callbck
 from tensorflow.keras.models import load_model
-import threading as th
-import time
-
 
 class Model_cnn(interface.ModelInterface):
     #global model  # instancia modelu keras
@@ -71,7 +65,7 @@ class Model_cnn(interface.ModelInterface):
             #  instead of accumulating all past gradients. This way, Adadelta continues learning even when many updates have been done.
             #  Compared to Adagrad, in the original version of Adadelta you don't have to set an initial learning rate. In this version,
             #  initial learning rate and decay factor can be set, as in most other Keras optimizers.
-        self.initializer = tensorflow.keras.initializers.glorot_uniform(conf.initializer_seed)
+        self.initializer = tensorflow.keras.initializers.glorot_uniform()
         self.bias_initializer = tensorflow.keras.initializers.RandomNormal(mean=0.0, stddev=0.05, seed=None)
             #self.save_state()
 

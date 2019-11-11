@@ -47,10 +47,3 @@ class Metadata:
         ret_val["Desc clinical diagnostis"] = str(self.diagnosis_confirm_type)
         ret_val["Melanocytic"] = str(self.diagnosis_meta)
         return ret_val
-
-
-
-
-
-
-
