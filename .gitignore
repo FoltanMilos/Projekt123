@@ -113,6 +113,4 @@ dataset/main_dataset/train/**
 dataset/main_dataset/validation/**
 images_other/images(MSK-1)/
 logs/
-saved_model/cnn/221/
-saved_model/cnn/247/
 other_files/jsonCreate
