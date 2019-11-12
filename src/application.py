@@ -8,6 +8,7 @@ import random
 import models.cnn.model_cnn as cnn_md
 import logger as logger
 import enumerations.enum_model as enum_model
+import config as conf
 
 class Application:
     global list_static_models  # instancia listu s modelov, s ktorymi sa pracuje
@@ -45,7 +46,7 @@ class Application:
         #self.list_active_user[0].indentifier = 'NkoXlbrhzKnQaPCDJoyUEoqWYsIrIMGX'
 
     def validate_user(self, credentials):
-        res = self.ref_db.select_statement("select * from proj_user where u_name ='"+ credentials['username'] +"'")
+        res = self.ref_db.select_statement("select * from "+ str(conf.database) +"_user where u_name ='"+ credentials['username'] +"'")
         for row in res:
             if row[2] == credentials['pass']:
                 identifier = self.generate_unique_string()
@@ -99,25 +100,25 @@ class Application:
 
 
     def load_all_static_models(self):
-        result_stat_models = self.ref_db.select_statement("select * from proj_model where m_static = 'S'")
+        result_stat_models = self.ref_db.select_statement("select * from "+ str(conf.database) +"_model where m_static = 'S'")
         for res_static_md in result_stat_models:
-            if res_static_md[4] == enum_model.Nn_type.CNN.value:
+            if res_static_md[3] == enum_model.Nn_type.CNN.value:
                 new_static_cnn_model = cnn_md.Model_cnn("",None,self)
                 new_static_cnn_model.load_state(res_static_md)
                 self.list_static_models.append(new_static_cnn_model)
-            elif res_static_md[4] == enum_model.Nn_type.MLP.value:
+            elif res_static_md[3] == enum_model.Nn_type.MLP.value:
                 #TODO dorobit
                 new_static_mlp_model = None
                 new_static_mlp_model.load_state(res_static_md)
                 self.list_static_models.append(new_static_mlp_model)
-            elif res_static_md[4] == enum_model.Nn_type.GEN.value:
+            elif res_static_md[3] == enum_model.Nn_type.GEN.value:
                 # TODO dorobit
                 new_static_gen_model = None
                 new_static_gen_model.load_state(res_static_md)
                 self.list_static_models.append(new_static_gen_model)
 
     def check_user_name(self,username):
-        result = self.ref_db.select_statement("select count(u_name) from proj_user where u_name="+username.lower())
+        result = self.ref_db.select_statement("select count(u_name) from "+ str(conf.database) +"_user where u_name="+username.lower())
         if int(result[0]) > 0:
             # nie je to ok, narusienie jedinecnosti
             return False
@@ -125,7 +126,7 @@ class Application:
             return True
 
     def create_user(self, username, password):
-        result = self.ref_db.insert_statement("insert into proj_user(u_name,u_password,u_active,u_note,u_privileges)"
+        result = self.ref_db.insert_statement("insert into "+ str(conf.database) +"_user(u_name,u_password,u_active,u_note,u_privileges)"
                     " values(:1,:2,:3,:4,:5)",[username,password,'N','vytvoreny cez app','L'])
         self.ref_db.commit()
         return True

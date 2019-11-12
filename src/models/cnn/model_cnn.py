@@ -109,7 +109,7 @@ class Model_cnn(interface.ModelInterface):
         self.is_changed = True
         self.is_new = False
         # res prov
-        self.ref_res_proc.accuracy =  float(train_hist.history['accuracy'][len(train_hist.history['accuracy'])-1])
+        self.ref_res_proc.train_accuracy =  float(train_hist.history['accuracy'][len(train_hist.history['accuracy']) - 1])
         self.ref_res_proc.is_changed = True
         self.ref_res_proc.is_new = False
         self.ref_res_proc.train_result_path = "saved_model/cnn/" + str(int(self.m_id)) + "/train_history.json"
@@ -253,18 +253,18 @@ class Model_cnn(interface.ModelInterface):
 
     def load_state(self, state):
         self.m_id = int(state[0])
-        self.path_struct = state[5]
+        self.path_struct = state[4]
         self.json_structure = None
         #self.path_weights = state[5]
         self.is_new = False
         self.is_changed = False
-        self.name = state[6]
-        if state[7] == 'F':
+        self.name = state[5]
+        if state[6] == 'F':
             self.locked_by_training = False
         else:
             self.locked_by_training = True
-        self.trained_on_dataset = state[8]
-        self.static = state[9]
+        self.trained_on_dataset = state[7]
+        self.static = state[8]
 
         # dotiahnutie dat
         self.ref_data = dt.Data(self,self.trained_on_dataset)
@@ -283,7 +283,7 @@ class Model_cnn(interface.ModelInterface):
             self.ref_res_proc.save_state()
             # insert
             self.m_id = int(self.ref_app.ref_db.insert_returning_identity(
-                "insert into proj_model(u_id,r_id,m_type,m_structure_path,model_name) values"
+                "insert into "+ str(conf.database) +"_model(u_id,r_id,m_type,m_structure_path,model_name) values"
                 "(" + str(self.ref_user.u_id) + ", " + str(
                     self.ref_res_proc.r_id) + ",'CNN','" + "','" + str(self.name) + "')"
                 , "m_id"))
@@ -299,7 +299,7 @@ class Model_cnn(interface.ModelInterface):
             if self.trained_on_dataset is None:
                 dt = "NULL"
             self.ref_app.ref_db.update_statement(
-                "update proj_model set r_id=" + str(self.ref_res_proc.r_id) +
+                "update "+ str(conf.database) +"_model set r_id=" + str(self.ref_res_proc.r_id) +
                 ", m_structure_path='" + str(self.path_struct) + "', model_name='" + str(
                     self.name) + "',trained_on_dataset=" + str(dt)+ "  where m_id=" + str(self.m_id))
             self.ref_app.ref_db.commit()
@@ -309,7 +309,7 @@ class Model_cnn(interface.ModelInterface):
         headers = {}
         #hlavicka modelu
         headers["Name"] = self.name
-        headers["Accuracy"] = self.ref_res_proc.accuracy
+        headers["Accuracy"] = self.ref_res_proc.train_accuracy
         headers["ModelId"] = self.m_id
         headers["ModelType"] = "CNN"
 
@@ -434,7 +434,6 @@ class Model_cnn(interface.ModelInterface):
         else:
             return True
 
-
     def load_test_session_file(self):
         ret = None
         if self.ref_res_proc.test_result_path is not None:
@@ -444,10 +443,10 @@ class Model_cnn(interface.ModelInterface):
 
     def lock_training(self):
         self.locked_by_training = True
-        self.ref_app.ref_db.update_statement("update proj_model set locked_by_train='T' where m_id="+str(self.m_id))
+        self.ref_app.ref_db.update_statement("update "+str(conf.database)+"_model set locked_by_train='T' where m_id="+str(self.m_id))
         self.ref_app.ref_db.commit()
 
     def unlock_training(self):
         self.locked_by_training = False
-        self.ref_app.ref_db.update_statement("update proj_model set locked_by_train='F' where m_id="+str(self.m_id))
+        self.ref_app.ref_db.update_statement("update "+str(conf.database)+"_model set locked_by_train='F' where m_id="+str(self.m_id))
         self.ref_app.ref_db.commit()

@@ -1,6 +1,7 @@
 import models.cnn.model_cnn as cnn
 import models.mlp.model_mlp as mlp
 import enumerations.enum_model as n_type
+import config as conf
 
 
 class User:
@@ -36,16 +37,16 @@ class User:
 		self.indentifier = identifier
 
 	def load_user_data(self):
-		ret_models = self.ref_db.select_statement("select * from proj_model "
+		ret_models = self.ref_db.select_statement("select * from "+ str(conf.database) +"_model "
 												 "where u_id ="+str(self.u_id)+" and m_static is null")
 		for loaded_model in ret_models:
-			if(loaded_model[4] == n_type.Nn_type.CNN.value):
+			if(loaded_model[3] == n_type.Nn_type.CNN.value):
 				mod = cnn.Model_cnn("",self,self.ref_app)
 				mod.load_state(loaded_model)
 				if(loaded_model[3] is not None):
 					self.active_model = mod
 				self.models.append(mod)
-			elif(loaded_model[4] == n_type.Nn_type.MLP.value):
+			elif(loaded_model[3] == n_type.Nn_type.MLP.value):
 				mod = mlp.Model_mlp()
 				mod.load_state(loaded_model)
 				self.models.append(mod)
@@ -78,7 +79,7 @@ class User:
 
 	@staticmethod
 	def load_all_users_no_cascade(app,db):
-		ret_users = db.select_statement("select * from proj_user")
+		ret_users = db.select_statement("select * from "+ str(conf.database) +"_user")
 		list_users = []
 		for loaded_user in ret_users:
 			u = User(app, loaded_user[0], db)

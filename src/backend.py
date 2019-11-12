@@ -303,6 +303,10 @@ def test():
         usr = application.find_user_by_identification(auth)
         if usr is not None:
             user_model = usr.switch_active_model(model_id)
+            if user_model.is_locked_by_training():
+                return flask.Response('Model is locked by training!', 403)
+            if not user_model.is_trained_on_dataset():
+                return flask.Response('Model has not been trained yet!', 403)
             if dataset_name is None:
                 res = user_model.test("small_dataset")
             else:

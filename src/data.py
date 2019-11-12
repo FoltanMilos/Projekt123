@@ -126,30 +126,31 @@ class Data:
         if self.name is not None:
             # KED MODEL ESTE NEMA PRIRADENE DATA LEBO NEBOL TRENOVANY
             ret_data_set = self.ref_model.ref_app.ref_db.select_statement(
-                "select * from proj_data where d_name='" + str(self.name.lower()) + "'")
+                "select * from "+str(conf.database)+"_data where d_name='" + str(self.name.lower()) + "'")
             for row in ret_data_set:
                 self.d_id = row[0]
-                self.paths[row[4]] = row[3]
-                self.name = row[2]
-                self.count = row[6]
-                self.data_description = row[7]
-                self.path_to_desc = row[5]
-                self.count_bening[row[4]] = row[8]
-                self.count_malig[row[4]] = row[9]
-                self.count_unspecified[row[4]] = row[10]
-                self.link_dataset = row[11]
-                self.img_size = row[12]
-                self.count_all_pics = row[13]
+                self.paths[row[3]] = row[2]
+                self.name = row[1]
+                self.count = row[5]
+                self.data_description = row[6]
+                self.path_to_desc = row[4]
+                self.count_bening[row[3]] = row[7]
+                self.count_malig[row[3]] = row[8]
+                self.count_unspecified[row[3]] = row[9]
+                self.link_dataset = row[10]
+                self.img_size = row[11]
+                self.count_all_pics = row[12]
 
     def save_state(self):
-        if(self.is_new):
+        returned_id_data = None
+        if self.is_new:
             for path_dict in self.paths:
-                returned_id_data = self.ref_model.ref_app.ref_db.insert_returning_identity("insert into proj_data( M_ID, D_NAME, D_PATH, D_PATH_TYPE) values "
+                returned_id_data = self.ref_model.ref_app.ref_db.insert_returning_identity("insert into "+ str(conf.database) +"_data( M_ID, D_NAME, D_PATH, D_PATH_TYPE) values "
                     "("+str(self.ref_model.m_id)+",'"+str(self.name)+"','"+str(self.paths[path_dict])+"','"+str(path_dict)+"')","d_id")
         elif(self.is_changed):
             pass
             for path_dict in self.paths:
-                self.ref_model.ref_app.ref_db.update_statement("update proj_data "
+                self.ref_model.ref_app.ref_db.update_statement("update "+ str(conf.database) +"_data "
                         "set m_id:=:1 d_name:=:2 d_path:=:3 d_path_type:=:4 where d_id="+self.d_id+"",
                         (self.ref_model.m_id,self.name,self.paths[path_dict],path_dict))
         else:

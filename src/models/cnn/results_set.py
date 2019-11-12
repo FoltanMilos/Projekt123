@@ -1,4 +1,5 @@
 import numpy as np
+import config as conf
 
 class Results_set:
 	""" Trieda zodpoveda za procesing vystupov zo siete """
@@ -9,9 +10,9 @@ class Results_set:
 	global is_new				# ci su novo vytvorene pre db
 
 	global result_json
-	global specificity
-	global accuracy
-	global senzitivity
+	global test_specificity
+	global train_accuracy
+	global test_sensitivity
 	global train_result_path
 	global test_result_path
 
@@ -22,12 +23,13 @@ class Results_set:
 		self.is_new = is_new
 		# NOVE
 		self.result_json = None
-		self.specificity= 0
-		self.accuracy= 0
-		self.senzitivity= 0
+		self.test_specificity= 0
+		self.train_accuracy= 0
+		self.test_accuracy = None
+		self.test_sensitivity= 0
+
 		self.train_result_path= None
 		self.test_result_path= None
-		self.test_accuracy = None
 		self.false_positives = None
 		self.true_negatives = None
 
@@ -95,15 +97,15 @@ class Results_set:
 		""" Spocita sensitivitu z matrix tabulky, vzorec: [a/(a+b)"""
 		if(self.samples_count <= 0):
 			raise Exception("Samples count should be > 0, but it is {}".format(self.samples_count))
-		self.senzitivity = float(self.result_matrix[1,1])/(self.result_matrix[1,1]+self.result_matrix[0,1])
-		return self.senzitivity
+		self.test_sensitivity = float(self.result_matrix[1, 1]) / (self.result_matrix[1, 1] + self.result_matrix[0, 1])
+		return self.test_sensitivity
 
 	def calc_specificity(self):
 		""" d / (c+d)"""
 		if(self.samples_count <= 0):
 			raise Exception("Samples count should be > 0, but it is {}".format(self.samples_count))
-		self.specificity = float(self.result_matrix[0,0])/(self.result_matrix[0,0]+self.result_matrix[1,0])
-		return self.specificity
+		self.test_specificity = float(self.result_matrix[0, 0]) / (self.result_matrix[0, 0] + self.result_matrix[1, 0])
+		return self.test_specificity
 
 	def calc_accuracy(self):
 		""" Presnost modelu, vzorec a + d / (a+b+c+d)
@@ -132,20 +134,21 @@ class Results_set:
 
 	# loading
 	def load_state(self):
-		ret_set_all = self.ref_model.ref_app.ref_db.select_statement("Select r.* from proj_result r"
-				" join PROJ_MODEL m on(r.r_id=m.r_id) where m.m_id="+str(self.ref_model.m_id) +"")
+		ret_set_all = self.ref_model.ref_app.ref_db.select_statement("Select r.* from "+str(conf.database)+"_result r"
+				" join "+str(conf.database)+"_MODEL m on(r.r_id=m.r_id) where m.m_id="+str(self.ref_model.m_id) +"")
 		for ret_set in ret_set_all:
-			self.r_id=ret_set[0]
+			self.r_id = ret_set[0]
 			self.train_result_path = ret_set[1]
-			self.senzitivity = ret_set[2]
-			self.specificity = ret_set[3]
-			self.accuracy = ret_set[4]
-			if ret_set[5] == 'NULL':
+			self.test_sensitivity = ret_set[5]
+			self.test_specificity = ret_set[6]
+			self.train_accuracy = ret_set[7]
+			if ret_set[2] == 'NULL':
 				self.test_result_path = None
 			else:
-				self.test_result_path = ret_set[5]
-			if  ret_set[9] is not None:
-				spl = ret_set[9].split(",")
+				self.test_result_path = ret_set[2]
+			self.test_accuracy = None if ret_set[3]  is None else float(ret_set[3])
+			if  ret_set[4] is not None:
+				spl = ret_set[4].split(",")
 				self.result_matrix[0,0] = int(spl[0])
 				self.result_matrix[0, 1] = int(spl[1])
 				self.result_matrix[1, 0] = int(spl[2])
@@ -162,23 +165,26 @@ class Results_set:
 				res_path = "'NULL'"
 			else:
 				res_path = "'" + self.test_result_path + "'"
-			sezi = 0 if self.senzitivity is None else str(self.senzitivity)
-			speci = 0 if self.specificity is None else str(self.specificity)
-			acc = 0 if self.accuracy is None else str(self.accuracy)
+			test_sensi = 0 if self.test_sensitivity is None else str(self.test_sensitivity)
+			test_speci = 0 if self.test_specificity is None else str(self.test_specificity)
+			train_acc = 0 if self.train_accuracy is None else str(self.train_accuracy)
+			test_acc = 0 if self.test_accuracy is None else str(self.test_accuracy)
 			matrx = "'" + str(int(self.result_matrix[0,0])) +","+str(int(self.result_matrix[0,1])) +","+str(int(self.result_matrix[1,0])) +","+str(int(self.result_matrix[1,1])) +  "'"
 			# update len
-			self.ref_model.ref_app.ref_db.update_statement("update proj_result "
+			self.ref_model.ref_app.ref_db.update_statement("update "+ str(conf.database) +"_result "
 				"SET model_train_result_path='" + str(self.train_result_path) + "',"
-				" sensitivity=" + str(sezi) + ","
-				" specificity=" + str(speci) + ","
-				" accuracy=" + str(acc) + ","
+				" train_accuracy=" + str(train_acc) + ","
 				" test_matrix=" + str(matrx) + ","
-				" model_test_result_path=" + res_path + " where r_id=" + str(self.r_id) + "")
+				" model_test_result_path=" + res_path + ","
+				" test_sensitivity=" + str(test_sensi) + ","
+				" test_specificity=" +str(test_speci) + ","
+				" test_accuracy=" + str(test_acc) +
+				" where r_id=" + str(self.r_id) + "")
 			self.ref_model.ref_app.ref_db.commit()
 			return self.r_id
 		elif self.is_new:
 			# insert
-			self.r_id = self.ref_model.ref_app.ref_db.insert_returning_identity("insert INTO proj_result"
+			self.r_id = self.ref_model.ref_app.ref_db.insert_returning_identity("insert INTO "+str(conf.database)+"_result"
 				"(MODEL_TRAIN_RESULT_PATH, SENSITIVITY, SPECIFICITY, ACCURACY, MODEL_TEST_RESULT_PATH) values "
 				"(NULL,NULL,NULL,NULL,NULL)","r_id")
 			self.ref_model.ref_app.ref_db.commit()
@@ -188,12 +194,12 @@ class Results_set:
 		result_json = {}
 		training = {}
 		testing = {}
-		training["Accuracy"] = str(self.accuracy)
+		training["Accuracy"] = str(self.train_accuracy)
 		training["TrainingTime"] = str(0)
 
 		testing["Accuracy"] = str(self.test_accuracy)
-		testing["Specificity"] = str(self.specificity)
-		testing["Senzitivity"] = str(self.senzitivity)
+		testing["Specificity"] = str(self.test_specificity)
+		testing["Senzitivity"] = str(self.test_sensitivity)
 		testing["FalsePositives"] = str(self.false_positives)
 		testing["TrueNegatives"] = str(self.true_negatives)
 
