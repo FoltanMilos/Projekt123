@@ -124,10 +124,10 @@ def training_session():
         #file_train_session = user_model.load_train_session_file()
         if user_model.is_trained_on_dataset() == True:
             file_train_session["dataset_info"] = user_model.ref_data.to_json()
+            file_train_session["train_history"] = user_model.load_train_session_file()
+            file_train_session["model_info"] = user_model.model_to_json()
         else:
-            file_train_session["dataset_info"] = None
-        file_train_session["train_history"] = user_model.load_train_session_file()
-        file_train_session["model_info"] = user_model.model_to_json()
+            file_train_session= None
     else:
         raise Exception("Nepovolena hodnota v atribute auth! [{}]".format(auth))
     erorMsg = {}
