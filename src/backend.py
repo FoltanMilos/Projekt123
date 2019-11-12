@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 import sys
+import os
 sys.path.append('src')
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+stderr = sys.stderr
+sys.stderr = open(os.devnull, 'w')
+import keras
+sys.stderr = stderr
 
 from flask import Flask, request
 import flask
@@ -22,7 +28,6 @@ app = Flask(__name__)
 CORS(app, resources={"*": {"origins": "*"}})
 # holds instance of application with neural network
 application = neuralNetworkApplication.Application()
-app.logger = application.log
 counters = {}
 ### ----------------------------------###
 #                                       #

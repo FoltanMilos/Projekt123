@@ -207,7 +207,7 @@ class Model_cnn(interface.ModelInterface):
             for res in result:
                 universal_dict = {}
                 metada_dummy = resClass.Metadata("Male", "26", "Bening", "serial imaging showing no change", "True")
-                tmp_res = resClass.Result(res[0], "Bening", metada_dummy, None)
+                tmp_res = resClass.Result(float(res[0]), "Bening", metada_dummy, None)
                 universal_dict["Result"] = tmp_res.to_json()
                 universal_dict["PhotoPath"] = str(data_to_return.filepaths[i])
                 results_list.append(universal_dict)
