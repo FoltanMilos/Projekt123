@@ -1,6 +1,6 @@
-import interface.model_interface as interface
-from models.mlp.cv_wrapper import CrossValidation
-from models.mlp.mlp import Mlp
+import src.interface.model_interface as interface
+from src.models.mlp.cv_wrapper import CrossValidation
+from src.models.mlp.mlp import Mlp
 
 class Model_mlp(interface.ModelInterface):
     def load_state(self, state):
@@ -19,7 +19,7 @@ class Model_mlp(interface.ModelInterface):
         self.mlp = Mlp(layer_sizes, learning_rate, activation_function, epoch_count)
 
     def predict_image(self, img):
-        raise Exception("Unsupported function")
+        return self.mlp.predict_image(img)
 
     def summary(self):
         raise Exception("Unsupported function")

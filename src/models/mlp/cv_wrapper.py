@@ -1,5 +1,5 @@
 from math import floor
-from models.mlp.mlp import Mlp
+from src.models.mlp.mlp import Mlp
 
 
 class CrossValidation:

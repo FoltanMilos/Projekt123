@@ -1,5 +1,5 @@
-from models.mlp.layer import Layer
-from numpy import dot
+from src.models.mlp.layer import Layer
+from numpy import dot, sqrt
 import json
 
 
@@ -22,7 +22,7 @@ class Mlp:
             self.__adapt_synaptic_weights__(weight_err)
 
     def __calculate_output_error__(self, estimates, labels):
-        return [self.layers[-1].neurons[i].__getattribute__("derivative_"+self.activation_function)()*round(abs(labels[i] - estimates[i])) for i in range(len(estimates))]
+        return [self.layers[-1].neurons[i].__getattribute__("derivative_"+self.activation_function)()*sqrt((labels[i] - estimates[i])**2) for i in range(len(estimates))]
 
     def __backpropagate_error__(self, output_error):
         err = [[0 for neuron in layer.neurons] for layer in self.layers[:-1]]
