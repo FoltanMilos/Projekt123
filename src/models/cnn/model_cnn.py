@@ -408,7 +408,7 @@ class Model_cnn(interface.ModelInterface):
         #    ret_dic["dataset_info"] = ref_data.to_json()
         if self.locked_by_training:
             # neda sa vratit jeho train session, ked sa trenuje
-            return True
+            return False
         else:
             if self.trained_on_dataset is None:
                 # model este nebol trenovany vobec

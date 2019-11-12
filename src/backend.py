@@ -130,12 +130,14 @@ def training_session():
         file_train_session["model_info"] = user_model.model_to_json()
     else:
         raise Exception("Nepovolena hodnota v atribute auth! [{}]".format(auth))
-
+    erorMsg = {}
     if file_train_session is None:
-        return flask.make_response('Model este nebol trenovany',200)
-    elif file_train_session is False:
+        erorMsg['message'] = 'Model has not been trained yet!'
+        return flask.make_response(json.dumps(erorMsg),200)
+    elif file_train_session["train_history"] is False:
         # model sa prave trenuje, treba presmerovat na live okno
-        return flask.make_response('Model sa prave trenuje ', 200)
+        erorMsg['message'] = 'Model is locked by training!'
+        return flask.make_response(json.dumps(erorMsg), 200)
     else:
         return flask.make_response(json.dumps(file_train_session),200)
 
@@ -158,17 +160,22 @@ def testing_session():
         # uzivatel je prihlaseny
         usr = application.find_user_by_identification(auth)
         user_model = usr.switch_active_model(model_id)
+        erorMsg = {}
         if user_model.is_locked_by_training() :
-            return flask.make_response("Model is locked by trainning!",200)
+            erorMsg['message'] = "Model is locked by trainning!"
+            return flask.make_response(json.dumps(erorMsg),200)
         elif user_model.is_trained_on_dataset()==False:
-            return flask.make_response("Model has not been trained yet!", 200)
+            erorMsg['message'] = "Model has not been trained yet!"
+            return flask.make_response(json.dumps(erorMsg), 200)
         elif user_model.ref_res_proc.test_result_path is None:
-            return flask.make_response("Model has not been trained yet!", 200)
+            erorMsg['message'] = "Model has not been trained yet!"
+            return flask.make_response(json.dumps(erorMsg), 200)
         else:
             # model bol uz trenovany, moze sa testovat
             head_test_session_info = user_model.load_test_session_file()
             if head_test_session_info is None:
-                return flask.make_response("Model has not been tested yet!", 200)
+                erorMsg['message'] = "Model has not been tested yet!"
+                return flask.make_response(json.dumps(erorMsg), 200)
     return flask.make_response(json.dumps({"testing_session": head_test_session_info}))
 
 @app.route('/dataset/new', methods=["POST"])
@@ -206,7 +213,9 @@ def login():
     data = flask.request.get_json()
     res = application.validate_user(data)
     if res == False:
-        return flask.Response('invalid credentials', 401)
+        erorMsg = {}
+        erorMsg['message'] = 'invalid credentials'
+        return flask.Response(json.dumps(erorMsg), 401)
     else:
         return flask.make_response(json.dumps(res))
 
@@ -235,7 +244,9 @@ def logout():
         res = application.logout_user(usr)
         if res != False:
             return flask.make_response()
-    return flask.Response('Invalid identifier', 403)
+    erorrMsg = {}
+    erorrMsg['message'] = 'Invalid identifier'
+    return flask.Response(json.dumps(erorrMsg), 403)
 
 
 @app.route('/builder', methods=['GET', 'POST'])
@@ -257,8 +268,9 @@ def builder():
     elif (request.method == 'POST'):
         return buildModel(flask.request.get_json())
     else:
-        code = 404
-        return flask.make_response('not found', 404)
+        erorrMsg = {}
+        erorrMsg['message'] = 'not found'
+        return flask.make_response(json.dumps(erorrMsg), 404)
 
 def builderGetData(model_type):
     resJson = None
@@ -275,7 +287,9 @@ def buildModel(jsonData):
         if usr is not None:
             returned_model_id = usr.create_model_from_builder(jsonData)
             return flask.Response({"new_model_id": str(returned_model_id)}, 200)
-    return flask.Response('Neautentifikovany user',403)
+    erorrMsg = {}
+    erorrMsg['message'] = 'not authentificated'
+    return flask.Response(json.dumps(erorrMsg),403)
 
 @app.route('/live_training_session', methods=["GET"])
 def live_training_session():
@@ -283,9 +297,7 @@ def live_training_session():
     auth = request.headers.get('Authorization')
     model_id = form.get('model')
     application.log.info("EndPoint: LiveTrainingSession, Auth:{}, ModelId:{}".format(auth, model_id))
-    #TODO: live prediciton
     return flask.Response('este nikto nerobil', 200)
-
 
 @app.route('/re_train', methods=["GET"])
 def re_train():
@@ -308,10 +320,13 @@ def test():
         usr = application.find_user_by_identification(auth)
         if usr is not None:
             user_model = usr.switch_active_model(model_id)
+            erorrMsg = {}
             if user_model.is_locked_by_training():
-                return flask.Response('Model is locked by training!', 403)
+                erorrMsg['message'] = 'Model is locked by training!'
+                return flask.Response(json.dumps(erorrMsg), 403)
             if not user_model.is_trained_on_dataset():
-                return flask.Response('Model has not been trained yet!', 403)
+                erorrMsg['message'] = 'Model has not been trained yet!'
+                return flask.Response(json.dumps(erorrMsg), 403)
             if dataset_name is None:
                 res = user_model.test("small_dataset")
             else:
@@ -363,15 +378,18 @@ def train():
         usr = application.find_user_by_identification(auth)
         model = usr.switch_active_model(model_id)
         if model.is_locked_by_training():
-            return flask.Response('Model is locked by training', 403)
+            erorMsg = {}
+            erorMsg['message'] = 'Model is locked by training!'
+            return flask.Response(json.dumps(erorMsg), 403)
         # oddelenie vlakna
         train_thread = th.Thread(target=model.train, args=(dataset_name,))
         train_thread.start()
         return flask.Response('OK', 200)
     else:
         md = application.swap_active_static_model(model_id)
-        #md.train(dataset_name)
-        return flask.Response('Forbiden for not logged user',403)
+        erorMsg = {}
+        erorMsg['message'] = 'Forbiden for not logged user!'
+        return flask.Response(json.dumps(erorMsg),403)
 
 @app.route('/create-user', methods=["POST"])
 def createUser():
@@ -397,7 +415,9 @@ def checkUserName():
         return flask.Response('OK', 200)
     else:
         # je take meno, nesmie byt vytvorene
-        return flask.Response('Username already exists', 403)
+        erorMsg = {}
+        erorMsg['message'] = 'Username already exists'
+        return flask.Response(json.dumps(erorMsg), 403)
 
 ## SPUSTENIE SERVERA
 if __name__ == "__main__":
