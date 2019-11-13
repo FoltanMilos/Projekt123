@@ -1,1 +1,183 @@
-{"model_header": {"training": {"TrainingTime": "0", "Accuracy": "1.0"}, "testing": {"Specificity": "0.52", "TrueNegatives": "0.5416666666666666", "Senzitivity": "0.56", "Accuracy": "0.54", "FalsePositives": "0.5384615384615384"}}, "dataset_header": {"VALID - bening": "150", "TRAIN - bening": "150", "IMG size": "64x64", "VALID - unspecified": "0", "DatasetDesc": "popis dataset", "TEST - bening": "150", "TEST - unspecified": "0", "All photo count": "800", "Dataset source": "www.dataset.sk", "TRAIN - unspecified": "0", "TRAIN - malig": "50", "VALID - malig": "50", "DatasetUsed": "small_dataset", "TEST - malig": "50"}, "tested_results": [{"Result": {"metadata": {"Age": "26", "Desc clinical diagnostis": "serial imaging showing no change", "Gender": "Male", "Melanocytic": "True", "Real diagnosis": "Bening"}, "Classification class": "Wrong value", "Classification result": "96.75", "prediction_info": "Vysledna hodnota ukazuje na percentualnu moznost vyskytu rakoviny. Je to informacna hodnota. Nase odporucanie: Ak je hodnota velmi vysoka, navstivte svojho lekara a poradte sa snim o moznom vybere znamienka"}, "PhotoPath": "dataset/small_dataset/test\\malignant\\ISIC_0033831.jpg"}, {"Result": {"metadata": {"Age": "26", "Desc clinical diagnostis": "serial imaging showing no change", "Gender": "Male", "Melanocytic": "True", "Real diagnosis": "Bening"}, "Classification class": "Wrong value", "Classification result": "15.12", "prediction_info": "Vysledna hodnota ukazuje na percentualnu moznost vyskytu rakoviny. Je to informacna hodnota. Nase odporucanie: Ak je hodnota velmi vysoka, navstivte svojho lekara a poradte sa snim o moznom vybere znamienka"}, "PhotoPath": "dataset/small_dataset/test\\malignant\\ISIC_0033834.jpg"}, {"Result": {"metadata": {"Age": "26", "Desc clinical diagnostis": "serial imaging showing no change", "Gender": "Male", "Melanocytic": "True", "Real diagnosis": "Bening"}, "Classification class": "Wrong value", "Classification result": "14.93", "prediction_info": "Vysledna hodnota ukazuje na percentualnu moznost vyskytu rakoviny. Je to informacna hodnota. Nase odporucanie: Ak je hodnota velmi vysoka, navstivte svojho lekara a poradte sa snim o moznom vybere znamienka"}, "PhotoPath": "dataset/small_dataset/test\\malignant\\ISIC_0033843.jpg"}, {"Result": {"metadata": {"Age": "26", "Desc clinical diagnostis": "serial imaging showing no change", "Gender": "Male", "Melanocytic": "True", "Real diagnosis": "Bening"}, "Classification class": "Wrong value", "Classification result": "34.68", "prediction_info": "Vysledna hodnota ukazuje na percentualnu moznost vyskytu rakoviny. Je to informacna hodnota. Nase odporucanie: Ak je hodnota velmi vysoka, navstivte svojho lekara a poradte sa snim o moznom vybere znamienka"}, "PhotoPath": "dataset/small_dataset/test\\malignant\\ISIC_0033848.jpg"}, {"Result": {"metadata": {"Age": "26", "Desc clinical diagnostis": "serial imaging showing no change", "Gender": "Male", "Melanocytic": "True", "Real diagnosis": "Bening"}, "Classification class": "Wrong value", "Classification result": "96.82", "prediction_info": "Vysledna hodnota ukazuje na percentualnu moznost vyskytu rakoviny. Je to informacna hodnota. Nase odporucanie: Ak je hodnota velmi vysoka, navstivte svojho lekara a poradte sa snim o moznom vybere znamienka"}, "PhotoPath": "dataset/small_dataset/test\\malignant\\ISIC_0033856.jpg"}, {"Result": {"metadata": {"Age": "26", "Desc clinical diagnostis": "serial imaging showing no change", "Gender": "Male", "Melanocytic": "True", "Real diagnosis": "Bening"}, "Classification class": "Wrong value", "Classification result": "96.83", "prediction_info": "Vysledna hodnota ukazuje na percentualnu moznost vyskytu rakoviny. Je to informacna hodnota. Nase odporucanie: Ak je hodnota velmi vysoka, navstivte svojho lekara a poradte sa snim o moznom vybere znamienka"}, "PhotoPath": "dataset/small_dataset/test\\bening\\ISIC_0033102.jpg"}, {"Result": {"metadata": {"Age": "26", "Desc clinical diagnostis": "serial imaging showing no change", "Gender": "Male", "Melanocytic": "True", "Real diagnosis": "Bening"}, "Classification class": "Wrong value", "Classification result": "96.70", "prediction_info": "Vysledna hodnota ukazuje na percentualnu moznost vyskytu rakoviny. Je to informacna hodnota. Nase odporucanie: Ak je hodnota velmi vysoka, navstivte svojho lekara a poradte sa snim o moznom vybere znamienka"}, "PhotoPath": "dataset/small_dataset/test\\bening\\ISIC_0033104.jpg"}, {"Result": {"metadata": {"Age": "26", "Desc clinical diagnostis": "serial imaging showing no change", "Gender": "Male", "Melanocytic": "True", "Real diagnosis": "Bening"}, "Classification class": "Wrong value", "Classification result": "96.82", "prediction_info": "Vysledna hodnota ukazuje na percentualnu moznost vyskytu rakoviny. Je to informacna hodnota. Nase odporucanie: Ak je hodnota velmi vysoka, navstivte svojho lekara a poradte sa snim o moznom vybere znamienka"}, "PhotoPath": "dataset/small_dataset/test\\bening\\ISIC_0033105.jpg"}, {"Result": {"metadata": {"Age": "26", "Desc clinical diagnostis": "serial imaging showing no change", "Gender": "Male", "Melanocytic": "True", "Real diagnosis": "Bening"}, "Classification class": "Wrong value", "Classification result": "14.99", "prediction_info": "Vysledna hodnota ukazuje na percentualnu moznost vyskytu rakoviny. Je to informacna hodnota. Nase odporucanie: Ak je hodnota velmi vysoka, navstivte svojho lekara a poradte sa snim o moznom vybere znamienka"}, "PhotoPath": "dataset/small_dataset/test\\bening\\ISIC_0033106.jpg"}, {"Result": {"metadata": {"Age": "26", "Desc clinical diagnostis": "serial imaging showing no change", "Gender": "Male", "Melanocytic": "True", "Real diagnosis": "Bening"}, "Classification class": "Wrong value", "Classification result": "15.15", "prediction_info": "Vysledna hodnota ukazuje na percentualnu moznost vyskytu rakoviny. Je to informacna hodnota. Nase odporucanie: Ak je hodnota velmi vysoka, navstivte svojho lekara a poradte sa snim o moznom vybere znamienka"}, "PhotoPath": "dataset/small_dataset/test\\bening\\ISIC_0033107.jpg"}]}
+{
+  "model_header": {
+    "training": {
+      "TrainingTime": "0",
+      "Accuracy": "1.0"
+    },
+    "testing": {
+      "Specificity": "0.52",
+      "TrueNegatives": "0.5416666666666666",
+      "Senzitivity": "0.56",
+      "Accuracy": "0.54",
+      "FalsePositives": "0.5384615384615384"
+    }
+  },
+  "dataset_header": {
+    "VALID - bening": "150",
+    "TRAIN - bening": "150",
+    "IMG size": "64x64",
+    "VALID - unspecified": "0",
+    "DatasetDesc": "popis dataset",
+    "TEST - bening": "150",
+    "TEST - unspecified": "0",
+    "All photo count": "800",
+    "Dataset source": "www.dataset.sk",
+    "TRAIN - unspecified": "0",
+    "TRAIN - malig": "50",
+    "VALID - malig": "50",
+    "DatasetUsed": "small_dataset",
+    "TEST - malig": "50"
+  },
+  "tested_results": [
+    {
+      "Result": {
+        "metadata": {
+          "Age": "26",
+          "Desc clinical diagnostis": "serial imaging showing no change",
+          "Gender": "Male",
+          "Melanocytic": "True",
+          "Real diagnosis": "Bening"
+        },
+        "Classification class": "Wrong value",
+        "Classification result": "96.75",
+        "prediction_info": "Vysledna hodnota ukazuje na percentualnu moznost vyskytu rakoviny. Je to informacna hodnota. Nase odporucanie: Ak je hodnota velmi vysoka, navstivte svojho lekara a poradte sa snim o moznom vybere znamienka"
+      },
+      "PhotoPath": "dataset/small_dataset/test\\malignant\\ISIC_0033831.jpg"
+    },
+    {
+      "Result": {
+        "metadata": {
+          "Age": "26",
+          "Desc clinical diagnostis": "serial imaging showing no change",
+          "Gender": "Male",
+          "Melanocytic": "True",
+          "Real diagnosis": "Bening"
+        },
+        "Classification class": "Wrong value",
+        "Classification result": "15.12",
+        "prediction_info": "Vysledna hodnota ukazuje na percentualnu moznost vyskytu rakoviny. Je to informacna hodnota. Nase odporucanie: Ak je hodnota velmi vysoka, navstivte svojho lekara a poradte sa snim o moznom vybere znamienka"
+      },
+      "PhotoPath": "dataset/small_dataset/test\\malignant\\ISIC_0033834.jpg"
+    },
+    {
+      "Result": {
+        "metadata": {
+          "Age": "26",
+          "Desc clinical diagnostis": "serial imaging showing no change",
+          "Gender": "Male",
+          "Melanocytic": "True",
+          "Real diagnosis": "Bening"
+        },
+        "Classification class": "Wrong value",
+        "Classification result": "14.93",
+        "prediction_info": "Vysledna hodnota ukazuje na percentualnu moznost vyskytu rakoviny. Je to informacna hodnota. Nase odporucanie: Ak je hodnota velmi vysoka, navstivte svojho lekara a poradte sa snim o moznom vybere znamienka"
+      },
+      "PhotoPath": "dataset/small_dataset/test\\malignant\\ISIC_0033843.jpg"
+    },
+    {
+      "Result": {
+        "metadata": {
+          "Age": "26",
+          "Desc clinical diagnostis": "serial imaging showing no change",
+          "Gender": "Male",
+          "Melanocytic": "True",
+          "Real diagnosis": "Bening"
+        },
+        "Classification class": "Wrong value",
+        "Classification result": "34.68",
+        "prediction_info": "Vysledna hodnota ukazuje na percentualnu moznost vyskytu rakoviny. Je to informacna hodnota. Nase odporucanie: Ak je hodnota velmi vysoka, navstivte svojho lekara a poradte sa snim o moznom vybere znamienka"
+      },
+      "PhotoPath": "dataset/small_dataset/test\\malignant\\ISIC_0033848.jpg"
+    },
+    {
+      "Result": {
+        "metadata": {
+          "Age": "26",
+          "Desc clinical diagnostis": "serial imaging showing no change",
+          "Gender": "Male",
+          "Melanocytic": "True",
+          "Real diagnosis": "Bening"
+        },
+        "Classification class": "Wrong value",
+        "Classification result": "96.82",
+        "prediction_info": "Vysledna hodnota ukazuje na percentualnu moznost vyskytu rakoviny. Je to informacna hodnota. Nase odporucanie: Ak je hodnota velmi vysoka, navstivte svojho lekara a poradte sa snim o moznom vybere znamienka"
+      },
+      "PhotoPath": "dataset/small_dataset/test\\malignant\\ISIC_0033856.jpg"
+    },
+    {
+      "Result": {
+        "metadata": {
+          "Age": "26",
+          "Desc clinical diagnostis": "serial imaging showing no change",
+          "Gender": "Male",
+          "Melanocytic": "True",
+          "Real diagnosis": "Bening"
+        },
+        "Classification class": "Wrong value",
+        "Classification result": "96.83",
+        "prediction_info": "Vysledna hodnota ukazuje na percentualnu moznost vyskytu rakoviny. Je to informacna hodnota. Nase odporucanie: Ak je hodnota velmi vysoka, navstivte svojho lekara a poradte sa snim o moznom vybere znamienka"
+      },
+      "PhotoPath": "dataset/small_dataset/test\\bening\\ISIC_0033102.jpg"
+    },
+    {
+      "Result": {
+        "metadata": {
+          "Age": "26",
+          "Desc clinical diagnostis": "serial imaging showing no change",
+          "Gender": "Male",
+          "Melanocytic": "True",
+          "Real diagnosis": "Bening"
+        },
+        "Classification class": "Wrong value",
+        "Classification result": "96.70",
+        "prediction_info": "Vysledna hodnota ukazuje na percentualnu moznost vyskytu rakoviny. Je to informacna hodnota. Nase odporucanie: Ak je hodnota velmi vysoka, navstivte svojho lekara a poradte sa snim o moznom vybere znamienka"
+      },
+      "PhotoPath": "dataset/small_dataset/test\\bening\\ISIC_0033104.jpg"
+    },
+    {
+      "Result": {
+        "metadata": {
+          "Age": "26",
+          "Desc clinical diagnostis": "serial imaging showing no change",
+          "Gender": "Male",
+          "Melanocytic": "True",
+          "Real diagnosis": "Bening"
+        },
+        "Classification class": "Wrong value",
+        "Classification result": "96.82",
+        "prediction_info": "Vysledna hodnota ukazuje na percentualnu moznost vyskytu rakoviny. Je to informacna hodnota. Nase odporucanie: Ak je hodnota velmi vysoka, navstivte svojho lekara a poradte sa snim o moznom vybere znamienka"
+      },
+      "PhotoPath": "dataset/small_dataset/test\\bening\\ISIC_0033105.jpg"
+    },
+    {
+      "Result": {
+        "metadata": {
+          "Age": "26",
+          "Desc clinical diagnostis": "serial imaging showing no change",
+          "Gender": "Male",
+          "Melanocytic": "True",
+          "Real diagnosis": "Bening"
+        },
+        "Classification class": "Wrong value",
+        "Classification result": "14.99",
+        "prediction_info": "Vysledna hodnota ukazuje na percentualnu moznost vyskytu rakoviny. Je to informacna hodnota. Nase odporucanie: Ak je hodnota velmi vysoka, navstivte svojho lekara a poradte sa snim o moznom vybere znamienka"
+      },
+      "PhotoPath": "dataset/small_dataset/test\\bening\\ISIC_0033106.jpg"
+    },
+    {
+      "Result": {
+        "metadata": {
+          "Age": "26",
+          "Desc clinical diagnostis": "serial imaging showing no change",
+          "Gender": "Male",
+          "Melanocytic": "True",
+          "Real diagnosis": "Bening"
+        },
+        "Classification class": "Wrong value",
+        "Classification result": "15.15",
+        "prediction_info": "Vysledna hodnota ukazuje na percentualnu moznost vyskytu rakoviny. Je to informacna hodnota. Nase odporucanie: Ak je hodnota velmi vysoka, navstivte svojho lekara a poradte sa snim o moznom vybere znamienka"
+      },
+      "PhotoPath": "dataset/small_dataset/test\\bening\\ISIC_0033107.jpg"
+    }
+  ]
+}

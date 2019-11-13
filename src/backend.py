@@ -63,7 +63,7 @@ def loadImages():
 
 @app.route("/datasets", methods=["GET"])
 def get_datatests():
-    tmp = os.listdir('dataset')
+    tmp = os.listdir('dataset/main_dataset/images')
     return flask.make_response(json.dumps(tmp))
 
 
