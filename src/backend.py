@@ -249,28 +249,25 @@ def logout():
     return flask.Response(json.dumps(erorrMsg), 403)
 
 
-@app.route('/builder', methods=['GET', 'POST'])
-def builder():
-    r_json = flask.request.get_json()
-    if r_json is None:
-        model_type = enum_model.Nn_type.CNN.value  # default
-    else:
-        r_json = r_json.get("modelType")
-    if r_json is not None:
-        if r_json == 'CNN':
-            model_type =  enum_model.Nn_type.CNN.value
-        elif r_json == 'MLP':
-            model_type =  enum_model.Nn_type.MLP.value
-        elif r_json == 'GEN':
-            model_type =  enum_model.Nn_type.GEN.value
-    if (request.method == 'GET'):
-        return builderGetData(model_type)
-    elif (request.method == 'POST'):
-        return buildModel(flask.request.get_json())
-    else:
-        erorrMsg = {}
-        erorrMsg['message'] = 'not found'
-        return flask.make_response(json.dumps(erorrMsg), 404)
+@app.route('/builder', methods=['GET'])
+def builderGet():
+    auth = request.headers.get('Authorization')
+    application.log.info("EndPoint: BuilderGet, Auth:{}".format(auth))
+    r_json = flask.request.args.get('model').upper()
+    if r_json == 'CNN':
+        model_type =  enum_model.Nn_type.CNN.value
+    elif r_json == 'MLP':
+        model_type =  enum_model.Nn_type.MLP.value
+    elif r_json == 'GEN':
+        model_type =  enum_model.Nn_type.GEN.value
+    return builderGetData(model_type)
+
+
+@app.route('/builder', methods=['POST'])
+def builderPost():
+    auth = request.headers.get('Authorization')
+    application.log.info("EndPoint: BuilderPost, Auth:{}".format(auth))
+    return buildModel(flask.request.get_json())
 
 def builderGetData(model_type):
     resJson = None
