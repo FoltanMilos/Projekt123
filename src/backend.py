@@ -392,15 +392,15 @@ def train():
 def createUser():
     form = flask.request.get_json()
     username = form.get('username')
-    password = form.get('password')
+    password = form.get('pass')
     application.log.info("EndPoint: CreateUser, username:{}, password: {}".format(username, password))
-    resut = application.create_user(username,password)
-    if resut:
-        # ok
-        return flask.Response('Your account has been created. You should log in', 200)
-    else:
-        # nieco sa pokazilo
-        return flask.Response('Something went wrong. Internal server error', 500)
+    result = application.create_user(username,password)
+    if result:
+        res = application.validate_user(form)
+        if res is not False:
+            return flask.make_response(json.dumps(res))
+    # nieco sa pokazilo
+    return flask.Response('Something went wrong. Internal server error', 500)
 
 @app.route('/check-user-name', methods=["GET"])
 def checkUserName():
