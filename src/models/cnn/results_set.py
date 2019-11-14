@@ -185,7 +185,7 @@ class Results_set:
 		elif self.is_new:
 			# insert
 			self.r_id = self.ref_model.ref_app.ref_db.insert_returning_identity("insert INTO "+str(conf.database)+"_result"
-				"(MODEL_TRAIN_RESULT_PATH, SENSITIVITY, SPECIFICITY, ACCURACY, MODEL_TEST_RESULT_PATH) values "
+				"(MODEL_TRAIN_RESULT_PATH, test_sensitivity, test_specificity, train_accuracy, MODEL_TEST_RESULT_PATH) values "
 				"(NULL,NULL,NULL,NULL,NULL)","r_id")
 			self.ref_model.ref_app.ref_db.commit()
 			return self.r_id
