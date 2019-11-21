@@ -23,12 +23,14 @@ from PIL import Image
 import enumerations.mlp_enum_builder as el_mlp
 import enumerations.enum_model as enum_model
 import threading as th
+from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
 CORS(app, resources={"*": {"origins": "*"}})
 # holds instance of application with neural network
 application = neuralNetworkApplication.Application()
 counters = {}
+io = SocketIO(app,cors_allowed_origins="*")
 ### ----------------------------------###
 #                                       #
 #           S E R V I C E S             #
@@ -379,9 +381,11 @@ def train():
             erorMsg['message'] = 'Model is locked by training!'
             return flask.Response(json.dumps(erorMsg), 403)
         # oddelenie vlakna
+        model.callb.modelId = model_id
+        model.callb.setResponseFunc(sendResponse)
         train_thread = th.Thread(target=model.train, args=(dataset_name,))
         train_thread.start()
-        return flask.Response('OK', 200)
+        return flask.make_response()
     else:
         md = application.swap_active_static_model(model_id)
         erorMsg = {}
@@ -416,8 +420,16 @@ def checkUserName():
         erorMsg['message'] = 'Username already exists'
         return flask.Response(json.dumps(erorMsg), 403)
 
+@io.on('connect',namespace="/socket")
+def connect():
+    emit('connect','message')
+
+def sendResponse(event,message):
+    print(event, message)
+    io.emit(event, message, broadcast=True, namespace="/socket")
+
 ## SPUSTENIE SERVERA
 if __name__ == "__main__":
     application.log.info(("* Loading Keras model and Flask starting server..."
            "please wait until server has fully started"))
-    app.run(host=conf.server_host, port=conf.server_port)
+    io.run(app,host=conf.server_host, port=conf.server_port)

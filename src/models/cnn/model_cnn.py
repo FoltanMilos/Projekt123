@@ -43,7 +43,7 @@ class Model_cnn(interface.ModelInterface):
         self.static = None
         self.m_id = -1
         self.model = None
-        self.callb = callbck.LiveLearningCallback(0)
+        self.callb = callbck.LiveLearningCallback(0, self.m_id)
 
         if model_name == "":
             # prazdna instania, do ktorej sa naloaduju data
