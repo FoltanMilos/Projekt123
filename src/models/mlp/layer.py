@@ -22,9 +22,10 @@ class Layer:
         return self.outputs
 
     def to_json(self):
-        return {'activation_function': self.activation_function, 'size': len(self.outputs), 'neurons': [n.to_json() for n in self.neurons]}
+        return {'prev_layer_size': self.prev_layer_size, 'activation_function': self.activation_function, 'size': len(self.outputs), 'neurons': [n.to_json() for n in self.neurons]}
 
     def from_json(self, json):
+        self.prev_layer_size = json['prev_layer_size']
         self.activation_function = json['activation_function']
         self.outputs = [0] * json['size']
         self.neurons = [Neuron(json=n) for n in json['neurons']]

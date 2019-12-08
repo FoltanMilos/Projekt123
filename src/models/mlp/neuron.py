@@ -9,7 +9,7 @@ class Neuron:
             self.potential = 0.0
             self.activation = 0.0
             if weights is None:
-                self.weights = [random.random() - 0.5 if prev_layer_size > 0 else 1 for i in range(prev_layer_size if prev_layer_size > 0 else 1)]
+                self.weights = [random.random() if prev_layer_size > 0 else 1 for i in range(prev_layer_size if prev_layer_size > 0 else 1)]
             else:
                 self.weights = weights
         else:

@@ -2,7 +2,7 @@ from enum import Enum
 
 class EnumLayer(Enum):
     LAYER = "Layer"
-    PARAMS = "Params"
+    #PARAMS = "Params" TODO
 
     @staticmethod
     def getValues():
@@ -17,8 +17,8 @@ class EnumLayerParameters(Enum):
     #attr = tuple(ID,display_name, ExpectedVale)
     NEURON_COUNT = ("NEURON_COUNT","neuron count", "number")
     ACTIVATION_FUNCTION = ("ACTIVATION_FUNCTION","activation function", "string")
-    LEARNING_RATE = ("LEARNING_RATE","learning rate", "number")
-    EPSILON = ("EPSILON","epsilon", "number")
+    #LEARNING_RATE = ("LEARNING_RATE","learning rate", "number")
+    #EPSILON = ("EPSILON","epsilon", "number")
     @staticmethod
     def getValues(enum_layer):
         values = [item.value for item in EnumLayer]
@@ -28,9 +28,9 @@ class EnumLayerParameters(Enum):
         if(enum_layer is EnumLayer.LAYER.value):
             r.append(EnumLayerParameters.NEURON_COUNT.value)
             r.append(EnumLayerParameters.ACTIVATION_FUNCTION.value)
-        elif enum_layer is EnumLayer.PARAMS.value:
-            r.append(EnumLayerParameters.LEARNING_RATE.value)
-            r.append(EnumLayerParameters.EPSILON.value)
+        #elif enum_layer is EnumLayer.PARAMS.value:
+        #    r.append(EnumLayerParameters.LEARNING_RATE.value)
+        #    r.append(EnumLayerParameters.EPSILON.value)
         return r
 
 def to_json():
