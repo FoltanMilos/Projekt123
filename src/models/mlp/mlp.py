@@ -1,15 +1,25 @@
 from src.models.mlp.layer import Layer
 from numpy import dot, sqrt
-import json
 
 
 class Mlp:
+    def __init__(self, layer_sizes=(1,1), learning_rate=0.005, epsilon=0.1, weights=None, json=None):
+        if json is None:
+            self.epsilon = epsilon
+            self.learning_rate = learning_rate
+            self.layers = [Layer(layer_sizes[j], 0 if j == 0 else layer_sizes[j - 1]) for j in range(len(layer_sizes))]
+            if weights is not None:
+                self.set_weights(weights)
+        else:
+            self.from_json(json)
 
-    def __init__(self, layer_sizes, learning_rate=0.5, activation_function="sigmoid", weights=None):
-        self.set_hyperparameters(learning_rate, activation_function)
-        self.__init_layers__(layer_sizes)
-        if weights is not None:
-            self.set_weights(weights)
+    def from_json(self, json):
+        self.epsilon = json['epsilon']
+        self.learning_rate = json['learning_rate']
+        self.layers = [Layer(json=l) for l in json['layers']]
+
+    def to_json(self):
+        return {'learning_rate': self.learning_rate, 'epsilon': self.epsilon, 'layers': [l.to_json() for l in self.layers]}
 
     def learn(self, inputs, labels):
         self.__backpropagation__(inputs, labels)
@@ -22,21 +32,21 @@ class Mlp:
             self.__adapt_synaptic_weights__(weight_err)
 
     def __calculate_output_error__(self, estimates, labels):
-        return [self.layers[-1].neurons[i].__getattribute__("derivative_"+self.activation_function)()*sqrt((labels[i] - estimates[i])**2) for i in range(len(estimates))]
+        return [self.layers[-1].neurons[i].__getattribute__("derivative_"+self.layers[-1].activation_function)()*sqrt((labels[i] - estimates[i])**2) for i in range(len(estimates))]
 
     def __backpropagate_error__(self, output_error):
         err = [[0 for neuron in layer.neurons] for layer in self.layers[:-1]]
         err.append(output_error)
         for m in range(len(self.layers[:-1])-1, 0, -1):
             for i in range(len(self.layers[m].neurons)):
-                err[m][i] = self.layers[m].neurons[i].__getattribute__("derivative_"+self.activation_function)()*dot([neuron.weights[i] for neuron in self.layers[m+1].neurons], err[m+1])
+                err[m][i] = self.layers[m].neurons[i].__getattribute__("derivative_"+self.layers[m].activation_function)()*dot([neuron.weights[i] for neuron in self.layers[m+1].neurons], err[m+1])
         return err
 
     def __predict__(self, inputs):
         for layer in self.layers:
-            outputs = layer.evaluate(inputs, self.activation_function)
+            outputs = layer.evaluate(inputs)
             inputs = outputs
-        return [round(i) for i in outputs]
+        return [self.step(i) for i in outputs]
 
     def __adapt_synaptic_weights__(self, error):
         for m in range(1, len(self.layers)):
@@ -46,12 +56,6 @@ class Mlp:
 
     def test(self, inputs):
         return [self.__predict__(i) for i in inputs]
-
-    def set_hyperparameters(self, learning_rate, activation_function):
-        self.activation_function, self.learning_rate = activation_function, learning_rate
-
-    def reset_weights(self):
-        self.__init__([len(layer.neurons) for layer in self.layers], self.learning_rate, self.activation_function)
 
     def get_weights(self):
         return [[neuron.weights for neuron in layer.neurons] for layer in self.layers]
@@ -66,21 +70,15 @@ class Mlp:
             for j in range(len(weights[i])):
                 self.layers[i].neurons[j] = weights[i][j]
 
-    def save_model(self, filepath):
-        with open(filepath, 'w') as fp:
-            json.dump({'learning rate': self.learning_rate, 'activation_function': self.activation_function, 'weights': self.get_weights()}, fp)
-
-    def load_model(self, filepath):
-        with open(filepath, 'r') as fp:
-            model = json.load(fp)
-            self.__init_layers__([len(layer) for layer in model['weights']])
-            self.set_weights(model['weights'])
-            self.set_hyperparameters(model['learning_rate'], model['activation_function'])
-
-    def __init_layers__(self, layer_sizes):
-        self.layers = [Layer(layer_sizes[j], 0 if j == 0 else layer_sizes[j - 1]) for j in range(len(layer_sizes))]
-
     def predict_image(self, image):
         if len(image) == len(self.layers[0].neurons):
             return self.__predict__(image)
         raise Exception("Input length doesn't match input layer size")
+
+    def step(self, n):
+        if n < self.epsilon:
+            return 0
+        elif n > 1 - self.epsilon:
+            return 1
+        return n
+
