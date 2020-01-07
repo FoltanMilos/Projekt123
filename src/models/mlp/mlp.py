@@ -2,6 +2,7 @@ from src.models.mlp.layer import Layer
 from numpy import dot, sqrt
 import json
 
+
 class Mlp:
     def __init__(self, layer_sizes=(1,1), activation_functions=("sigmoid", "sigmoid"), learning_rate=0.005, epsilon=0.1, weights=None, json=None):
         if json is None:
@@ -21,7 +22,7 @@ class Mlp:
         self.epsilon = d['epsilon']
         self.learning_rate = d['learning_rate']
         for i in range(len(d['layers'])):
-            d['layers'][i]['prev_layer_size'] = 0 if i == 0 else d['layers'][i-1]['size']
+            d['layers'][i]['prev_layer_size'] = 0 if i == 0 else d['layers'][i-1]['NEURON_COUNT']
         self.layers = [Layer(json=l) for l in d['layers']]
 
     def train(self, inputs, labels, callback, epoch_count, image=False):

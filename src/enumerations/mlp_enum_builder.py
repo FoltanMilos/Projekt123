@@ -33,6 +33,39 @@ class EnumLayerParameters(Enum):
         #    r.append(EnumLayerParameters.EPSILON.value)
         return r
 
+class EnumLoss(Enum):
+    #attr = (id,name)
+    DEFAULT = ("default","Default")
+
+    @staticmethod
+    def getValues():
+        result = []
+        for data in EnumLoss:
+            result.append({'id' : data.name, 'name': data.value})
+        return result
+
+class EnumOptimizer(Enum):
+    #attr = {id,name}
+    DEFAULT = ("default","Default")
+
+    @staticmethod
+    def getValues():
+        result = []
+        for data in EnumOptimizer:
+            result.append({'id' : data.name, 'name': data.value})
+        return result
+
+class EnumMetrics(Enum):
+    #attr=(id,name)
+    DEFAULT = ("default","Default")
+
+    @staticmethod
+    def getValues():
+        result = []
+        for data in EnumMetrics:
+            result.append({'id' : data.name, 'name': data.value})
+        return result
+
 def to_json():
     res = {}
     mlp = {}
@@ -51,5 +84,10 @@ def to_json():
                 parJson['possibleValues'] = eval("Enum" + str(par[0]).capitalize()).getValues()
             result.append(parJson)
         mlp[key+"Parameters"] = result
+    tmp = {}
+    tmp['metrics'] = EnumMetrics.getValues()
+    tmp['name'] = EnumOptimizer.getValues()
+    tmp['loss'] = EnumLoss.getValues()
+    mlp['optimizer'] = tmp
     res['mlp'] = mlp
     return res
