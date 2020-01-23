@@ -37,7 +37,7 @@ class Application:
         self.active_static_model = None
 
         # natiahnutie statickych modelov
-        #self.load_all_static_models()
+        self.load_all_static_models()
 
         credentials = {}
         credentials['username'] = 'admin'
@@ -51,7 +51,7 @@ class Application:
             if row[2] == credentials['pass']:
                 identifier = self.generate_unique_string()
                 logged_user = user.User(self, row[0], self.ref_db, identifier)
-                #logged_user.load_user_data()
+                logged_user.load_user_data()
                 self.list_active_user.append(logged_user)
                 return {'identity':identifier, 'name': row[1]}
             else:
