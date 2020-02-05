@@ -40,10 +40,13 @@ class Application:
         self.load_all_static_models()
 
         credentials = {}
-        credentials['username'] = 'admin'
-        credentials['pass'] = 'admin'
+        credentials['username'] = 'milos'
+        credentials['pass'] = 'milos'
         self.validate_user(credentials)
         self.list_active_user[0].indentifier = 'MgtKbChIBsFpumdwizuSeDnxXjBpDowo'
+
+       # self.list_active_user[0].models[0].predict_image_flow()
+
 
     def validate_user(self, credentials):
         res = self.ref_db.select_statement("select * from "+ str(conf.database) +"_user where u_name ='"+ credentials['username'] +"'")

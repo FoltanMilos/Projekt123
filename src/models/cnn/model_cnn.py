@@ -16,6 +16,7 @@ import enumerations.enum_model_builder as mb
 import data as dt
 import models.cnn.callbacks as callbck
 from tensorflow.keras.models import load_model
+#from pyimagesearch.minivggnet import MiniVGGNet
 
 class Model_cnn(interface.ModelInterface):
     #global model  # instancia modelu keras
@@ -92,17 +93,17 @@ class Model_cnn(interface.ModelInterface):
             self.ref_data.load_state()
         self.ref_data.load_train_set()
         self.ref_data.load_validation_set()
-        self.callb.max_epoch = 10
+        self.callb.max_epoch = 2
         self.lock_training()
         train_hist = self.model.fit_generator(
-            self.ref_data.train_set, steps_per_epoch=10, epochs=self.callb.max_epoch,
+            self.ref_data.train_set,epochs=self.callb.max_epoch,
             validation_data=self.ref_data.valid_set,
             validation_steps=5,
             callbacks=[EarlyStopping(monitor='accuracy',
                                      patience=200,
-                                     verbose=1),
+                                     verbose=1)
                       # callbck.LiveLearningCallback()
-                       self.callb
+                       #self.callb
                        ])
         # nastavenie parametrov
         self.trained_on_dataset = self.ref_data.name
@@ -128,11 +129,11 @@ class Model_cnn(interface.ModelInterface):
         # VSTUPNA
         self.model.add(Conv2D(64,
                               kernel_size=3,
-                              #activation='relu',
-                              #padding='valid',
-                              #bias_initializer=self.bias_initializer,
-                              input_shape=(conf.IMG_SIZE_X, conf.IMG_SIZE_Y, 3)
-                              #kernel_initializer=self.initializer
+                              activation='relu',
+                              padding='valid',
+                              bias_initializer=self.bias_initializer,
+                              input_shape=(conf.IMG_SIZE_X, conf.IMG_SIZE_Y, 3),
+                              kernel_initializer=self.initializer
                               )
                        )
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
@@ -160,7 +161,7 @@ class Model_cnn(interface.ModelInterface):
         self.model.add(Dense(10, activation='sigmoid'))
 
         # VYSTUPNA VRSTVA -sigmoid - vraj to ma byt ale nie som s tym stotozneny
-        self.model.add(Dense(1, activation='sigmoid'))
+        self.model.add(Dense(1, activation='softmax'))
 
         # compilovanie rmsprop ??mean_squared_error, rmsprop ?? najlepsie bola adadelta
         self.model.compile(loss="binary_crossentropy",
@@ -185,6 +186,7 @@ class Model_cnn(interface.ModelInterface):
         # ak chcem pustit rychlu evaluation
         if is_fast_test:
             self.ref_app.log.info('Model evaulation(Fast test):')
+            #ppp = self.model.predict_classes(self.ref_data.load_test_set())
             result = self.model.evaluate_generator(self.ref_data.load_test_set(),verbose=1)
             self.ref_app.log.info('Evaluation completed:')
             i = 0
@@ -196,9 +198,11 @@ class Model_cnn(interface.ModelInterface):
         else:
             # co sa ulozi do suboru na precitanie
             data_to_return = self.ref_data.load_test_set()
+
+            #self.model.predict_classes(self.ref_data.load_test_set(),batch_size = None)
             result = self.model.predict_generator(data_to_return,verbose = 1)
             # process data results
-            self.ref_res_proc.process_result_matrix(result,data_to_return[0][1],threshold=0.75)
+            self.ref_res_proc.process_result_matrix(result,data_to_return.classes)
             # zapisanie historie testovania
             test_history = {}
             header = self.ref_res_proc.to_json()
@@ -231,6 +235,8 @@ class Model_cnn(interface.ModelInterface):
         image = self.ref_data.preproces_image(image)
         ppp = self.model.predict_classes(image)
         predicted = self.model.predict(image)
+        if ppp==0:
+            predicted[0][0] = 1 - predicted[0][0]
         # vytvorenie triedy vysledku clasifikacie
         metada_dummy = resClass.Metadata("Male","26","Bening","serial imaging showing no change","True")
         result_class = resClass.Result(predicted[0][0],ppp[0][0],metada_dummy,None)
@@ -240,16 +246,17 @@ class Model_cnn(interface.ModelInterface):
     def predict_image_flow(self):
         #self.load()
         image_exante_set = self.ref_data.load_image_exante_flow(
-            'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\main_dataset\\validation\\')
-        image_exante_set.reset()
+            'C:\\Skola\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\testovanie\\')
+        rr = self.model.predict_classes(image_exante_set)
+
         result_set = self.model.predict_generator(image_exante_set,
                                                   steps=len(image_exante_set.filenames),
                                                   verbose=0)
-        res_string = self.result_processing.process_results(result_set,
-                                                            np.array(image_exante_set.classes).reshape(
-                                                                len(image_exante_set.classes), 1)
-                                                            , image_exante_set.filenames)
-        return res_string
+        #res_string = self.result_processing.process_results(result_set,
+        #                                                    np.array(image_exante_set.classes).reshape(
+        #                                                        len(image_exante_set.classes), 1)
+        #                                                    , image_exante_set.filenames)
+        return result_set
 
     def load_state(self, state):
         self.m_id = int(state[0])
@@ -337,42 +344,44 @@ class Model_cnn(interface.ModelInterface):
         self.json_structure = p_json
         self.name = p_json["modelName"]
         self.model = Sequential()
+        self.create()
         # testovanie
         #with open('other_files/jsonCreate', 'r') as jsons:
          #   p_json = json.load(jsons)
-        for lay in p_json["layers"]:
-            if lay["class"] == mb.EnumLayer.INPUT.name.upper():
-                self.model.add(Conv2D(int(lay["NEURON_COUNT"]),
-                                      kernel_size=int(str(lay["KERNEL_SIZE"]).split('x')[0].split(',')[0]),
-                                      activation=str(lay["ACTIVATION"]).lower(),
-                                      padding=str(lay["PADDING"]).lower(),
-                                      bias_initializer=self.bias_initializer,
-                                      input_shape=(int(str(lay["INPUT_SHAPE"]).split('x')[0].split(',')[0]),
-                                                   int(str(lay["INPUT_SHAPE"]).split('x')[0].split(',')[1]),
-                                                   3)
-                                      )
-                               )
-            elif lay["class"] == mb.EnumLayer.FLATTENING.name.upper():
-                self.model.add(Flatten())
-            elif lay["class"] == mb.EnumLayer.POOLING.name.upper():
-                self.model.add(MaxPooling2D(pool_size=(int(str(lay["POOL_SIZE"])),
-                                                       int(str(lay["POOL_SIZE"]))))
-                               )
-            elif lay["class"] == mb.EnumLayer.DENSE.name.upper():
-                self.model.add(Dense(int(str(lay["NEURON_COUNT"]))
-                                     , activation=str(lay["ACTIVATION"]).lower()))
-            elif lay["class"] == mb.EnumLayer.BATCH_NORMALIZATION.name.upper():
-                self.model.add(BatchNormalization())
-            elif lay["class"] == mb.EnumLayer.CONV2D.name.upper():
-                self.model.add(Conv2D(int(lay["NEURON_COUNT"]),
-                                      kernel_size=int(str(lay["KERNEL_SIZE"]).split('x')[0].split(',')[0]),
-                                      activation=str(lay["ACTIVATION"]).lower(),
-                                      padding=str(lay["PADDING"]).lower()
-                                      )
-                               )
-        self.model.compile(loss=str(p_json["loss"]),
-        				   optimizer=str(p_json["optimizer"]),
-        				   metrics=[str(p_json["metrics"])])
+        if False is True:
+            for lay in p_json["layers"]:
+                if lay["class"] == mb.EnumLayer.INPUT.name.upper():
+                    self.model.add(Conv2D(int(lay["NEURON_COUNT"]),
+                                          kernel_size=int(str(lay["KERNEL_SIZE"]).split('x')[0].split(',')[0]),
+                                          activation=str(lay["ACTIVATION"]).lower(),
+                                          padding=str(lay["PADDING"]).lower(),
+                                          bias_initializer=self.bias_initializer,
+                                          input_shape=(int(str(lay["INPUT_SHAPE"]).split('x')[0].split(',')[0]),
+                                                       int(str(lay["INPUT_SHAPE"]).split('x')[0].split(',')[1]),
+                                                       3)
+                                          )
+                                   )
+                elif lay["class"] == mb.EnumLayer.FLATTENING.name.upper():
+                    self.model.add(Flatten())
+                elif lay["class"] == mb.EnumLayer.POOLING.name.upper():
+                    self.model.add(MaxPooling2D(pool_size=(int(str(lay["POOL_SIZE"])),
+                                                           int(str(lay["POOL_SIZE"]))))
+                                   )
+                elif lay["class"] == mb.EnumLayer.DENSE.name.upper():
+                    self.model.add(Dense(int(str(lay["NEURON_COUNT"]))
+                                         , activation=str(lay["ACTIVATION"]).lower()))
+                elif lay["class"] == mb.EnumLayer.BATCH_NORMALIZATION.name.upper():
+                    self.model.add(BatchNormalization())
+                elif lay["class"] == mb.EnumLayer.CONV2D.name.upper():
+                    self.model.add(Conv2D(int(lay["NEURON_COUNT"]),
+                                          kernel_size=int(str(lay["KERNEL_SIZE"]).split('x')[0].split(',')[0]),
+                                          activation=str(lay["ACTIVATION"]).lower(),
+                                          padding=str(lay["PADDING"]).lower()
+                                          )
+                                   )
+            self.model.compile(loss=str(p_json["loss"]),
+                               optimizer=str(p_json["optimizer"]),
+                               metrics=[str(p_json["metrics"])])
         # ulozit to do DB
         self.save_state() # toto je kvoli vrateniu ID
         self.path_struct = 'saved_model/cnn/' + str(int(self.m_id)) + '/model'

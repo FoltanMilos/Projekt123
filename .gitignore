@@ -111,6 +111,8 @@ dataset/main_dataset/description(10015)
 dataset/main_dataset/test/**
 dataset/main_dataset/train/**
 dataset/main_dataset/validation/**
+dataset/small_dataset/validation/malignant/**
+dataset/small_dataset/**
 images_other/images(MSK-1)/
 logs/
 other_files/jsonCreate

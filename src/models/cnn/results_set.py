@@ -50,12 +50,12 @@ class Results_set:
 		# pocet vzoriek
 		self.samples_count = 0
 
-	def process_result_matrix(self,predction_array,true_lab_array,threshold):
+	def process_result_matrix(self,predction_array,true_lab_array):
 		if(predction_array.shape[0]!= true_lab_array.shape[0]):
 			raise Exception("Result for matrix must be same shape. But shape is: prediction_array:{} true_lab_array{}".format(predction_array.shape,true_lab_array.shape))
 		index = 0
-		predction_array = predction_array > threshold
-		predction_array = predction_array.astype(int)
+		predction_array = np.argmax(predction_array,axis=1)
+		#predction_array = predction_array.astype(int)
 		for predicted_value in predction_array:
 			self.result_matrix[predicted_value,int(true_lab_array[index])]+= 1
 			self.samples_count = self.samples_count+1

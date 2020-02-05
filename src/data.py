@@ -72,8 +72,6 @@ class Data:
 
     def load_test_set(self):
         self.test_set = self.train_datagen.flow_from_directory(
-            ##self.path + '\\dataset\\main_dataset\\test\\',
-            #'C:\\SKOLA\\7.Semester\\Projekt 1\\SarinaKristaTi\\Projekt123\\dataset\\main_dataset\\test\\',
             self.paths["T"],
             target_size=(conf.IMG_SIZE_X, conf.IMG_SIZE_Y),
             batch_size=16,

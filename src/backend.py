@@ -170,7 +170,7 @@ def testing_session():
             erorMsg['message'] = "Model has not been trained yet!"
             return flask.make_response(json.dumps(erorMsg), 200)
         elif user_model.ref_res_proc.test_result_path is None:
-            erorMsg['message'] = "Model has not been trained yet!"
+            erorMsg['message'] = "Model has not been tested yet!"
             return flask.make_response(json.dumps(erorMsg), 200)
         else:
             # model bol uz trenovany, moze sa testovat
@@ -367,6 +367,7 @@ def show_info_models():
 def train():
     form = flask.request.get_json()
     auth = request.headers.get('Authorization')
+    epochMax = ''
     model_id = int(form.get('modelId'))
     dataset_name = form.get('datasetName')
     if dataset_name is None:
