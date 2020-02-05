@@ -2,14 +2,33 @@ from src.models.mlp.neuron import Neuron
 
 
 class Layer:
-    def __init__(self, layer_size, prev_layer_size):
-        self.outputs = [0] * layer_size
-        self.prev_layer_size = prev_layer_size
-        self.neurons = [Neuron(prev_layer_size) for i in range(layer_size)]
-
-    def evaluate(self, inputs, activation_function):
-        if self.prev_layer_size == 0:
-            self.outputs = [self.neurons[i].activate(inputs[i], activation_function) for i in range(len(inputs))]
+    def __init__(self, layer_size=1, prev_layer_size=1, activation_function="sigmoid", weights=None, json=None):
+        if json is None:
+            self.outputs = [0] * layer_size
+            self.prev_layer_size = prev_layer_size
+            self.activation_function = activation_function
+            if weights is not None:
+                self.neurons = [Neuron(prev_layer_size, weights[i]) for i in range(layer_size)]
+            else:
+                self.neurons = [Neuron(prev_layer_size) for i in range(layer_size)]
         else:
-            self.outputs = [neuron.activate(inputs, activation_function) for neuron in self.neurons]
+            self.from_json(json)
+
+    def evaluate(self, inputs):
+        if self.prev_layer_size == 0:
+            self.outputs = [self.neurons[i].activate(inputs[i], self.activation_function) for i in range(len(inputs))]
+        else:
+            self.outputs = [neuron.activate(inputs, self.activation_function) for neuron in self.neurons]
         return self.outputs
+
+    def to_json(self):
+        return {'prev_layer_size': self.prev_layer_size, 'ACTIVATION_FUNCTION': self.activation_function, 'NEURON_COUNT': len(self.outputs), 'neurons': [n.to_json() for n in self.neurons]}
+
+    def from_json(self, json):
+        self.prev_layer_size = json['prev_layer_size']
+        self.activation_function = json['ACTIVATION_FUNCTION']
+        self.outputs = [0] * int(json['NEURON_COUNT'])
+        try:
+            self.neurons = [Neuron(json=n) for n in json['neurons']]
+        except KeyError:
+            self.neurons = [Neuron(prev_layer_size=self.prev_layer_size) for i in self.outputs]

@@ -94,8 +94,10 @@ class User:
 			new_model = cnn.Model_cnn(p_json["modelName"],self,self.ref_app)
 			new_model.create_model_from_json(p_json)
 		elif p_json["type"] == 'mlp':
-			# new model MLP
-			pass
+			new_model = mlp.Model_mlp(self, self.ref_app, None, p_json["modelName"])
+			p_json['epsilon'] = 0.1
+			p_json['learning_rate'] = 0.01
+			new_model.create_model_from_json(p_json)
 		elif p_json["type"] == 'gen':
 			pass
 		else:

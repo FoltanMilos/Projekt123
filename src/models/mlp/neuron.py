@@ -1,11 +1,20 @@
 import random
 import numpy as np
 
+
 class Neuron:
-    def __init__(self, prev_layer_size):
-        self.potential = 0.0
-        self.activation = 0.0
-        self.weights = [random.random() - 0.5 if prev_layer_size > 0 else 1 for i in range(prev_layer_size if prev_layer_size > 0 else 1)]
+
+    def __init__(self, prev_layer_size=1, weights=None, json=None):
+        if json is None:
+            self.potential = 0.0
+            self.activation = 0.0
+            if weights is None:
+                i_prev_layer_size = int(prev_layer_size)
+                self.weights = [random.random() if i_prev_layer_size > 0 else 1 for i in range(i_prev_layer_size if i_prev_layer_size > 0 else 1)]
+            else:
+                self.weights = weights
+        else:
+            self.from_json(json)
 
     def __calculate_potential__(self, inputs):
         self.potential = 0.0
@@ -40,3 +49,9 @@ class Neuron:
 
     def derivative_tanh(self):
         return 1 - self.activation**2
+
+    def to_json(self):
+        return {'potential': self.potential, 'activation': self.activation, 'weights': self.weights}
+
+    def from_json(self, json):
+        self.potential, self.activation, self.weights = json['potential'], json['activation'], json['weights']

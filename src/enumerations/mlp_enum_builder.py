@@ -2,6 +2,7 @@ from enum import Enum
 
 class EnumLayer(Enum):
     LAYER = "Layer"
+    #PARAMS = "Params" TODO
 
     @staticmethod
     def getValues():
@@ -12,32 +13,58 @@ class EnumLayer(Enum):
             classNames.append({'id' : data.name, 'name': data.value})
         return map,classNames
 
-class EnumActivation(Enum):
-    SIGMOID = "sigmoid"
-    RELU = "relu"
-    LINEAR = "linear"
-
-    @staticmethod
-    def getValues():
-            result = []
-            for data in EnumActivation:
-                result.append({"id": data.name, "name": data.value})
-            return result
-
 class EnumLayerParameters(Enum):
     #attr = tuple(ID,display_name, ExpectedVale)
-    NAME = ("NAME","name","string")
     NEURON_COUNT = ("NEURON_COUNT","neuron count", "number")
+    ACTIVATION_FUNCTION = ("ACTIVATION_FUNCTION","activation function", "string")
+    #LEARNING_RATE = ("LEARNING_RATE","learning rate", "number")
+    #EPSILON = ("EPSILON","epsilon", "number")
     @staticmethod
     def getValues(enum_layer):
         values = [item.value for item in EnumLayer]
         if (not enum_layer in values):
             raise Exception('must be member of EnumLayers')
         r = []
-        r.append(EnumLayerParameters.NAME.value)
         if(enum_layer is EnumLayer.LAYER.value):
             r.append(EnumLayerParameters.NEURON_COUNT.value)
-            return r
+            r.append(EnumLayerParameters.ACTIVATION_FUNCTION.value)
+        #elif enum_layer is EnumLayer.PARAMS.value:
+        #    r.append(EnumLayerParameters.LEARNING_RATE.value)
+        #    r.append(EnumLayerParameters.EPSILON.value)
+        return r
+
+class EnumLoss(Enum):
+    #attr = (id,name)
+    DEFAULT = ("default","Default")
+
+    @staticmethod
+    def getValues():
+        result = []
+        for data in EnumLoss:
+            result.append({'id' : data.name, 'name': data.value})
+        return result
+
+class EnumOptimizer(Enum):
+    #attr = {id,name}
+    DEFAULT = ("default","Default")
+
+    @staticmethod
+    def getValues():
+        result = []
+        for data in EnumOptimizer:
+            result.append({'id' : data.name, 'name': data.value})
+        return result
+
+class EnumMetrics(Enum):
+    #attr=(id,name)
+    DEFAULT = ("default","Default")
+
+    @staticmethod
+    def getValues():
+        result = []
+        for data in EnumMetrics:
+            result.append({'id' : data.name, 'name': data.value})
+        return result
 
 def to_json():
     res = {}
@@ -57,6 +84,10 @@ def to_json():
                 parJson['possibleValues'] = eval("Enum" + str(par[0]).capitalize()).getValues()
             result.append(parJson)
         mlp[key+"Parameters"] = result
-    mlp['activation'] = EnumActivation.getValues()
+    tmp = {}
+    tmp['metrics'] = EnumMetrics.getValues()
+    tmp['name'] = EnumOptimizer.getValues()
+    tmp['loss'] = EnumLoss.getValues()
+    mlp['optimizer'] = tmp
     res['mlp'] = mlp
     return res
