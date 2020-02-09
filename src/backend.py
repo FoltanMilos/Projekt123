@@ -94,8 +94,7 @@ def predict():
     elif auth is not None:
         # uzivatel je prihlaseny, pouziva svoje modely
         usr = application.find_user_by_identification(auth)
-        result = usr.switch_active_\
-            (model_id).predict_image(img)
+        result = usr.switch_active_model(model_id).predict_image(img)
     else:
         raise Exception("Nepovolena hodnota v atribute auth! [{}]".format(auth))
     application.log.info("Prediction result:")
