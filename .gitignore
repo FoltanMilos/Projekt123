@@ -114,5 +114,6 @@ dataset/main_dataset/validation/**
 dataset/small_dataset/validation/malignant/**
 dataset/small_dataset/**
 images_other/images(MSK-1)/
+saved_model/cnn/5/model
 logs/
 other_files/jsonCreate

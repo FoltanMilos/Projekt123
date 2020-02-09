@@ -84,8 +84,18 @@ def predict():
     img = form.get('photo')
     auth = request.headers.get('Authorization')
     application.log.info("EndPoint: Predict, Auth:{}, ModelId:{}".format(auth, model_id))
-    jpgtxt = base64.standard_b64decode(img.split(',')[1])  # treba odrezat cestu, lebo je v otm prilozena
-    dataset_name = base64.standard_b64decode(img.split(',')[0]) # cesta pre dohladanie fotky
+    jpgtxt = None
+    try:
+        jpgtxt = base64.standard_b64decode(img.split(',')[1])
+    except:
+        jpgtxt = None
+
+    if jpgtxt is None:
+        jpgtxt = base64.standard_b64decode(img['image'].split(';')[1].split(',')[1])
+    else:
+        dataset_name = base64.standard_b64decode(img.split(',')[0])  # cesta pre dohladanie fotky
+    # treba odrezat cestu, lebo je v otm prilozena
+
     #TODO: dorobit tu cestu do fotky ked sa vyberie z nasich datasetov, VYSTRIHNUT DO TOHO DATASET NAME
     img = Image.open(BytesIO(jpgtxt))
     if auth is None:

@@ -16,7 +16,7 @@ import enumerations.enum_model_builder as mb
 import data as dt
 import models.cnn.callbacks as callbck
 from tensorflow.keras.models import load_model
-#from pyimagesearch.minivggnet import MiniVGGNet
+from keras.applications.vgg16 import VGG16
 
 class Model_cnn(interface.ModelInterface):
     #global model  # instancia modelu keras
@@ -45,6 +45,8 @@ class Model_cnn(interface.ModelInterface):
         self.m_id = -1
         self.model = None
         self.callb = callbck.LiveLearningCallback(0, self.m_id)
+        self.sizeX = 0
+        self.sizeY = 0
 
         if model_name == "":
             # prazdna instania, do ktorej sa naloaduju data
@@ -232,14 +234,22 @@ class Model_cnn(interface.ModelInterface):
         """Predikcia jedneho obrazku"""
         if (image is None):
             raise Exception("Error by predict image. Image is None!")
-        image = self.ref_data.preproces_image(image)
-        ppp = self.model.predict_classes(image)
+        image = self.ref_data.preproces_image(image,[self.sizeX,self.sizeY])
         predicted = self.model.predict(image)
+        ppp = None
+        if self.sizeY == self.sizeX == 224:
+            # model ktory nie je sequential
+            ppp = 1 if predicted[0][0] >= predicted[0][1] else 0
+        else:
+            ppp = self.model.predict_classes(image)
+            ppp = ppp[0][0]
         if ppp==0:
             predicted[0][0] = 1 - predicted[0][0]
         # vytvorenie triedy vysledku clasifikacie
-        metada_dummy = resClass.Metadata("Male","26","Bening","serial imaging showing no change","True")
-        result_class = resClass.Result(predicted[0][0],ppp[0][0],metada_dummy,None)
+        metada_dummy = resClass.Metadata("Male", "26", "Bening", "serial imaging showing no change", "True")
+        if self.sizeY == self.sizeX == 224:
+            metada_dummy = None
+        result_class = resClass.Result(predicted[0][0],ppp,metada_dummy,None)
         return result_class.to_json()
 
     # TODO: na predikciu dakeho vaciseho sbor
@@ -272,6 +282,8 @@ class Model_cnn(interface.ModelInterface):
             self.locked_by_training = True
         self.trained_on_dataset = state[7]
         self.static = state[8]
+        self.sizeX = state[9]
+        self.sizeY = state[10]
 
         # dotiahnutie dat
         self.ref_data = dt.Data(self,self.trained_on_dataset)
@@ -290,9 +302,9 @@ class Model_cnn(interface.ModelInterface):
             self.ref_res_proc.save_state()
             # insert
             self.m_id = int(self.ref_app.ref_db.insert_returning_identity(
-                "insert into "+ str(conf.database) +"_model(u_id,r_id,m_type,m_structure_path,model_name) values"
+                "insert into "+ str(conf.database) +"_model(u_id,r_id,m_type,m_structure_path,model_name,sizex,sizey) values"
                 "(" + str(self.ref_user.u_id) + ", " + str(
-                    self.ref_res_proc.r_id) + ",'CNN','" + "','" + str(self.name) + "')"
+                    self.ref_res_proc.r_id) + ",'CNN','" + "','" + str(self.name) + "'"+str(self.sizeX)+", "+str(self.sizeY) +")"
                 , "m_id"))
             # ak je novy model, treba  u vytvorit este aj folder
             os.mkdir(os.getcwd() + '/saved_model/cnn/' + str(int(self.m_id)))
@@ -459,3 +471,20 @@ class Model_cnn(interface.ModelInterface):
         self.locked_by_training = False
         self.ref_app.ref_db.update_statement("update "+str(conf.database)+"_model set locked_by_train='F' where m_id="+str(self.m_id))
         self.ref_app.ref_db.commit()
+
+    def create_VGG_base(self):
+        self.model = VGG16(weights='imagenet', include_top=True,input_shape=(224,224,3))
+
+    def decode_pred(self,pr):
+        # dict = {'malignant': 1 'bening': 0}
+        # ale je to positional argument
+        if pr[0] >= pr[1]:
+            return 0, 'bening', [pr[0], pr[1]]
+        elif pr[0] < pr[1]:
+            return 1, 'malignant', [pr[0], pr[1]]
+
+    def dcd(self,int):
+        if int == 0:
+            return 'bening'
+        elif int == 1:
+            return 'malignant'

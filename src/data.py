@@ -113,10 +113,9 @@ class Data:
         image_exante = np.expand_dims(image_exante, axis=0)
         return image_exante
 
-    def preproces_image(self,image):
+    def preproces_image(self,image,tupple_size):
         image = img_proc.img_to_array(image)
-
-        image.resize((64,64,3),refcheck=False)
+        image.resize((tupple_size[0],tupple_size[1],3),refcheck=False)
         image = np.expand_dims(image, axis=0)
         return image
 
