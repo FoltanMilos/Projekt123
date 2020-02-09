@@ -1,32 +1,32 @@
 {
   "model_header": {
     "training": {
-      "TrainingTime": "0",
-      "Accuracy": "1.0"
+      "TrainingTime": "16:32:46",
+      "Accuracy": "92%"
     },
     "testing": {
-      "Specificity": "0.52",
-      "TrueNegatives": "0.5416666666666666",
-      "Senzitivity": "0.56",
-      "Accuracy": "0.54",
-      "FalsePositives": "0.5384615384615384"
+      "Specificity": "0.79",
+      "TrueNegatives": "0.215617771617",
+      "Senzitivity": "0.75",
+      "Accuracy": "0.76",
+      "FalsePositives": "0.23809523807"
     }
   },
   "dataset_header": {
-    "VALID - bening": "150",
-    "TRAIN - bening": "150",
-    "IMG size": "64x64",
-    "VALID - unspecified": "0",
-    "DatasetDesc": "popis dataset",
-    "TEST - bening": "150",
-    "TEST - unspecified": "0",
-    "All photo count": "800",
-    "Dataset source": "www.dataset.sk",
-    "TRAIN - unspecified": "0",
-    "TRAIN - malig": "50",
+    "VALID - bening": "858",
+    "TRAIN - bening": "4048",
+    "IMG size": "224x224",
+    "VALID - unspecified": "0 - nepoužité",
+    "DatasetDesc": "a large collection of multi-source dermatoscopic images of common pigmented skin lesions. Used on ISIC challenge in 2018. ",
+    "TEST - bening": "700",
+    "TEST - unspecified": "0 - nepoužité",
+    "All photo count": "10015",
+    "Dataset source": "https://www.isic-archive.com/#!/topWithHeader/onlyHeaderTop/gallery",
+    "TRAIN - unspecified": "0 - nepoužité",
+    "TRAIN - malig": "855",
     "VALID - malig": "50",
-    "DatasetUsed": "small_dataset",
-    "TEST - malig": "50"
+    "DatasetUsed": "main_dataset",
+    "TEST - malig": "116"
   },
   "tested_results": [
     {

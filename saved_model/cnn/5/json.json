@@ -1,1 +1,172 @@
-{"loss": null, "modelName": "Exam2", "metrics": null, "type": "cnn", "layers": [{"NEURON_COUNT": "64", "KERNEL_SIZE": "3,3", "ACTIVATION": "RELU", "INPUT_SHAPE": "64,64", "PADDING": "valid", "NAME": "vstup", "class": "INPUT"}, {"NAME": "dd", "POOL_SIZE": "2", "class": "POOLING"}, {"NEURON_COUNT": "32", "KERNEL_SIZE": "3,3", "ACTIVATION": "RELU", "INPUT_SHAPE": "64,64", "PADDING": "valid", "NAME": "dd", "class": "CONV2D"}, {"NAME": "ss", "class": "BATCH_NORMALIZATION"}, {"NEURON_COUNT": "16", "KERNEL_SIZE": "3,3", "ACTIVATION": "RELU", "INPUT_SHAPE": "64,64", "PADDING": "valid", "NAME": "ff", "class": "CONV2D"}, {"NAME": "ss", "POOL_SIZE": "2", "class": "POOLING"}, {"NAME": "ss", "class": "FLATTENING"}, {"NEURON_COUNT": "64", "NAME": "ss", "ACTIVATION": "SIGMOID", "class": "DENSE"}, {"NEURON_COUNT": "128", "NAME": "ss", "ACTIVATION": "SIGMOID", "class": "DENSE"}, {"NEURON_COUNT": "10", "NAME": "ss", "ACTIVATION": "SIGMOID", "class": "DENSE"}, {"NEURON_COUNT": "1", "NAME": "ss", "ACTIVATION": "SIGMOID", "class": "DENSE"}], "optimizer": null}
+{
+  "layers": [
+    {
+      "NEURON_COUNT": "64",
+      "KERNEL_SIZE": "3,3",
+      "ACTIVATION": "RELU",
+      "INPUT_SHAPE": "224,224",
+      "PADDING": "valid",
+      "NAME": "Vstupná vrstva",
+      "class": "INPUT"
+    },
+      {
+      "NEURON_COUNT": "64",
+      "KERNEL_SIZE": "3,3",
+      "ACTIVATION": "RELU",
+      "INPUT_SHAPE": "224,224",
+      "PADDING": "valid",
+      "NAME": "1. konvolučná vrstva",
+      "class": "INPUT"
+    },
+    {
+      "NAME": "Max pooling",
+      "POOL_SIZE": "2",
+      "class": "POOLING"
+    },
+    {
+      "NEURON_COUNT": "128",
+      "KERNEL_SIZE": "3,3",
+      "ACTIVATION": "RELU",
+      "INPUT_SHAPE": "64,64",
+      "PADDING": "valid",
+      "NAME": "2. konvolučná vrstva",
+      "class": "CONV2D"
+    },
+    {
+      "NEURON_COUNT": "128",
+      "KERNEL_SIZE": "3,3",
+      "ACTIVATION": "RELU",
+      "INPUT_SHAPE": "64,64",
+      "PADDING": "valid",
+      "NAME": "3. konvolučná vrstva",
+      "class": "CONV2D"
+    },
+     {
+      "NAME": "Max pooling",
+      "POOL_SIZE": "2",
+      "class": "POOLING"
+    },
+    {
+      "NEURON_COUNT": "256",
+      "KERNEL_SIZE": "3,3",
+      "ACTIVATION": "RELU",
+      "INPUT_SHAPE": "128,128",
+      "PADDING": "valid",
+      "NAME": "4. konvolučná vrstva",
+      "class": "CONV2D"
+    },
+    {
+      "NEURON_COUNT": "256",
+      "KERNEL_SIZE": "3,3",
+      "ACTIVATION": "RELU",
+      "INPUT_SHAPE": "128,128",
+      "PADDING": "valid",
+      "NAME": "5. konvolučná vrstva",
+      "class": "CONV2D"
+    },
+    {
+      "NEURON_COUNT": "256",
+      "KERNEL_SIZE": "3,3",
+      "ACTIVATION": "RELU",
+      "INPUT_SHAPE": "128,128",
+      "PADDING": "valid",
+      "NAME": "6. konvolučná vrstva",
+      "class": "CONV2D"
+    },
+     {
+      "NAME": "Max pooling",
+      "POOL_SIZE": "2",
+      "class": "POOLING"
+    },
+      {
+      "NEURON_COUNT": "512",
+      "KERNEL_SIZE": "3,3",
+      "ACTIVATION": "RELU",
+      "INPUT_SHAPE": "256,256",
+      "PADDING": "valid",
+      "NAME": "7. konvolučná vrstva",
+      "class": "CONV2D"
+    },
+      {
+      "NEURON_COUNT": "512",
+      "KERNEL_SIZE": "3,3",
+      "ACTIVATION": "RELU",
+      "INPUT_SHAPE": "256,256",
+      "PADDING": "valid",
+      "NAME": "8. konvolučná vrstva",
+      "class": "CONV2D"
+    },
+      {
+      "NEURON_COUNT": "512",
+      "KERNEL_SIZE": "3,3",
+      "ACTIVATION": "RELU",
+      "INPUT_SHAPE": "256,256",
+      "PADDING": "valid",
+      "NAME": "9. konvolučná vrstva",
+      "class": "CONV2D"
+    },
+      {
+      "NAME": "Max pooling",
+      "POOL_SIZE": "2",
+      "class": "POOLING"
+    },
+     {
+      "NEURON_COUNT": "512",
+      "KERNEL_SIZE": "3,3",
+      "ACTIVATION": "RELU",
+      "INPUT_SHAPE": "256,256",
+      "PADDING": "valid",
+      "NAME": "10. konvolučná vrstva",
+      "class": "CONV2D"
+    },
+      {
+      "NEURON_COUNT": "512",
+      "KERNEL_SIZE": "3,3",
+      "ACTIVATION": "RELU",
+      "INPUT_SHAPE": "256,256",
+      "PADDING": "valid",
+      "NAME": "11. konvolučná vrstva",
+      "class": "CONV2D"
+    },
+      {
+      "NEURON_COUNT": "512",
+      "KERNEL_SIZE": "3,3",
+      "ACTIVATION": "RELU",
+      "INPUT_SHAPE": "256,256",
+      "PADDING": "valid",
+      "NAME": "12. konvolučná vrstva",
+      "class": "CONV2D"
+    },
+      {
+      "NAME": "Max pooling",
+      "POOL_SIZE": "2",
+      "class": "POOLING"
+    },
+    {"NAME": "Vyrovnanie",
+      "class": "FLATTENING"
+    },
+    {
+      "NEURON_COUNT": "2000",
+      "NAME": "Klasifikátor - 1.vrstva",
+      "ACTIVATION": "SIGMOID",
+      "class": "DENSE"
+    },
+     {
+      "NEURON_COUNT": "2000",
+      "NAME": "Klasifikátor - 2.vrstva",
+      "ACTIVATION": "SIGMOID",
+      "class": "DENSE"
+    },
+    {
+      "NEURON_COUNT": "2",
+      "NAME": "Softmax na určenie triedy",
+      "ACTIVATION": "SOFTMAX",
+      "class": "DENSE"
+    }
+  ],
+  "loss": "Categorical loss",
+  "metrics": "Categorical crossentropy",
+  "modelName": "Hlavný klasifikačný model",
+  "optimizer": "Adam(lr=0.0001)",
+  "type": "cnn"
+}
