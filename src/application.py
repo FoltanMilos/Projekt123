@@ -30,15 +30,15 @@ class Application:
         # kontrola dependences
         self.log.info("Interpreter version: " + sys.version)
         self.log.info("Keras version: " + keras.__version__)
-        backendInfo = tf.config.list_physical_devices('GPU')
-        info = device_lib.list_local_devices()
         try:
+            backendInfo = tf.config.list_physical_devices('GPU')
+            info = device_lib.list_local_devices()
             self.log.info("Computational device: {}".format(backendInfo[0].device_type))
             self.log.info("Device desc: {}".format(info[1].physical_device_desc.split(',')[1]))
             self.log.info("Device name: {}".format(info[1].physical_device_desc.split(',')[3]))
             self.log.info("Is built CUDA: {}".format(str(tf.test.is_built_with_cuda).split('<')[1].split(' ')[1]))
         except:
-            self.log.info("CUDA NOT LOADED! CPU used!!");
+            self.log.info("CUDA NOT LOADED! CPU used!!")
         self.log.info("Aplication started: OK (main)")
         # pripojenie na DB
         self.ref_db = dm.DB_manip(self)
