@@ -230,7 +230,7 @@ class Model_cnn(interface.ModelInterface):
             self.ref_res_proc.save_state()
             return test_history
 
-    def predict_image(self, image=None):
+    def predict_image(self, image,shootedOnFe,photoDesc):
         """Predikcia jedneho obrazku"""
         if (image is None):
             raise Exception("Error by predict image. Image is None!")
@@ -246,9 +246,11 @@ class Model_cnn(interface.ModelInterface):
         if ppp==0:
             predicted[0][0] = 1 - predicted[0][0]
         # vytvorenie triedy vysledku clasifikacie
-        metada_dummy = resClass.Metadata("Male", "26", "Bening", "serial imaging showing no change", "True")
-        if self.sizeY == self.sizeX == 224:
+        #metada_dummy = resClass.Metadata("Male", "26", "Bening", "serial imaging showing no change", "True")
+        if shootedOnFe is True:
             metada_dummy = None
+        else:
+            metada_dummy = self.ref_app.mainDatasetTree.get(photoDesc)
         result_class = resClass.Result(predicted[0][0],ppp,metada_dummy,None)
         return result_class.to_json()
 

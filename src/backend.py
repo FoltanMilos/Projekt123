@@ -82,13 +82,18 @@ def predict():
     form = flask.request.get_json()
     model_id = int(form.get('model'))
     img = form.get('photo')
+    photoDesc = form.get('photoDescription')
     auth = request.headers.get('Authorization')
     application.log.info("EndPoint: Predict, Auth:{}, ModelId:{}".format(auth, model_id))
     jpgtxt = None
+    shootedOnFe = None
     try:
         jpgtxt = base64.standard_b64decode(img.split(',')[1])
+        photoDesc = 'ISIC_0034320'
     except:
         jpgtxt = None
+        shootedOnFe = True
+        photoDesc = None
 
     if jpgtxt is None:
         jpgtxt = base64.standard_b64decode(img['image'].split(';')[1].split(',')[1])
@@ -100,7 +105,7 @@ def predict():
     img = Image.open(BytesIO(jpgtxt))
     if auth is None:
         # uzivatel nebol prihlaseny, treba pouzit staticky model
-        result = application.swap_active_static_model(model_id).predict_image(img)
+        result = application.swap_active_static_model(model_id).predict_image(img,shootedOnFe,photoDesc)
     elif auth is not None:
         # uzivatel je prihlaseny, pouziva svoje modely
         usr = application.find_user_by_identification(auth)

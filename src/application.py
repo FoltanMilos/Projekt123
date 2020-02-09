@@ -11,6 +11,7 @@ import enumerations.enum_model as enum_model
 import config as conf
 import tensorflow as tf
 from tensorflow_core.python.client import device_lib
+import src.models.result as r
 
 class Application:
     global list_static_models  # instancia listu s modelov, s ktorymi sa pracuje
@@ -50,14 +51,12 @@ class Application:
         # natiahnutie statickych modelov
         self.load_all_static_models()
 
-        credentials = {}
-        credentials['username'] = 'milos'
-        credentials['pass'] = 'milos'
-        self.validate_user(credentials)
-        self.list_active_user[0].indentifier = 'jmbHJPPdeGnNVcoYwGQnskzpaEsQmQkQ'
-
-       # self.list_active_user[0].models[0].predict_image_flow()
-
+        self.mainDatasetTree = r.Metadata.loadCsvWithDatasetInfo('dataset/main_dataset/description/metadata_all_with_X.csv')
+        # credentials = {}
+        # credentials['username'] = 'milos'
+        # credentials['pass'] = 'milos'
+        # self.validate_user(credentials)
+        # self.list_active_user[0].indentifier = 'jmbHJPPdeGnNVcoYwGQnskzpaEsQmQkQ'
 
     def validate_user(self, credentials):
         res = self.ref_db.select_statement("select * from "+ str(conf.database) +"_user where u_name ='"+ credentials['username'] +"'")

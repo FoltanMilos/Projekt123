@@ -11,3 +11,7 @@ database = 'production'
 # developovanie sa robi na PROJ tabulkach
 # NEMENTE staticke modely, vytvorte si vlastneho usera ak testujete nieco
 # staticke modely nacita kazdemu, modely inych user nie.
+
+info = 'Sledujte si vývoj podozrivých znamienok. Ak sa znamienko mení v čase, naštívte svojho lekára'
+hlaskaNotOk = ''
+hlaskaOk = ''
