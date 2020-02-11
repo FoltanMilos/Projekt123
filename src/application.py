@@ -51,7 +51,7 @@ class Application:
         # natiahnutie statickych modelov
         self.load_all_static_models()
 
-      #  self.mainDatasetTree = r.Metadata.loadCsvWithDatasetInfo('dataset/main_dataset/description/metadata_all_with_X.csv')
+        self.mainDatasetTree = r.Metadata.loadCsvWithDatasetInfo('dataset/main_dataset/description/metadata_all_with_X.csv')
         # credentials = {}
         # credentials['username'] = 'milos'
         # credentials['pass'] = 'milos'
