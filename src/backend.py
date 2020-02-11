@@ -96,8 +96,8 @@ def predict():
 
     if jpgtxt is None:
         jpgtxt = base64.standard_b64decode(img['image'].split(';')[1].split(',')[1])
-    else:
-        dataset_name = base64.standard_b64decode(img.split(',')[0])  # cesta pre dohladanie fotky
+    #else:
+    #    dataset_name = base64.standard_b64decode(img.split(',')[0])  # cesta pre dohladanie fotky
     # treba odrezat cestu, lebo je v otm prilozena
 
     #TODO: dorobit tu cestu do fotky ked sa vyberie z nasich datasetov, VYSTRIHNUT DO TOHO DATASET NAME
