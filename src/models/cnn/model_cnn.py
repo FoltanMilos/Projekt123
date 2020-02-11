@@ -250,7 +250,8 @@ class Model_cnn(interface.ModelInterface):
         if shootedOnFe is True:
             metada_dummy = None
         else:
-            metada_dummy = self.ref_app.mainDatasetTree.get(photoDesc)
+            metada_dummy = None
+            #metada_dummy = self.ref_app.mainDatasetTree.get(photoDesc)
         result_class = resClass.Result(predicted[0][0],ppp,metada_dummy,None)
         return result_class.to_json()
 

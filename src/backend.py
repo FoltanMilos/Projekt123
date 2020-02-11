@@ -5,7 +5,6 @@ sys.path.append('src')
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 stderr = sys.stderr
 sys.stderr = open(os.devnull, 'w')
-import keras
 sys.stderr = stderr
 
 from flask import Flask, request
