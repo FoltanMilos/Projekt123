@@ -1,5 +1,6 @@
 import sys
 import None
+import None
 sys.path.append('src')
 import keras
 import user as user
