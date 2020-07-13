@@ -17,3 +17,4 @@ class logger:
         self.log = logging.getLogger('pythonConfig')
         self.log.setLevel(LOG_LEVEL)
         self.log.addHandler(stream)
+        #other comment
