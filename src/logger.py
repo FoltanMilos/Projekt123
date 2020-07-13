@@ -7,7 +7,8 @@ class logger:
 
     def __init__(self):
         LOG_LEVEL = logging.DEBUG
-        #comment test
+        #otherBranch
+        #otherBranch2
         LOGFORMAT = "%(log_color)s %(asctime)s :%(levelname)-8s %(name)-12s  %(message)s"
         logging.root.setLevel(LOG_LEVEL)
         self.formatter = ColoredFormatter(LOGFORMAT)
