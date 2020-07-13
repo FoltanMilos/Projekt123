@@ -9,6 +9,8 @@ class logger:
         LOG_LEVEL = logging.DEBUG
         #otherBranch
         #otherBranch2
+        #3
+        #4
         LOGFORMAT = "%(log_color)s %(asctime)s :%(levelname)-8s %(name)-12s  %(message)s"
         logging.root.setLevel(LOG_LEVEL)
         self.formatter = ColoredFormatter(LOGFORMAT)
